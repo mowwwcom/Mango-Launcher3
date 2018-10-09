@@ -41,6 +41,12 @@ android {
     flavorDimensions "default"
 
     productFlavors {
+        mango {
+            dimension "default"
+            applicationId 'com.mango.launcher3'
+            testApplicationId 'com.mango.launcher3.tests'
+        }
+
         aosp {
             dimension "default"
             applicationId 'com.android.launcher3'
