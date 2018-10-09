@@ -132,6 +132,8 @@ dependencies {
     implementation "com.android.support:support-dynamic-animation:${SUPPORT_LIBS_VERSION}"
     implementation "com.android.support:recyclerview-v7:${SUPPORT_LIBS_VERSION}"
     implementation "com.android.support:appcompat-v7:${SUPPORT_LIBS_VERSION}"
+    implementation "com.android.support:preference-v7:${SUPPORT_LIBS_VERSION}"
+    // implementation "com.android.support:preference-v14:${SUPPORT_LIBS_VERSION}"
     implementation 'com.google.protobuf.nano:protobuf-javanano:3.0.0-alpha-7'
 
     quickstepImplementation fileTree(dir: "quickstep/libs", include: 'sysui_shared.jar')

@@ -95,10 +95,11 @@
         <activity
             android:name="com.android.launcher3.ui.settings.SettingsActivity"
             android:autoRemoveFromRecents="true"
-            android:label="@string/settings_button_text"
-            android:theme="@android:style/Theme.Material.Settings">
+            android:label="@string/mango_settings"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
+                <!--<action android:name="android.intent.action.APPLICATION_PREFERENCES"/>-->
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
