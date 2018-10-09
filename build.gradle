@@ -98,6 +98,10 @@ android {
             manifest.srcFile "tests/AndroidManifest.xml"
         }
 
+        mango {
+            java.srcDirs = ['src_flags', "src_ui_overrides"]
+        }
+
         aosp {
             java.srcDirs = ['src_flags', "src_ui_overrides"]
         }
@@ -127,6 +131,7 @@ dependencies {
     implementation "com.android.support:support-v4:${SUPPORT_LIBS_VERSION}"
     implementation "com.android.support:support-dynamic-animation:${SUPPORT_LIBS_VERSION}"
     implementation "com.android.support:recyclerview-v7:${SUPPORT_LIBS_VERSION}"
+    implementation "com.android.support:appcompat-v7:${SUPPORT_LIBS_VERSION}"
     implementation 'com.google.protobuf.nano:protobuf-javanano:3.0.0-alpha-7'
 
     quickstepImplementation fileTree(dir: "quickstep/libs", include: 'sysui_shared.jar')

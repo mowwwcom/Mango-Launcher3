@@ -2541,6 +2541,10 @@ public class CellLayout extends ViewGroup {
 
     public static class LayoutParams extends ViewGroup.MarginLayoutParams {
         /**
+         * Indicates that this item should use the full extents of its parent.
+         */
+        public boolean isFullscreen = false;
+        /**
          * Horizontal location of the item in the grid.
          */
         @ViewDebug.ExportedProperty
@@ -2658,6 +2662,7 @@ public class CellLayout extends ViewGroup {
             }
         }
 
+        @Override
         public String toString() {
             return "(" + this.cellX + ", " + this.cellY + ")";
         }

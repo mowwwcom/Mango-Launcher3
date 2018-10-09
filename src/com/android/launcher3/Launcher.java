@@ -1765,6 +1765,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
      *
      * Implementation of the method from LauncherModel.Callbacks.
      */
+    @Override
     public void startBinding() {
         TraceHelper.beginSection("startBinding");
         // Floating panels (except the full widget sheet) are associated with individual icons. If
@@ -1799,6 +1800,13 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
             mWorkspace.addExtraEmptyScreen();
         }
         bindAddScreens(orderedScreenIds);
+
+        // Create the custom content page (this call updates mDefaultScreen which calls
+        // setCurrentPage() so ensure that all pages are added before calling this).
+        if (hasCustomContentToLeft()) {
+            mWorkspace.createCustomContentContainer();
+            populateCustomContentContainer();
+        }
 
         // After we have added all the screens, if the wallpaper was locked to the default state,
         // then notify to indicate that it can be released and a proper wallpaper offset can be
@@ -2420,5 +2428,40 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     public interface OnResumeCallback {
 
         void onLauncherResume();
+    }
+    /**
+     * To be overridden by subclasses to hint to Launcher that we have custom content
+     */
+    protected boolean hasCustomContentToLeft() {
+        if (mLauncherCallbacks != null) {
+            return mLauncherCallbacks.hasCustomContentToLeft();
+        }
+        return false;
+    }
+
+    /**
+     * To be overridden by subclasses to populate the custom content container and call
+     * {@link #addToCustomContentPage}. This will only be invoked if
+     * {@link #hasCustomContentToLeft()} is {@code true}.
+     */
+    protected void populateCustomContentContainer() {
+        if (mLauncherCallbacks != null) {
+            mLauncherCallbacks.populateCustomContentContainer();
+        }
+    }
+
+    public interface CustomContentCallbacks {
+        // Custom content is completely shown. {@code fromResume} indicates whether this was caused
+        // by a onResume or by scrolling otherwise.
+        void onShow(boolean fromResume);
+
+        // Custom content is completely hidden
+        void onHide();
+
+        // Custom content scroll progress changed. From 0 (not showing) to 1 (fully showing).
+        void onScrollProgressChanged(float progress);
+
+        // Indicates whether the user is allowed to scroll away from the custom content.
+        boolean isScrollingAllowed();
     }
 }

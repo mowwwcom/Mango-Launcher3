@@ -26,6 +26,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.view.View.AccessibilityDelegate;
 
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
@@ -243,5 +244,12 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
         writer.println(" mSystemUiController: " + mSystemUiController);
         writer.println(" mActivityFlags: " + mActivityFlags);
         writer.println(" mForceInvisible: " + mForceInvisible);
+    }
+
+    /**
+     * for override
+     */
+    public void onPermissionRefuse(@NonNull String permissions) {
+
     }
 }

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.launcher3;
-
-import static com.android.launcher3.states.RotationHelper.ALLOW_ROTATION_PREFERENCE_KEY;
-import static com.android.launcher3.states.RotationHelper.getAllowRotationDefaultValue;
+package com.android.launcher3.ui.settings;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -42,6 +39,10 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.ListView;
 
+import com.android.launcher3.LauncherFiles;
+import com.android.launcher3.R;
+import com.android.launcher3.SessionCommitReceiver;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.graphics.IconShapeOverride;
 import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.util.ListViewHighlighter;
@@ -49,6 +50,9 @@ import com.android.launcher3.util.SettingsObserver;
 import com.android.launcher3.views.ButtonPreference;
 
 import java.util.Objects;
+
+import static com.android.launcher3.states.RotationHelper.ALLOW_ROTATION_PREFERENCE_KEY;
+import static com.android.launcher3.states.RotationHelper.getAllowRotationDefaultValue;
 
 /**
  * Settings activity for Launcher. Currently implements the following setting: Allow rotation

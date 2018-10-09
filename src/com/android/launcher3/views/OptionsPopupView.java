@@ -15,9 +15,6 @@
  */
 package com.android.launcher3.views;
 
-import static com.android.launcher3.BaseDraggingActivity.INTENT_EXTRA_IGNORE_LAUNCH_ANIMATION;
-import static com.android.launcher3.Utilities.EXTRA_WALLPAPER_OFFSET;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -42,6 +39,9 @@ import com.android.launcher3.widget.WidgetsFullSheet;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.android.launcher3.BaseDraggingActivity.INTENT_EXTRA_IGNORE_LAUNCH_ANIMATION;
+import static com.android.launcher3.Utilities.EXTRA_WALLPAPER_OFFSET;
 
 /**
  * Popup shown on long pressing an empty space in launcher
@@ -146,7 +146,7 @@ public class OptionsPopupView extends ArrowPopup
                 ControlType.WALLPAPER_BUTTON, OptionsPopupView::startWallpaperPicker));
         options.add(new OptionItem(R.string.widget_button_text, R.drawable.ic_widget,
                 ControlType.WIDGETS_BUTTON, OptionsPopupView::onWidgetsClicked));
-        options.add(new OptionItem(R.string.settings_button_text, R.drawable.ic_setting,
+        options.add(new OptionItem(R.string.mango_settings, R.drawable.ic_setting,
                 ControlType.SETTINGS_BUTTON, OptionsPopupView::startSettings));
 
         show(launcher, target, options);
