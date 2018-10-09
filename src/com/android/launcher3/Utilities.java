@@ -591,4 +591,33 @@ public final class Utilities {
         msg.setAsynchronous(true);
         handler.sendMessage(msg);
     }
+
+    /**
+     * 当前的桌面是否是我们的桌面
+     */
+    public static boolean isOurHome(Context context) {
+        return context.getPackageName().equals(getDefaultHome(context)[0]);
+    }
+
+    /**
+     * 获取当前设置的默认桌面
+     */
+    public static String[] getDefaultHome(Context context) {
+        String[] mPackageNameAndClassName = new String[2];
+        final Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        final ResolveInfo res = context.getPackageManager().resolveActivity(intent, 0);
+        if (res.activityInfo == null) {
+            // should not happen. A home is always installed, isn't it?
+        } else if (res.activityInfo.packageName.equals("android")) {
+            // No default selected
+        } else {
+            // res.activityInfo.packageName and res.activityInfo.name gives
+            // you the default app
+            mPackageNameAndClassName[0] = res.activityInfo.packageName;
+            mPackageNameAndClassName[1] = res.activityInfo.name;
+            return mPackageNameAndClassName;
+        }
+        return mPackageNameAndClassName;
+    }
 }
