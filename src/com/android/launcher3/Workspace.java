@@ -70,6 +70,7 @@ import com.android.launcher3.graphics.DragPreviewProvider;
 import com.android.launcher3.graphics.PreloadIconDrawable;
 import com.android.launcher3.pageindicators.WorkspacePageIndicator;
 import com.android.launcher3.popup.PopupContainerWithArrow;
+import com.android.launcher3.qsb.QsbHelper;
 import com.android.launcher3.shortcuts.ShortcutDragPreviewProvider;
 import com.android.launcher3.touch.ItemLongClickListener;
 import com.android.launcher3.touch.WorkspaceTouchListener;
@@ -499,7 +500,8 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
      * @param qsb an existing qsb to recycle or null.
      */
     public void bindAndInitFirstWorkspaceScreen(View qsb) {
-        if (!FeatureFlags.QSB_ON_FIRST_SCREEN) {
+        int positon = QsbHelper.getAppliedValue(mLauncher);
+        if (!FeatureFlags.QSB_ON_FIRST_SCREEN || positon == QsbHelper.POSITION_NONE) {
             return;
         }
         // Add the first page
@@ -511,8 +513,8 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             qsb = LayoutInflater.from(getContext())
                     .inflate(R.layout.search_container_workspace, firstPage, false);
         }
-
-        CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, firstPage.getCountY() - 1,
+        int cellY = (positon == QsbHelper.POSITION_TOP) ? 0 : firstPage.getCountY() - 1;
+        CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, cellY,
                 firstPage.getCountX(), 1);
         lp.canReorder = false;
         if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {

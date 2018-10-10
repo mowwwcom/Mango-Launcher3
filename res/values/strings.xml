@@ -346,8 +346,13 @@
     <string name="bottom_work_tab_user_education_close_button">Close</string>
     <string name="bottom_work_tab_user_education_closed">Closed</string>
     <string name="qsb_position">SearchBar position</string>
+    <string name="qsb_position_none">No SearchBar</string>
+    <string name="qsb_position_top">On top</string>
+    <string name="qsb_position_bottom">On bottom</string>
     <string name="launcher">Launcher</string>
     <string name="folder">Folder</string>
     <string name="appearance">Appearance</string>
     <string name="about">About</string>
+
+    <string name="qsb_position_override_progress">Applying SearchBar position changes</string>
 </resources>

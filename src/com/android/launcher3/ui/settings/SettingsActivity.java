@@ -17,7 +17,6 @@
 package com.android.launcher3.ui.settings;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -45,6 +44,7 @@ import com.android.launcher3.SessionCommitReceiver;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.graphics.IconShapeOverride;
 import com.android.launcher3.notification.NotificationListener;
+import com.android.launcher3.qsb.QsbHelper;
 import com.android.launcher3.ui.BaseCompatActivity;
 import com.android.launcher3.util.ListViewHighlighter;
 import com.android.launcher3.util.SettingsObserver;
@@ -61,9 +61,13 @@ import static com.android.launcher3.states.RotationHelper.getAllowRotationDefaul
 public class SettingsActivity extends BaseCompatActivity {
 
     private static final String ICON_BADGING_PREFERENCE_KEY = "pref_icon_badging";
-    /** Hidden field Settings.Secure.NOTIFICATION_BADGING */
+    /**
+     * Hidden field Settings.Secure.NOTIFICATION_BADGING
+     */
     public static final String NOTIFICATION_BADGING = "notification_badging";
-    /** Hidden field Settings.Secure.ENABLED_NOTIFICATION_LISTENERS */
+    /**
+     * Hidden field Settings.Secure.ENABLED_NOTIFICATION_LISTENERS
+     */
     private static final String NOTIFICATION_ENABLED_LISTENERS = "enabled_notification_listeners";
 
     private static final String EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key";
@@ -141,6 +145,15 @@ public class SettingsActivity extends BaseCompatActivity {
             } else {
                 // Initialize the UI once
                 rotationPref.setDefaultValue(getAllowRotationDefaultValue());
+            }
+
+            // Setup qbs position preference
+            Preference positionPref = findPreference(QsbHelper.KEY_PREFERENCE);
+            if (positionPref != null) {
+                if (QsbHelper.isSupported(getActivity())) {
+                    QsbHelper.handlePreferenceUI((ListPreference)positionPref);
+                }
+                positionPref.setDefaultValue(QsbHelper.POSITION_NONE);
             }
         }
 
@@ -235,7 +248,7 @@ public class SettingsActivity extends BaseCompatActivity {
         private final FragmentManager mFragmentManager;
 
         public IconBadgingObserver(ButtonPreference badgingPref, ContentResolver resolver,
-                FragmentManager fragmentManager) {
+                                   FragmentManager fragmentManager) {
             super(resolver);
             mBadgingPref = badgingPref;
             mResolver = resolver;

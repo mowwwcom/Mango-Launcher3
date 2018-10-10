@@ -15,17 +15,11 @@
  */
 package com.android.launcher3.graphics;
 
-import static com.android.launcher3.Utilities.getDevicePrefs;
-
 import android.annotation.TargetApi;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
-import android.os.SystemClock;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -35,12 +29,13 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.launcher3.LauncherAppState;
-import com.android.launcher3.LauncherModel;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.util.LooperExecutor;
+import com.android.launcher3.util.OverrideApplyHandler;
 
 import java.lang.reflect.Field;
+
+import static com.android.launcher3.Utilities.getDevicePrefs;
 
 /**
  * Utility class to override shape of {@link android.graphics.drawable.AdaptiveIconDrawable}.
@@ -51,12 +46,6 @@ public class IconShapeOverride {
     private static final String TAG = "IconShapeOverride";
 
     public static final String KEY_PREFERENCE = "pref_override_icon_shape";
-
-    // Time to wait before killing the process this ensures that the progress bar is visible for
-    // sufficient time so that there is no flicker.
-    private static final long PROCESS_KILL_DELAY_MS = 1000;
-
-    private static final int RESTART_REQUEST_CODE = 42; // the answer to everything
 
     public static boolean isSupported(Context context) {
         if (!Utilities.ATLEAST_OREO) {
@@ -165,49 +154,14 @@ public class IconShapeOverride {
                         mContext.getString(R.string.icon_shape_override_progress),
                         true /* indeterminate */,
                         false /* cancelable */);
-                new LooperExecutor(LauncherModel.getWorkerLooper()).execute(
-                        new OverrideApplyHandler(mContext, newValue));
+                OverrideApplyHandler.applyWith(mContext, () -> {
+                    // Synchronously write the preference.
+                    getDevicePrefs(mContext).edit().putString(KEY_PREFERENCE, newValue).commit();
+                    // Clear the icon cache.
+                    LauncherAppState.getInstance(mContext).getIconCache().clear();
+                });
             }
             return false;
-        }
-    }
-
-    private static class OverrideApplyHandler implements Runnable {
-
-        private final Context mContext;
-        private final String mValue;
-
-        private OverrideApplyHandler(Context context, String value) {
-            mContext = context;
-            mValue = value;
-        }
-
-        @Override
-        public void run() {
-            // Synchronously write the preference.
-            getDevicePrefs(mContext).edit().putString(KEY_PREFERENCE, mValue).commit();
-            // Clear the icon cache.
-            LauncherAppState.getInstance(mContext).getIconCache().clear();
-
-            // Wait for it
-            try {
-                Thread.sleep(PROCESS_KILL_DELAY_MS);
-            } catch (Exception e) {
-                Log.e(TAG, "Error waiting", e);
-            }
-
-            // Schedule an alarm before we kill ourself.
-            Intent homeIntent = new Intent(Intent.ACTION_MAIN)
-                    .addCategory(Intent.CATEGORY_HOME)
-                    .setPackage(mContext.getPackageName())
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            PendingIntent pi = PendingIntent.getActivity(mContext, RESTART_REQUEST_CODE,
-                    homeIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
-            mContext.getSystemService(AlarmManager.class).setExact(
-                    AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 50, pi);
-
-            // Kill process
-            android.os.Process.killProcess(android.os.Process.myPid());
         }
     }
 }

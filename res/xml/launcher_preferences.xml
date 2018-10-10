@@ -52,4 +52,13 @@
         android:defaultValue=""
         android:persistent="false" />
 
+    <ListPreference
+        android:key="pref_qsb_position"
+        android:title="@string/qsb_position"
+        android:summary="%s"
+        android:entries="@array/qsb_position_names"
+        android:entryValues="@array/qsb_position_values"
+        android:defaultValue="0"
+        android:persistent="true" />
+
 </PreferenceScreen>

@@ -146,10 +146,14 @@
     <string name="bottom_work_tab_user_education_close_button" msgid="4224492243977802135">"关闭"</string>
     <string name="bottom_work_tab_user_education_closed" msgid="1098340939861869465">"已关闭"</string>
     <string name="qsb_position">搜索栏位置</string>
+    <string name="qsb_position_none">无搜索栏</string>
+    <string name="qsb_position_top">顶部</string>
+    <string name="qsb_position_bottom">底部</string>
     <string name="launcher">桌面</string>
     <string name="folder">文件夹</string>
     <string name="appearance">外观</string>
     <string name="about">关于</string>
 
+    <string name="qsb_position_override_progress">正在应用搜索栏位置变化</string>
 
 </resources>

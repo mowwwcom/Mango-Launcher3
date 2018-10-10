@@ -37,6 +37,18 @@
         <item>@string/icon_shape_teardrop</item>
     </string-array>
 
+    <string-array translatable="false" name="qsb_position_names">
+        <!-- Option to not change the qsb position on home screen. [CHAR LIMIT=50] -->
+        <item>@string/qsb_position_none</item>
+        <item>@string/qsb_position_top</item>
+        <item>@string/qsb_position_bottom</item>
+    </string-array>
+    <string-array translatable="false" name="qsb_position_values">
+        <item>-1</item>
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
 <!-- DragController -->
     <item type="id" name="drag_event_parity" />
 
