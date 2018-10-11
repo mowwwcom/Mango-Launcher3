@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
@@ -279,7 +280,6 @@ public class LoaderResults {
     private void bindWorkspaceItems(final ArrayList<ItemInfo> workspaceItems,
                                     final ArrayList<LauncherAppWidgetInfo> appWidgets,
                                     final Executor executor) {
-
         // Bind the workspace items
         int N = workspaceItems.size();
         for (int i = 0; i < N; i += ITEMS_CHUNK) {
@@ -309,7 +309,17 @@ public class LoaderResults {
     }
 
     public void bindAllApps2Workspace() {
+        @SuppressWarnings("unchecked") final ArrayList<AppInfo> list = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
+        bindWorkspaceItems(workspaceItems, appWidgets, mUiExecutor);
+        List<ItemInfo> shortcuts = new ArrayList<>();
 
+        Runnable r = () -> {
+            Callbacks callbacks = mCallbacks.get();
+            if (callbacks != null) {
+                callbacks.bindItems(shortcuts, false);
+            }
+        };
+        mUiExecutor.execute(r);
     }
 
     public void bindDeepShortcuts() {
