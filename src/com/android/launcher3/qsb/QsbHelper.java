@@ -46,7 +46,7 @@ public class QsbHelper {
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object o) {
-            int newValue = (int) o;
+            int newValue = Integer.valueOf((String) o);
             if (getAppliedValue(mContext) != newValue) {
                 // Value has changed
                 ProgressDialog.show(mContext,

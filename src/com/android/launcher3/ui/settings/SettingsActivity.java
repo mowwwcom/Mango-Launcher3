@@ -33,7 +33,9 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.provider.Settings;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.ListView;
@@ -78,6 +80,9 @@ public class SettingsActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActionBar bar = getSupportActionBar();
+        bar.setHomeButtonEnabled(true);
+        bar.setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             // Display the fragment as the main content.
@@ -85,6 +90,15 @@ public class SettingsActivity extends BaseCompatActivity {
                     .replace(android.R.id.content, getNewFragment())
                     .commit();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     protected PreferenceFragment getNewFragment() {
@@ -151,7 +165,7 @@ public class SettingsActivity extends BaseCompatActivity {
             Preference positionPref = findPreference(QsbHelper.KEY_PREFERENCE);
             if (positionPref != null) {
                 if (QsbHelper.isSupported(getActivity())) {
-                    QsbHelper.handlePreferenceUI((ListPreference)positionPref);
+                    QsbHelper.handlePreferenceUI((ListPreference) positionPref);
                 }
                 positionPref.setDefaultValue(QsbHelper.POSITION_NONE);
             }

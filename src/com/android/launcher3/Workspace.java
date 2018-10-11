@@ -500,8 +500,8 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
      * @param qsb an existing qsb to recycle or null.
      */
     public void bindAndInitFirstWorkspaceScreen(View qsb) {
-        int positon = QsbHelper.getAppliedValue(mLauncher);
-        if (!FeatureFlags.QSB_ON_FIRST_SCREEN || positon == QsbHelper.POSITION_NONE) {
+        int position = QsbHelper.getAppliedValue(mLauncher);
+        if (!FeatureFlags.QSB_ON_FIRST_SCREEN || position == QsbHelper.POSITION_NONE) {
             return;
         }
         // Add the first page
@@ -513,7 +513,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             qsb = LayoutInflater.from(getContext())
                     .inflate(R.layout.search_container_workspace, firstPage, false);
         }
-        int cellY = (positon == QsbHelper.POSITION_TOP) ? 0 : firstPage.getCountY() - 1;
+        int cellY = (position == QsbHelper.POSITION_TOP) ? 0 : firstPage.getCountY() - 1;
         CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, cellY,
                 firstPage.getCountX(), 1);
         lp.canReorder = false;
