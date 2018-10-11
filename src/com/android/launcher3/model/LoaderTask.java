@@ -154,6 +154,7 @@ public class LoaderTask implements Runnable {
         mFirstScreenBroadcast.sendBroadcasts(mApp.getContext(), firstScreenItems);
     }
 
+    @Override
     public void run() {
         synchronized (this) {
             // Skip fast if we are already stopped.
@@ -188,8 +189,12 @@ public class LoaderTask implements Runnable {
             verifyNotStopped();
             mResults.bindAllApps();
 
+            TraceHelper.partitionSection(TAG, "step 2.3: Binding all into workspace");
             verifyNotStopped();
-            TraceHelper.partitionSection(TAG, "step 2.3: Update icon cache");
+            mResults.bindAllApps2Workspace();
+
+            verifyNotStopped();
+            TraceHelper.partitionSection(TAG, "step 2.4: Update icon cache");
             updateIconCache();
 
             // Take a break

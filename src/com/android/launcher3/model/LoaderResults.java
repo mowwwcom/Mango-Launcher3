@@ -65,13 +65,13 @@ public class LoaderResults {
     private final WeakReference<Callbacks> mCallbacks;
 
     public LoaderResults(LauncherAppState app, BgDataModel dataModel,
-            AllAppsList allAppsList, int pageToBindFirst, WeakReference<Callbacks> callbacks) {
+                         AllAppsList allAppsList, int pageToBindFirst, WeakReference<Callbacks> callbacks) {
         mUiExecutor = new MainThreadExecutor();
         mApp = app;
         mBgDataModel = dataModel;
         mBgAllAppsList = allAppsList;
         mPageToBindFirst = pageToBindFirst;
-        mCallbacks = callbacks == null ? new WeakReference<Callbacks>(null) : callbacks;
+        mCallbacks = callbacks == null ? new WeakReference<>(null) : callbacks;
     }
 
     /**
@@ -129,25 +129,20 @@ public class LoaderResults {
         sortWorkspaceItemsSpatially(otherWorkspaceItems);
 
         // Tell the workspace that we're about to start binding items
-        r = new Runnable() {
-            public void run() {
-                Callbacks callbacks = mCallbacks.get();
-                if (callbacks != null) {
-                    callbacks.clearPendingBinds();
-                    callbacks.startBinding();
-                }
+        r = () -> {
+            Callbacks callbacks1 = mCallbacks.get();
+            if (callbacks1 != null) {
+                callbacks1.clearPendingBinds();
+                callbacks1.startBinding();
             }
         };
         mUiExecutor.execute(r);
 
         // Bind workspace screens
-        mUiExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Callbacks callbacks = mCallbacks.get();
-                if (callbacks != null) {
-                    callbacks.bindScreens(orderedScreenIds);
-                }
+        mUiExecutor.execute(() -> {
+            Callbacks callbacks12 = mCallbacks.get();
+            if (callbacks12 != null) {
+                callbacks12.bindScreens(orderedScreenIds);
             }
         });
 
@@ -163,43 +158,36 @@ public class LoaderResults {
         final Executor deferredExecutor =
                 validFirstPage ? new ViewOnDrawExecutor() : mainExecutor;
 
-        mainExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Callbacks callbacks = mCallbacks.get();
-                if (callbacks != null) {
-                    callbacks.finishFirstPageBind(
-                            validFirstPage ? (ViewOnDrawExecutor) deferredExecutor : null);
-                }
+        mainExecutor.execute(() -> {
+            Callbacks callbacks15 = mCallbacks.get();
+            if (callbacks15 != null) {
+                callbacks15.finishFirstPageBind(
+                        validFirstPage ? (ViewOnDrawExecutor) deferredExecutor : null);
             }
         });
 
         bindWorkspaceItems(otherWorkspaceItems, otherAppWidgets, deferredExecutor);
 
         // Tell the workspace that we're done binding items
-        r = new Runnable() {
-            public void run() {
-                Callbacks callbacks = mCallbacks.get();
-                if (callbacks != null) {
-                    callbacks.finishBindingItems();
-                }
+        r = () -> {
+            Callbacks callbacks13 = mCallbacks.get();
+            if (callbacks13 != null) {
+                callbacks13.finishBindingItems();
             }
         };
         deferredExecutor.execute(r);
 
         if (validFirstPage) {
-            r = new Runnable() {
-                public void run() {
-                    Callbacks callbacks = mCallbacks.get();
-                    if (callbacks != null) {
-                        // We are loading synchronously, which means, some of the pages will be
-                        // bound after first draw. Inform the callbacks that page binding is
-                        // not complete, and schedule the remaining pages.
-                        if (currentScreen != PagedView.INVALID_RESTORE_PAGE) {
-                            callbacks.onPageBoundSynchronously(currentScreen);
-                        }
-                        callbacks.executeOnNextDraw((ViewOnDrawExecutor) deferredExecutor);
+            r = () -> {
+                Callbacks callbacks14 = mCallbacks.get();
+                if (callbacks14 != null) {
+                    // We are loading synchronously, which means, some of the pages will be
+                    // bound after first draw. Inform the callbacks that page binding is
+                    // not complete, and schedule the remaining pages.
+                    if (currentScreen != PagedView.INVALID_RESTORE_PAGE) {
+                        callbacks14.onPageBoundSynchronously(currentScreen);
                     }
+                    callbacks14.executeOnNextDraw((ViewOnDrawExecutor) deferredExecutor);
                 }
             };
             mUiExecutor.execute(r);
@@ -207,12 +195,14 @@ public class LoaderResults {
     }
 
 
-    /** Filters the set of items who are directly or indirectly (via another container) on the
-     * specified screen. */
+    /**
+     * Filters the set of items who are directly or indirectly (via another container) on the
+     * specified screen.
+     */
     public static <T extends ItemInfo> void filterCurrentWorkspaceItems(long currentScreenId,
-            ArrayList<T> allWorkspaceItems,
-            ArrayList<T> currentScreenItems,
-            ArrayList<T> otherScreenItems) {
+                                                                        ArrayList<T> allWorkspaceItems,
+                                                                        ArrayList<T> currentScreenItems,
+                                                                        ArrayList<T> otherScreenItems) {
         // Purge any null ItemInfos
         Iterator<T> iter = allWorkspaceItems.iterator();
         while (iter.hasNext()) {
@@ -226,12 +216,7 @@ public class LoaderResults {
         // list sequentially, build up a list of containers that are in the specified screen,
         // as well as all items in those containers.
         Set<Long> itemsOnScreen = new HashSet<>();
-        Collections.sort(allWorkspaceItems, new Comparator<ItemInfo>() {
-            @Override
-            public int compare(ItemInfo lhs, ItemInfo rhs) {
-                return Utilities.longCompare(lhs.container, rhs.container);
-            }
-        });
+        Collections.sort(allWorkspaceItems, (Comparator<ItemInfo>) (lhs, rhs) -> Utilities.longCompare(lhs.container, rhs.container));
         for (T info : allWorkspaceItems) {
             if (info.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
                 if (info.screenId == currentScreenId) {
@@ -254,60 +239,56 @@ public class LoaderResults {
         }
     }
 
-    /** Sorts the set of items by hotseat, workspace (spatially from top to bottom, left to
-     * right) */
+    /**
+     * Sorts the set of items by hotseat, workspace (spatially from top to bottom, left to
+     * right)
+     */
     private void sortWorkspaceItemsSpatially(ArrayList<ItemInfo> workspaceItems) {
         final InvariantDeviceProfile profile = mApp.getInvariantDeviceProfile();
         final int screenCols = profile.numColumns;
         final int screenCellCount = profile.numColumns * profile.numRows;
-        Collections.sort(workspaceItems, new Comparator<ItemInfo>() {
-            @Override
-            public int compare(ItemInfo lhs, ItemInfo rhs) {
-                if (lhs.container == rhs.container) {
-                    // Within containers, order by their spatial position in that container
-                    switch ((int) lhs.container) {
-                        case LauncherSettings.Favorites.CONTAINER_DESKTOP: {
-                            long lr = (lhs.screenId * screenCellCount +
-                                    lhs.cellY * screenCols + lhs.cellX);
-                            long rr = (rhs.screenId * screenCellCount +
-                                    rhs.cellY * screenCols + rhs.cellX);
-                            return Utilities.longCompare(lr, rr);
-                        }
-                        case LauncherSettings.Favorites.CONTAINER_HOTSEAT: {
-                            // We currently use the screen id as the rank
-                            return Utilities.longCompare(lhs.screenId, rhs.screenId);
-                        }
-                        default:
-                            if (FeatureFlags.IS_DOGFOOD_BUILD) {
-                                throw new RuntimeException("Unexpected container type when " +
-                                        "sorting workspace items.");
-                            }
-                            return 0;
+        Collections.sort(workspaceItems, (lhs, rhs) -> {
+            if (lhs.container == rhs.container) {
+                // Within containers, order by their spatial position in that container
+                switch ((int) lhs.container) {
+                    case LauncherSettings.Favorites.CONTAINER_DESKTOP: {
+                        long lr = (lhs.screenId * screenCellCount +
+                                lhs.cellY * screenCols + lhs.cellX);
+                        long rr = (rhs.screenId * screenCellCount +
+                                rhs.cellY * screenCols + rhs.cellX);
+                        return Utilities.longCompare(lr, rr);
                     }
-                } else {
-                    // Between containers, order by hotseat, desktop
-                    return Utilities.longCompare(lhs.container, rhs.container);
+                    case LauncherSettings.Favorites.CONTAINER_HOTSEAT: {
+                        // We currently use the screen id as the rank
+                        return Utilities.longCompare(lhs.screenId, rhs.screenId);
+                    }
+                    default:
+                        if (FeatureFlags.IS_DOGFOOD_BUILD) {
+                            throw new RuntimeException("Unexpected container type when " +
+                                    "sorting workspace items.");
+                        }
+                        return 0;
                 }
+            } else {
+                // Between containers, order by hotseat, desktop
+                return Utilities.longCompare(lhs.container, rhs.container);
             }
         });
     }
 
     private void bindWorkspaceItems(final ArrayList<ItemInfo> workspaceItems,
-            final ArrayList<LauncherAppWidgetInfo> appWidgets,
-            final Executor executor) {
+                                    final ArrayList<LauncherAppWidgetInfo> appWidgets,
+                                    final Executor executor) {
 
         // Bind the workspace items
         int N = workspaceItems.size();
         for (int i = 0; i < N; i += ITEMS_CHUNK) {
             final int start = i;
-            final int chunkSize = (i+ITEMS_CHUNK <= N) ? ITEMS_CHUNK : (N-i);
-            final Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    Callbacks callbacks = mCallbacks.get();
-                    if (callbacks != null) {
-                        callbacks.bindItems(workspaceItems.subList(start, start+chunkSize), false);
-                    }
+            final int chunkSize = (i + ITEMS_CHUNK <= N) ? ITEMS_CHUNK : (N - i);
+            final Runnable r = () -> {
+                Callbacks callbacks = mCallbacks.get();
+                if (callbacks != null) {
+                    callbacks.bindItems(workspaceItems.subList(start, start + chunkSize), false);
                 }
             };
             executor.execute(r);
@@ -317,16 +298,18 @@ public class LoaderResults {
         N = appWidgets.size();
         for (int i = 0; i < N; i++) {
             final ItemInfo widget = appWidgets.get(i);
-            final Runnable r = new Runnable() {
-                public void run() {
-                    Callbacks callbacks = mCallbacks.get();
-                    if (callbacks != null) {
-                        callbacks.bindItems(Collections.singletonList(widget), false);
-                    }
+            final Runnable r = () -> {
+                Callbacks callbacks = mCallbacks.get();
+                if (callbacks != null) {
+                    callbacks.bindItems(Collections.singletonList(widget), false);
                 }
             };
             executor.execute(r);
         }
+    }
+
+    public void bindAllApps2Workspace() {
+
     }
 
     public void bindDeepShortcuts() {
@@ -334,13 +317,10 @@ public class LoaderResults {
         synchronized (mBgDataModel) {
             shortcutMapCopy = mBgDataModel.deepShortcutMap.clone();
         }
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                Callbacks callbacks = mCallbacks.get();
-                if (callbacks != null) {
-                    callbacks.bindDeepShortcutMap(shortcutMapCopy);
-                }
+        Runnable r = () -> {
+            Callbacks callbacks = mCallbacks.get();
+            if (callbacks != null) {
+                callbacks.bindDeepShortcutMap(shortcutMapCopy);
             }
         };
         mUiExecutor.execute(r);
@@ -348,15 +328,12 @@ public class LoaderResults {
 
     public void bindAllApps() {
         // shallow copy
-        @SuppressWarnings("unchecked")
-        final ArrayList<AppInfo> list = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
+        @SuppressWarnings("unchecked") final ArrayList<AppInfo> list = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
 
-        Runnable r = new Runnable() {
-            public void run() {
-                Callbacks callbacks = mCallbacks.get();
-                if (callbacks != null) {
-                    callbacks.bindAllApplications(list);
-                }
+        Runnable r = () -> {
+            Callbacks callbacks = mCallbacks.get();
+            if (callbacks != null) {
+                callbacks.bindAllApplications(list);
             }
         };
         mUiExecutor.execute(r);
@@ -365,12 +342,10 @@ public class LoaderResults {
     public void bindWidgets() {
         final ArrayList<WidgetListRowEntry> widgets =
                 mBgDataModel.widgetsModel.getWidgetsList(mApp.getContext());
-        Runnable r = new Runnable() {
-            public void run() {
-                Callbacks callbacks = mCallbacks.get();
-                if (callbacks != null) {
-                    callbacks.bindAllWidgets(widgets);
-                }
+        Runnable r = () -> {
+            Callbacks callbacks = mCallbacks.get();
+            if (callbacks != null) {
+                callbacks.bindAllWidgets(widgets);
             }
         };
         mUiExecutor.execute(r);
