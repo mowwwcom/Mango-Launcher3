@@ -155,5 +155,10 @@
     <string name="about">关于</string>
 
     <string name="qsb_position_override_progress">正在应用搜索栏位置变化</string>
+    <string name="launcher_style_override_progress">正在应用桌面风格变化</string>
+
+    <string name="launcher_style">桌面风格</string>
+    <string name="launcher_style_standard">标准风格</string>
+    <string name="launcher_style_drawer">抽屉风格</string>
 
 </resources>

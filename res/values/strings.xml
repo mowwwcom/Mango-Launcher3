@@ -355,4 +355,10 @@
     <string name="about">About</string>
 
     <string name="qsb_position_override_progress">Applying SearchBar position changes</string>
+    <string name="launcher_style_override_progress">Applying Launcher style changes</string>
+
+    <string name="launcher_style">Launcher Style</string>
+    <string name="launcher_style_standard">Standard Style</string>
+    <string name="launcher_style_drawer">Drawer Style</string>
+
 </resources>

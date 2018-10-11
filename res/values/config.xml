@@ -48,6 +48,15 @@
         <item>0</item>
         <item>1</item>
     </string-array>
+    <string-array translatable="false" name="launcher_style_names">
+        <!-- Option to not change the launcher style. [CHAR LIMIT=50] -->
+        <item>@string/launcher_style_standard</item>
+        <item>@string/launcher_style_drawer</item>
+    </string-array>
+    <integer-array translatable="false" name="simple_values">
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
 
 <!-- DragController -->
     <item type="id" name="drag_event_parity" />

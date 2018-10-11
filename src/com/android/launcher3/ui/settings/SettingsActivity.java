@@ -47,6 +47,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.graphics.IconShapeOverride;
 import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.qsb.QsbHelper;
+import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.ui.BaseCompatActivity;
 import com.android.launcher3.util.ListViewHighlighter;
 import com.android.launcher3.util.SettingsObserver;
@@ -168,6 +169,14 @@ public class SettingsActivity extends BaseCompatActivity {
                     QsbHelper.handlePreferenceUI((ListPreference) positionPref);
                 }
                 positionPref.setDefaultValue(QsbHelper.POSITION_NONE);
+            }
+
+            Preference launcherStyle = findPreference(LauncherStyleHandler.KEY_PREFERENCE);
+            if (launcherStyle != null) {
+                if (LauncherStyleHandler.isSupported(getActivity())) {
+                    LauncherStyleHandler.handlePreferenceUI((LauncherStylePreference) launcherStyle);
+                }
+                launcherStyle.setDefaultValue(LauncherStyleHandler.STYLE_DRAWER);
             }
         }
 

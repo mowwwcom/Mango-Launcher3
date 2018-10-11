@@ -16,49 +16,67 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.android.launcher3.views.ButtonPreference
-        android:key="pref_icon_badging"
-        android:title="@string/icon_badging_title"
-        android:persistent="false"
-        android:widgetLayout="@layout/notification_pref_warning" >
-        <intent android:action="android.settings.NOTIFICATION_SETTINGS">
-            <!-- This extra highlights the "Allow icon badges" field in Notification settings -->
-            <extra
-                android:name=":settings:fragment_args_key"
-                android:value="notification_badging" />
-        </intent>
-    </com.android.launcher3.views.ButtonPreference>
+    <PreferenceCategory
+        android:key="pref_key_storage_settings"
+        android:title="@string/appearance">
 
-    <SwitchPreference
-        android:key="pref_add_icon_to_home"
-        android:title="@string/auto_add_shortcuts_label"
-        android:summary="@string/auto_add_shortcuts_description"
-        android:defaultValue="true"
-        android:persistent="true" />
+        <ListPreference
+            android:defaultValue=""
+            android:entries="@array/icon_shape_override_paths_names"
+            android:entryValues="@array/icon_shape_override_paths_values"
+            android:key="pref_override_icon_shape"
+            android:persistent="false"
+            android:summary="%s"
+            android:title="@string/icon_shape_override_label"/>
 
-    <SwitchPreference
-        android:key="pref_allowRotation"
-        android:title="@string/allow_rotation_title"
-        android:summary="@string/allow_rotation_desc"
-        android:defaultValue="@bool/allow_rotation"
-        android:persistent="true" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/qsb_position_names"
+            android:entryValues="@array/qsb_position_values"
+            android:key="pref_qsb_position"
+            android:persistent="true"
+            android:summary="%s"
+            android:title="@string/qsb_position"/>
 
-    <ListPreference
-        android:key="pref_override_icon_shape"
-        android:title="@string/icon_shape_override_label"
-        android:summary="%s"
-        android:entries="@array/icon_shape_override_paths_names"
-        android:entryValues="@array/icon_shape_override_paths_values"
-        android:defaultValue=""
-        android:persistent="false" />
+        <com.android.launcher3.ui.settings.LauncherStylePreference
+            android:defaultValue="1"
+            android:entries="@array/launcher_style_names"
+            android:entryValues="@array/simple_values"
+            android:key="pref_launcher_style"
+            android:persistent="true"
+            android:summary="%s"
+            android:title="@string/launcher_style"/>
+    </PreferenceCategory>
 
-    <ListPreference
-        android:key="pref_qsb_position"
-        android:title="@string/qsb_position"
-        android:summary="%s"
-        android:entries="@array/qsb_position_names"
-        android:entryValues="@array/qsb_position_values"
-        android:defaultValue="0"
-        android:persistent="true" />
+    <PreferenceCategory
+        android:key="pref_key_storage_settings"
+        android:title="@string/settings_button_text">
+        <com.android.launcher3.views.ButtonPreference
+            android:key="pref_icon_badging"
+            android:persistent="false"
+            android:title="@string/icon_badging_title"
+            android:widgetLayout="@layout/notification_pref_warning">
+            <intent android:action="android.settings.NOTIFICATION_SETTINGS">
+                <!-- This extra highlights the "Allow icon badges" field in Notification settings -->
+                <extra
+                    android:name=":settings:fragment_args_key"
+                    android:value="notification_badging"/>
+            </intent>
+        </com.android.launcher3.views.ButtonPreference>
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="pref_add_icon_to_home"
+            android:persistent="true"
+            android:summary="@string/auto_add_shortcuts_description"
+            android:title="@string/auto_add_shortcuts_label"/>
+
+        <SwitchPreference
+            android:defaultValue="@bool/allow_rotation"
+            android:key="pref_allowRotation"
+            android:persistent="true"
+            android:summary="@string/allow_rotation_desc"
+            android:title="@string/allow_rotation_title"/>
+
+    </PreferenceCategory>
 </PreferenceScreen>
