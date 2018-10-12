@@ -78,6 +78,7 @@ public class RestoreDbTaskTest {
         @Override
         protected void handleOneTimeDataUpgrade(SQLiteDatabase db) { }
 
+        @Override
         protected void onEmptyDbCreated() { }
     }
 }

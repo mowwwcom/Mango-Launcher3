@@ -71,7 +71,7 @@ public class RestoreDbTask {
         long oldProfileId = getDefaultProfileId(db);
         // Delete all entries which do not belong to the main user
         int itemsDeleted = db.delete(
-                Favorites.TABLE_NAME, "profileId != ?", new String[]{Long.toString(oldProfileId)});
+                Favorites.getTableName(), "profileId != ?", new String[]{Long.toString(oldProfileId)});
         if (itemsDeleted > 0) {
             FileLog.d(TAG, itemsDeleted + " items belonging to a managed profile, were deleted");
         }
@@ -81,14 +81,14 @@ public class RestoreDbTask {
         ContentValues values = new ContentValues();
         values.put(Favorites.RESTORED, ShortcutInfo.FLAG_RESTORED_ICON
                 | (keepAllIcons ? ShortcutInfo.FLAG_RESTORE_STARTED : 0));
-        db.update(Favorites.TABLE_NAME, values, null, null);
+        db.update(Favorites.getTableName(), values, null, null);
 
         // Mark widgets with appropriate restore flag
         values.put(Favorites.RESTORED,  LauncherAppWidgetInfo.FLAG_ID_NOT_VALID |
                 LauncherAppWidgetInfo.FLAG_PROVIDER_NOT_READY |
                 LauncherAppWidgetInfo.FLAG_UI_NOT_READY |
                 (keepAllIcons ? LauncherAppWidgetInfo.FLAG_RESTORE_STARTED : 0));
-        db.update(Favorites.TABLE_NAME, values, "itemType = ?",
+        db.update(Favorites.getTableName(), values, "itemType = ?",
                 new String[]{Integer.toString(Favorites.ITEM_TYPE_APPWIDGET)});
 
         long myProfileId = helper.getDefaultUserSerial();
@@ -105,7 +105,7 @@ public class RestoreDbTask {
         // Update existing entries.
         ContentValues values = new ContentValues();
         values.put(Favorites.PROFILE_ID, newProfileId);
-        db.update(Favorites.TABLE_NAME, values, null, null);
+        db.update(Favorites.getTableName(), values, null, null);
 
         // Change default value of the column.
         db.execSQL("ALTER TABLE favorites RENAME TO favorites_old;");

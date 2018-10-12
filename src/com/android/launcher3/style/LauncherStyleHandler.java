@@ -20,9 +20,14 @@ public class LauncherStyleHandler {
     public static final String KEY_PREFERENCE = "pref_launcher_style";
     public static final int STYLE_STANDARD = 0;
     public static final int STYLE_DRAWER = 1;
+    public static boolean isDrawer = false;
 
     public static int getAppliedValue(Context context) {
-        return getDevicePrefs(context).getInt(KEY_PREFERENCE, STYLE_DRAWER);
+        int value = getDevicePrefs(context).getInt(KEY_PREFERENCE, STYLE_DRAWER);
+        isDrawer = value == STYLE_DRAWER;
+        return value;
+//        isDrawer = false;
+//        return STYLE_STANDARD;
     }
 
     public static boolean isSupported(Activity activity) {
@@ -31,7 +36,6 @@ public class LauncherStyleHandler {
 
     public static void handlePreferenceUI(LauncherStylePreference preference) {
         Context context = preference.getContext();
-        //preference.setValue(String.valueOf(getAppliedValue(context)));
         preference.setOnPreferenceChangeListener(new LauncherStyleHandler.PreferenceChangeHandler(context));
     }
 
@@ -45,7 +49,7 @@ public class LauncherStyleHandler {
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object o) {
-            int newValue = Integer.valueOf((String) o);
+            int newValue = (int) o;
             if (getAppliedValue(mContext) != newValue) {
                 // Value has changed
                 ProgressDialog.show(mContext,

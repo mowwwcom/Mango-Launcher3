@@ -16,12 +16,6 @@
 
 package com.android.launcher3.model;
 
-import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_LOCKED_USER;
-import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_SAFEMODE;
-import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_SUSPENDED;
-import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
-import static com.android.launcher3.model.LoaderResults.filterCurrentWorkspaceItems;
-
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -52,6 +46,7 @@ import com.android.launcher3.LauncherModel;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.ShortcutInfo;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.Workspace;
 import com.android.launcher3.compat.AppWidgetManagerCompat;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.PackageInstallerCompat;
@@ -65,6 +60,7 @@ import com.android.launcher3.provider.ImportDataTask;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.shortcuts.ShortcutInfoCompat;
 import com.android.launcher3.shortcuts.ShortcutKey;
+import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LooperIdleLock;
 import com.android.launcher3.util.MultiHashMap;
@@ -72,6 +68,7 @@ import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.Provider;
 import com.android.launcher3.util.TraceHelper;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,6 +76,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
+
+import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_LOCKED_USER;
+import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_SAFEMODE;
+import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_SUSPENDED;
+import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
+import static com.android.launcher3.model.LoaderResults.filterCurrentWorkspaceItems;
 
 /**
  * Runnable for the thread that loads the contents of the launcher:
@@ -165,6 +168,7 @@ public class LoaderTask implements Runnable {
 
         TraceHelper.beginSection(TAG);
         try (LauncherModel.LoaderTransaction transaction = mApp.getModel().beginLoader(this)) {
+
             TraceHelper.partitionSection(TAG, "step 1.1: loading workspace");
             loadWorkspace();
 
@@ -189,9 +193,14 @@ public class LoaderTask implements Runnable {
             verifyNotStopped();
             mResults.bindAllApps();
 
-            TraceHelper.partitionSection(TAG, "step 2.3: Binding all into workspace");
-            verifyNotStopped();
-            mResults.bindAllApps2Workspace();
+            if (!LauncherStyleHandler.isDrawer) {
+                TraceHelper.partitionSection(TAG, "step 2.3.1: loading all apps into workspace");
+                ArrayList<ItemInfo> data = loadAllApps2Workspace();
+
+                TraceHelper.partitionSection(TAG, "step 2.3.2: Binding all apps into workspace");
+                verifyNotStopped();
+                mResults.bindAllApps2Workspace(data);
+            }
 
             verifyNotStopped();
             TraceHelper.partitionSection(TAG, "step 2.4: Update icon cache");
@@ -229,6 +238,39 @@ public class LoaderTask implements Runnable {
             TraceHelper.partitionSection(TAG, "Cancelled");
         }
         TraceHelper.endSection(TAG);
+    }
+
+    private ArrayList<ItemInfo> loadAllApps2Workspace() {
+        @SuppressWarnings("unchecked")
+        final ArrayList<AppInfo> list = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
+        @SuppressWarnings("unchecked")
+        final ArrayList<ItemInfo> workspace = (ArrayList<ItemInfo>) mBgDataModel.workspaceItems.clone();
+        ArrayList<ItemInfo> shortcuts = new ArrayList<>();
+        final int count = workspace.size();
+        boolean exist = false;
+        for (AppInfo app : list) {
+            // check exist
+            for (int i = 0; i < count; i++) {
+                ItemInfo item = workspace.get(i);
+                // ignore first screen
+                if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP
+                        && item.screenId != Workspace.FIRST_SCREEN_ID) {
+                    if (item instanceof ShortcutInfo) {
+                        ShortcutInfo si = (ShortcutInfo) item;
+                        if (app.componentName.getPackageName().equals(si.getTargetComponent().getPackageName())) {
+                            exist = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!exist) {
+                ShortcutInfo newItem = app.makeShortcut();
+                shortcuts.add(newItem);
+            }
+            exist = false;
+        }
+        return shortcuts;
     }
 
     public synchronized void stopLocked() {
@@ -278,7 +320,8 @@ public class LoaderTask implements Runnable {
 
             Map<ShortcutKey, ShortcutInfoCompat> shortcutKeyToPinnedShortcuts = new HashMap<>();
             final LoaderCursor c = new LoaderCursor(contentResolver.query(
-                    LauncherSettings.Favorites.CONTENT_URI, null, null, null, null), mApp);
+                    LauncherSettings.Favorites.getContentUri(),
+                    null, null, null, null), mApp);
 
             HashMap<ComponentKey, AppWidgetProviderInfo> widgetProvidersMap = null;
 

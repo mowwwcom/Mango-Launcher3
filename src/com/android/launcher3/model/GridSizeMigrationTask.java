@@ -120,7 +120,7 @@ public class GridSizeMigrationTask {
             if (DEBUG) {
                 Log.d(TAG, "Removing items: " + TextUtils.join(", ", mEntryToRemove));
             }
-            mContext.getContentResolver().delete(LauncherSettings.Favorites.CONTENT_URI,
+            mContext.getContentResolver().delete(LauncherSettings.Favorites.getContentUri(),
                     Utilities.createDbSelectionQuery(
                             LauncherSettings.Favorites._ID, mEntryToRemove), null);
         }
@@ -231,7 +231,7 @@ public class GridSizeMigrationTask {
             } while (!mCarryOver.isEmpty());
 
             // Update screens
-            final Uri uri = LauncherSettings.WorkspaceScreens.CONTENT_URI;
+            final Uri uri = LauncherSettings.WorkspaceScreens.getContentUri();
             mUpdateOperations.add(ContentProviderOperation.newDelete(uri).build());
             int count = allScreens.size();
             for (int i = 0; i < count; i++) {
@@ -603,7 +603,7 @@ public class GridSizeMigrationTask {
     }
 
     private ArrayList<DbEntry> loadHotseatEntries() {
-        Cursor c =  mContext.getContentResolver().query(LauncherSettings.Favorites.CONTENT_URI,
+        Cursor c =  mContext.getContentResolver().query(LauncherSettings.Favorites.getContentUri(),
                 new String[]{
                         Favorites._ID,                  // 0
                         Favorites.ITEM_TYPE,            // 1
@@ -787,7 +787,7 @@ public class GridSizeMigrationTask {
     }
 
     protected Cursor queryWorkspace(String[] columns, String where) {
-        return mContext.getContentResolver().query(LauncherSettings.Favorites.CONTENT_URI,
+        return mContext.getContentResolver().query(LauncherSettings.Favorites.getContentUri(),
                 columns, where, null, null, null);
     }
 
@@ -929,7 +929,7 @@ public class GridSizeMigrationTask {
             if (dbChanged) {
                 // Make sure we haven't removed everything.
                 final Cursor c = context.getContentResolver().query(
-                        LauncherSettings.Favorites.CONTENT_URI, null, null, null, null);
+                        LauncherSettings.Favorites.getContentUri(), null, null, null, null);
                 boolean hasData = c.moveToNext();
                 c.close();
                 if (!hasData) {

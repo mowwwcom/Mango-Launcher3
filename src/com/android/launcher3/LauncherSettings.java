@@ -22,11 +22,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 
+import com.android.launcher3.style.LauncherStyleHandler;
+
 /**
  * Settings related utilities.
  */
 public class LauncherSettings {
-    /** Columns required on table staht will be subject to backup and restore. */
+    /**
+     * Columns required on table staht will be subject to backup and restore.
+     */
     static interface ChangeLogColumns extends BaseColumns {
         /**
          * The time of the last update to this row.
@@ -52,7 +56,7 @@ public class LauncherSettings {
 
         /**
          * The type of the gesture
-         *
+         * <p>
          * <P>Type: INTEGER</P>
          */
         public static final String ITEM_TYPE = "itemType";
@@ -88,24 +92,38 @@ public class LauncherSettings {
 
     /**
      * Workspace Screens.
-     *
+     * <p>
      * Tracks the order of workspace screens.
      */
     public static final class WorkspaceScreens implements ChangeLogColumns {
 
         public static final String TABLE_NAME = "workspaceScreens";
+        public static final String TABLE_NAME_STANDARD = "workspaceScreens_standard";
 
         /**
          * The content:// style URL for this table
          */
         public static final Uri CONTENT_URI = Uri.parse("content://" +
                 LauncherProvider.AUTHORITY + "/" + TABLE_NAME);
+        /**
+         * The content:// style URL for this table
+         */
+        public static final Uri CONTENT_URI_STANDARD = Uri.parse("content://" +
+                LauncherProvider.AUTHORITY + "/" + TABLE_NAME_STANDARD);
 
         /**
          * The rank of this screen -- ie. how it is ordered relative to the other screens.
          * <P>Type: INTEGER</P>
          */
         public static final String SCREEN_RANK = "screenRank";
+
+        public static Uri getContentUri() {
+            return LauncherStyleHandler.isDrawer ? CONTENT_URI : CONTENT_URI_STANDARD;
+        }
+
+        public static String getTableName() {
+            return LauncherStyleHandler.isDrawer ? TABLE_NAME : TABLE_NAME_STANDARD;
+        }
     }
 
     /**
@@ -114,23 +132,36 @@ public class LauncherSettings {
     public static final class Favorites implements BaseLauncherColumns {
 
         public static final String TABLE_NAME = "favorites";
+        public static final String TABLE_NAME_STANDARD = "favorites_standard";
 
         /**
          * The content:// style URL for this table
          */
         public static final Uri CONTENT_URI = Uri.parse("content://" +
                 LauncherProvider.AUTHORITY + "/" + TABLE_NAME);
+        /**
+         * The content:// style URL for standard favorites table
+         */
+        public static final Uri CONTENT_URI_STANDARD = Uri.parse("content://" +
+                LauncherProvider.AUTHORITY + "/" + TABLE_NAME_STANDARD);
 
         /**
          * The content:// style URL for a given row, identified by its id.
          *
          * @param id The row id.
-         *
          * @return The unique content URL for the specified row.
          */
         public static Uri getContentUri(long id) {
             return Uri.parse("content://" + LauncherProvider.AUTHORITY +
-                    "/" + TABLE_NAME + "/" + id);
+                    "/" + (LauncherStyleHandler.isDrawer ? TABLE_NAME : TABLE_NAME_STANDARD) + "/" + id);
+        }
+
+        public static Uri getContentUri() {
+            return LauncherStyleHandler.isDrawer ? CONTENT_URI : CONTENT_URI_STANDARD;
+        }
+
+        public static String getTableName() {
+            return LauncherStyleHandler.isDrawer ? TABLE_NAME : TABLE_NAME_STANDARD;
         }
 
         /**
@@ -147,21 +178,31 @@ public class LauncherSettings {
 
         static final String containerToString(int container) {
             switch (container) {
-                case CONTAINER_DESKTOP: return "desktop";
-                case CONTAINER_HOTSEAT: return "hotseat";
-                default: return String.valueOf(container);
+                case CONTAINER_DESKTOP:
+                    return "desktop";
+                case CONTAINER_HOTSEAT:
+                    return "hotseat";
+                default:
+                    return String.valueOf(container);
             }
         }
 
         static final String itemTypeToString(int type) {
-            switch(type) {
-                case ITEM_TYPE_APPLICATION: return "APP";
-                case ITEM_TYPE_SHORTCUT: return "SHORTCUT";
-                case ITEM_TYPE_FOLDER: return "FOLDER";
-                case ITEM_TYPE_APPWIDGET: return "WIDGET";
-                case ITEM_TYPE_CUSTOM_APPWIDGET: return "CUSTOMWIDGET";
-                case ITEM_TYPE_DEEP_SHORTCUT: return "DEEPSHORTCUT";
-                default: return String.valueOf(type);
+            switch (type) {
+                case ITEM_TYPE_APPLICATION:
+                    return "APP";
+                case ITEM_TYPE_SHORTCUT:
+                    return "SHORTCUT";
+                case ITEM_TYPE_FOLDER:
+                    return "FOLDER";
+                case ITEM_TYPE_APPWIDGET:
+                    return "WIDGET";
+                case ITEM_TYPE_CUSTOM_APPWIDGET:
+                    return "CUSTOMWIDGET";
+                case ITEM_TYPE_DEEP_SHORTCUT:
+                    return "DEEPSHORTCUT";
+                default:
+                    return String.valueOf(type);
             }
         }
 
@@ -199,7 +240,7 @@ public class LauncherSettings {
 
         /**
          * The profile id of the item in the cell.
-         * <P>
+         * <p>
          * Type: INTEGER
          * </P>
          */
@@ -227,14 +268,14 @@ public class LauncherSettings {
 
         /**
          * The appWidgetId of the widget
-         *
+         * <p>
          * <P>Type: INTEGER</P>
          */
         public static final String APPWIDGET_ID = "appWidgetId";
 
         /**
          * The ComponentName of the widget provider
-         *
+         * <p>
          * <P>Type: STRING</P>
          */
         public static final String APPWIDGET_PROVIDER = "appWidgetProvider";
@@ -259,7 +300,7 @@ public class LauncherSettings {
 
         public static void addTableToDb(SQLiteDatabase db, long myProfileId, boolean optional) {
             String ifNotExists = optional ? " IF NOT EXISTS " : "";
-            db.execSQL("CREATE TABLE " + ifNotExists + TABLE_NAME + " (" +
+            String sql = "CREATE TABLE " + ifNotExists + TABLE_NAME + " (" +
                     "_id INTEGER PRIMARY KEY," +
                     "title TEXT," +
                     "intent TEXT," +
@@ -280,7 +321,12 @@ public class LauncherSettings {
                     "profileId INTEGER DEFAULT " + myProfileId + "," +
                     "rank INTEGER NOT NULL DEFAULT 0," +
                     "options INTEGER NOT NULL DEFAULT 0" +
-                    ");");
+                    ");";
+            // drawer db
+            db.execSQL(sql);
+            String sqlStandard = sql.replace(TABLE_NAME, TABLE_NAME_STANDARD);
+            // standard db
+            db.execSQL(sqlStandard);
         }
     }
 

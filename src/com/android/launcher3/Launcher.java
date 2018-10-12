@@ -1203,6 +1203,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         return mModelWriter;
     }
 
+    @Override
     public SharedPreferences getSharedPrefs() {
         return mSharedPrefs;
     }
@@ -1942,24 +1943,20 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
             if (newItemsScreenId > -1) {
                 long currentScreenId = mWorkspace.getScreenIdForPageIndex(mWorkspace.getNextPage());
                 final int newScreenIndex = mWorkspace.getPageIndexForScreenId(newItemsScreenId);
-                final Runnable startBounceAnimRunnable = new Runnable() {
-                    public void run() {
-                        anim.playTogether(bounceAnims);
-                        anim.start();
-                    }
+                final Runnable startBounceAnimRunnable = () -> {
+                    anim.playTogether(bounceAnims);
+                    anim.start();
                 };
                 if (newItemsScreenId != currentScreenId) {
                     // We post the animation slightly delayed to prevent slowdowns
                     // when we are loading right after we return to launcher.
-                    mWorkspace.postDelayed(new Runnable() {
-                        public void run() {
-                            if (mWorkspace != null) {
-                                AbstractFloatingView.closeAllOpenViews(Launcher.this, false);
+                    mWorkspace.postDelayed(() -> {
+                        if (mWorkspace != null) {
+                            AbstractFloatingView.closeAllOpenViews(Launcher.this, false);
 
-                                mWorkspace.snapToPage(newScreenIndex);
-                                mWorkspace.postDelayed(startBounceAnimRunnable,
-                                        NEW_APPS_ANIMATION_DELAY);
-                            }
+                            mWorkspace.snapToPage(newScreenIndex);
+                            mWorkspace.postDelayed(startBounceAnimRunnable,
+                                    NEW_APPS_ANIMATION_DELAY);
                         }
                     }, NEW_APPS_PAGE_MOVE_DELAY);
                 } else {
@@ -2199,6 +2196,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
      * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
+    @Override
     public void bindAllApplications(ArrayList<AppInfo> apps) {
         mAppsView.getAppsStore().setApps(apps);
 

@@ -28,7 +28,6 @@ import android.content.res.XmlResourceParser;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Process;
@@ -37,16 +36,19 @@ import android.util.ArrayMap;
 import android.util.Log;
 import android.util.Pair;
 import android.util.Patterns;
+
 import com.android.launcher3.LauncherProvider.SqlArguments;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.LauncherIcons;
 import com.android.launcher3.util.Thunk;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Layout parsing code for auto installs layout
@@ -614,6 +616,8 @@ public class AutoInstallsLayout {
 
                     addedId = folderItems.get(0);
                     mDb.update(Favorites.TABLE_NAME, childValues,
+                            Favorites._ID + "=" + addedId, null);
+                    mDb.update(Favorites.TABLE_NAME_STANDARD, childValues,
                             Favorites._ID + "=" + addedId, null);
                 }
             }

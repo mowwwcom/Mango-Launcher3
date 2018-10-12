@@ -43,7 +43,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
@@ -308,18 +307,26 @@ public class LoaderResults {
         }
     }
 
-    public void bindAllApps2Workspace() {
-        @SuppressWarnings("unchecked") final ArrayList<AppInfo> list = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
-        bindWorkspaceItems(workspaceItems, appWidgets, mUiExecutor);
-        List<ItemInfo> shortcuts = new ArrayList<>();
+    public void bindAllApps2Workspace(ArrayList<ItemInfo> data) {
+        // TODO 计算 screenId
+        ArrayList<Long> screens = new ArrayList<>(mBgDataModel.workspaceScreens);
+        Collections.sort(screens);
+        Long maxScreenId = screens.get(screens.size() - 1);
+        // TODO 计算 cellX, cellY
 
-        Runnable r = () -> {
-            Callbacks callbacks = mCallbacks.get();
-            if (callbacks != null) {
-                callbacks.bindItems(shortcuts, false);
+
+        // 1. add new screen for items
+        ArrayList<Long> orderedScreenIds = new ArrayList<>();
+        mUiExecutor.execute(() -> {
+            Callbacks callbacks12 = mCallbacks.get();
+            if (callbacks12 != null) {
+                orderedScreenIds.add(1L);
+                callbacks12.bindScreens(orderedScreenIds);
             }
-        };
-        mUiExecutor.execute(r);
+        });
+        // 2. bind items
+
+        bindWorkspaceItems(data, new ArrayList<>(), mUiExecutor);
     }
 
     public void bindDeepShortcuts() {

@@ -47,7 +47,7 @@ public class LauncherDbUtils {
     public static boolean prepareScreenZeroToHostQsb(Context context, SQLiteDatabase db) {
         try (SQLiteTransaction t = new SQLiteTransaction(db)) {
             // Get the existing screens
-            ArrayList<Long> screenIds = getScreenIdsFromCursor(db.query(WorkspaceScreens.TABLE_NAME,
+            ArrayList<Long> screenIds = getScreenIdsFromCursor(db.query(WorkspaceScreens.getTableName(),
                     null, null, null, null, null, WorkspaceScreens.SCREEN_RANK));
 
             if (screenIds.isEmpty()) {
@@ -69,7 +69,7 @@ public class LauncherDbUtils {
             }
 
             // Check if the first row is empty
-            if (DatabaseUtils.queryNumEntries(db, Favorites.TABLE_NAME,
+            if (DatabaseUtils.queryNumEntries(db, Favorites.getTableName(),
                     "container = -100 and screen = 0 and cellY = 0") == 0) {
                 // First row is empty, no need to migrate.
                 t.commit();
@@ -91,11 +91,11 @@ public class LauncherDbUtils {
 
         ContentValues values = new ContentValues();
         values.put(WorkspaceScreens._ID, newScreen);
-        db.update(WorkspaceScreens.TABLE_NAME, values, "_id = ?", whereParams);
+        db.update(WorkspaceScreens.getTableName(), values, "_id = ?", whereParams);
 
         values.clear();
         values.put(Favorites.SCREEN, newScreen);
-        db.update(Favorites.TABLE_NAME, values, "container = -100 and screen = ?", whereParams);
+        db.update(Favorites.getTableName(), values, "container = -100 and screen = ?", whereParams);
     }
 
     /**

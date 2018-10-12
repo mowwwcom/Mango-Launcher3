@@ -16,9 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.LauncherAppState.ACTION_FORCE_ROLOAD;
-import static com.android.launcher3.config.FeatureFlags.IS_DOGFOOD_BUILD;
-
 import android.content.BroadcastReceiver;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
@@ -73,6 +70,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executor;
+
+import static com.android.launcher3.LauncherAppState.ACTION_FORCE_ROLOAD;
+import static com.android.launcher3.config.FeatureFlags.IS_DOGFOOD_BUILD;
 
 /**
  * Maintains in-memory state of the Launcher. It is expected that there should be only one
@@ -274,11 +274,9 @@ public class LauncherModel extends BroadcastReceiver
     static void checkItemInfo(final ItemInfo item) {
         final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
         final long itemId = item.id;
-        Runnable r = new Runnable() {
-            public void run() {
-                synchronized (sBgDataModel) {
-                    checkItemInfoLocked(itemId, item, stackTrace);
-                }
+        Runnable r = () -> {
+            synchronized (sBgDataModel) {
+                checkItemInfoLocked(itemId, item, stackTrace);
             }
         };
         runOnWorkerThread(r);
@@ -291,7 +289,7 @@ public class LauncherModel extends BroadcastReceiver
     public static void updateWorkspaceScreenOrder(Context context, final ArrayList<Long> screens) {
         final ArrayList<Long> screensCopy = new ArrayList<Long>(screens);
         final ContentResolver cr = context.getContentResolver();
-        final Uri uri = LauncherSettings.WorkspaceScreens.CONTENT_URI;
+        final Uri uri = LauncherSettings.WorkspaceScreens.getContentUri();
 
         // Remove any negative screen ids -- these aren't persisted
         Iterator<Long> iter = screensCopy.iterator();
@@ -302,31 +300,28 @@ public class LauncherModel extends BroadcastReceiver
             }
         }
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-                // Clear the table
-                ops.add(ContentProviderOperation.newDelete(uri).build());
-                int count = screensCopy.size();
-                for (int i = 0; i < count; i++) {
-                    ContentValues v = new ContentValues();
-                    long screenId = screensCopy.get(i);
-                    v.put(LauncherSettings.WorkspaceScreens._ID, screenId);
-                    v.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, i);
-                    ops.add(ContentProviderOperation.newInsert(uri).withValues(v).build());
-                }
+        Runnable r = () -> {
+            ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+            // Clear the table
+            ops.add(ContentProviderOperation.newDelete(uri).build());
+            int count = screensCopy.size();
+            for (int i = 0; i < count; i++) {
+                ContentValues v = new ContentValues();
+                long screenId = screensCopy.get(i);
+                v.put(LauncherSettings.WorkspaceScreens._ID, screenId);
+                v.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, i);
+                ops.add(ContentProviderOperation.newInsert(uri).withValues(v).build());
+            }
 
-                try {
-                    cr.applyBatch(LauncherProvider.AUTHORITY, ops);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
+            try {
+                cr.applyBatch(LauncherProvider.AUTHORITY, ops);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
 
-                synchronized (sBgDataModel) {
-                    sBgDataModel.workspaceScreens.clear();
-                    sBgDataModel.workspaceScreens.addAll(screensCopy);
-                }
+            synchronized (sBgDataModel) {
+                sBgDataModel.workspaceScreens.clear();
+                sBgDataModel.workspaceScreens.addAll(screensCopy);
             }
         };
         runOnWorkerThread(r);
@@ -537,7 +532,7 @@ public class LauncherModel extends BroadcastReceiver
      */
     public static ArrayList<Long> loadWorkspaceScreensDb(Context context) {
         final ContentResolver contentResolver = context.getContentResolver();
-        final Uri screensUri = LauncherSettings.WorkspaceScreens.CONTENT_URI;
+        final Uri screensUri = LauncherSettings.WorkspaceScreens.getContentUri();
 
         // Get screens ordered by rank.
         return LauncherDbUtils.getScreenIdsFromCursor(contentResolver.query(
@@ -552,12 +547,7 @@ public class LauncherModel extends BroadcastReceiver
                 if (!apps.added.isEmpty()) {
                     final ArrayList<AppInfo> arrayList = new ArrayList<>(apps.added);
                     apps.added.clear();
-                    scheduleCallbackTask(new CallbackTask() {
-                        @Override
-                        public void execute(Callbacks callbacks) {
-                            callbacks.bindAppsAddedOrUpdated(arrayList);
-                        }
-                    });
+                    scheduleCallbackTask(callbacks -> callbacks.bindAppsAddedOrUpdated(arrayList));
                 }
             }
         });

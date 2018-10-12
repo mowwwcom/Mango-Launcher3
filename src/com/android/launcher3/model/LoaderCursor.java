@@ -24,7 +24,6 @@ import android.content.Intent.ShortcutIconResource;
 import android.content.pm.LauncherActivityInfo;
 import android.database.Cursor;
 import android.database.CursorWrapper;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.UserHandle;
 import android.provider.BaseColumns;
@@ -312,7 +311,7 @@ public class LoaderCursor extends CursorWrapper {
     public boolean commitDeleted() {
         if (itemsToRemove.size() > 0) {
             // Remove dead items
-            mContext.getContentResolver().delete(LauncherSettings.Favorites.CONTENT_URI,
+            mContext.getContentResolver().delete(LauncherSettings.Favorites.getContentUri(),
                     Utilities.createDbSelectionQuery(
                             LauncherSettings.Favorites._ID, itemsToRemove), null);
             return true;
@@ -339,7 +338,7 @@ public class LoaderCursor extends CursorWrapper {
             // Update restored items that no longer require special handling
             ContentValues values = new ContentValues();
             values.put(LauncherSettings.Favorites.RESTORED, 0);
-            mContext.getContentResolver().update(LauncherSettings.Favorites.CONTENT_URI, values,
+            mContext.getContentResolver().update(LauncherSettings.Favorites.getContentUri(), values,
                     Utilities.createDbSelectionQuery(
                             LauncherSettings.Favorites._ID, restoredRows), null);
         }

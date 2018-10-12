@@ -56,7 +56,7 @@ public class LossyScreenMigrationTask extends GridSizeMigrationTask {
 
     @Override
     protected Cursor queryWorkspace(String[] columns, String where) {
-        return mDb.query(Favorites.TABLE_NAME, columns, where, null, null, null, null);
+        return mDb.query(Favorites.getTableName(), columns, where, null, null, null, null);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class LossyScreenMigrationTask extends GridSizeMigrationTask {
                     || org.spanX != update.spanX || org.spanY != update.spanY) {
                 tempValues.clear();
                 update.addToContentValues(tempValues);
-                mDb.update(Favorites.TABLE_NAME, tempValues, "_id = ?",
+                mDb.update(Favorites.getTableName(), tempValues, "_id = ?",
                         new String[] {Long.toString(update.id)});
             }
         }
@@ -100,7 +100,7 @@ public class LossyScreenMigrationTask extends GridSizeMigrationTask {
         }
 
         if (!mEntryToRemove.isEmpty()) {
-            mDb.delete(Favorites.TABLE_NAME,
+            mDb.delete(Favorites.getTableName(),
                     Utilities.createDbSelectionQuery(Favorites._ID, mEntryToRemove), null);
         }
     }

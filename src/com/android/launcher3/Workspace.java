@@ -936,8 +936,13 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         ItemInfo info = (ItemInfo) child.getTag();
         int childId = mLauncher.getViewIdForItem(info);
 
+        if (layout == null) {
+            Log.e(TAG, "layout null but screenId:" + screenId + " ==> " + info.title);
+        }
+
         boolean markCellsAsOccupied = !(child instanceof Folder);
-        if (!layout.addViewToCellLayout(child, -1, childId, lp, markCellsAsOccupied)) {
+        if (layout != null
+                && !layout.addViewToCellLayout(child, -1, childId, lp, markCellsAsOccupied)) {
             // TODO: This branch occurs when the workspace is adding views
             // outside of the defined grid
             // maybe we should be deleting these items from the LauncherModel?
@@ -2915,6 +2920,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
     /**
      * Called at the end of a drag which originated on the workspace.
      */
+    @Override
     public void onDropCompleted(final View target, final DragObject d,
                                 final boolean success) {
 
@@ -2962,14 +2968,11 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
      * Removes all folder listeners
      */
     public void removeFolderListeners() {
-        mapOverItems(false, new ItemOperator() {
-            @Override
-            public boolean evaluate(ItemInfo info, View view) {
-                if (view instanceof FolderIcon) {
-                    ((FolderIcon) view).removeListeners();
-                }
-                return false;
+        mapOverItems(false, (info, view) -> {
+            if (view instanceof FolderIcon) {
+                ((FolderIcon) view).removeListeners();
             }
+            return false;
         });
     }
 
@@ -3079,61 +3082,37 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
     }
 
     public View getHomescreenIconByItemId(final long id) {
-        return getFirstMatch(new ItemOperator() {
-
-            @Override
-            public boolean evaluate(ItemInfo info, View v) {
-                return info != null && info.id == id;
-            }
-        });
+        return getFirstMatch((info, v) -> info != null && info.id == id);
     }
 
     public View getViewForTag(final Object tag) {
-        return getFirstMatch(new ItemOperator() {
-
-            @Override
-            public boolean evaluate(ItemInfo info, View v) {
-                return info == tag;
-            }
-        });
+        return getFirstMatch((info, v) -> info == tag);
     }
 
     public LauncherAppWidgetHostView getWidgetForAppWidgetId(final int appWidgetId) {
-        return (LauncherAppWidgetHostView) getFirstMatch(new ItemOperator() {
-
-            @Override
-            public boolean evaluate(ItemInfo info, View v) {
-                return (info instanceof LauncherAppWidgetInfo) &&
-                        ((LauncherAppWidgetInfo) info).appWidgetId == appWidgetId;
-            }
-        });
+        return (LauncherAppWidgetHostView) getFirstMatch((info, v) -> (info instanceof LauncherAppWidgetInfo) &&
+                ((LauncherAppWidgetInfo) info).appWidgetId == appWidgetId);
     }
 
     public View getFirstMatch(final ItemOperator operator) {
         final View[] value = new View[1];
-        mapOverItems(MAP_NO_RECURSE, new ItemOperator() {
-            @Override
-            public boolean evaluate(ItemInfo info, View v) {
-                if (operator.evaluate(info, v)) {
-                    value[0] = v;
-                    return true;
-                }
-                return false;
+        mapOverItems(MAP_NO_RECURSE, (info, v) -> {
+            if (operator.evaluate(info, v)) {
+                value[0] = v;
+                return true;
             }
+            return false;
         });
         return value[0];
     }
 
     void clearDropTargets() {
-        mapOverItems(MAP_NO_RECURSE, new ItemOperator() {
-            @Override
-            public boolean evaluate(ItemInfo info, View v) {
-                if (v instanceof DropTarget) {
-                    mDragController.removeDropTarget((DropTarget) v);
-                }
-                // not done, process all the shortcuts
-                return false;
+        mapOverItems(MAP_NO_RECURSE, (info, v) -> {
+            if (v instanceof DropTarget) {
+                mDragController.removeDropTarget((DropTarget) v);
             }
+            // not done, process all the shortcuts
+            return false;
         });
     }
 
@@ -3243,52 +3222,43 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             folderIds.add(s.container);
         }
 
-        mapOverItems(MAP_RECURSE, new ItemOperator() {
-            @Override
-            public boolean evaluate(ItemInfo info, View v) {
-                if (info instanceof ShortcutInfo && v instanceof BubbleTextView &&
-                        updates.contains(info)) {
-                    ShortcutInfo si = (ShortcutInfo) info;
-                    BubbleTextView shortcut = (BubbleTextView) v;
-                    Drawable oldIcon = shortcut.getIcon();
-                    boolean oldPromiseState = (oldIcon instanceof PreloadIconDrawable)
-                            && ((PreloadIconDrawable) oldIcon).hasNotCompleted();
-                    shortcut.applyFromShortcutInfo(si, si.isPromise() != oldPromiseState);
-                }
-                // process all the shortcuts
-                return false;
+        mapOverItems(MAP_RECURSE, (info, v) -> {
+            if (info instanceof ShortcutInfo && v instanceof BubbleTextView &&
+                    updates.contains(info)) {
+                ShortcutInfo si = (ShortcutInfo) info;
+                BubbleTextView shortcut = (BubbleTextView) v;
+                Drawable oldIcon = shortcut.getIcon();
+                boolean oldPromiseState = (oldIcon instanceof PreloadIconDrawable)
+                        && ((PreloadIconDrawable) oldIcon).hasNotCompleted();
+                shortcut.applyFromShortcutInfo(si, si.isPromise() != oldPromiseState);
             }
+            // process all the shortcuts
+            return false;
         });
 
         // Update folder icons
-        mapOverItems(MAP_NO_RECURSE, new ItemOperator() {
-            @Override
-            public boolean evaluate(ItemInfo info, View v) {
-                if (info instanceof FolderInfo && folderIds.contains(info.id)) {
-                    ((FolderInfo) info).itemsChanged(false);
-                }
-                // process all the shortcuts
-                return false;
+        mapOverItems(MAP_NO_RECURSE, (info, v) -> {
+            if (info instanceof FolderInfo && folderIds.contains(info.id)) {
+                ((FolderInfo) info).itemsChanged(false);
             }
+            // process all the shortcuts
+            return false;
         });
     }
 
     public void updateIconBadges(final Set<PackageUserKey> updatedBadges) {
         final PackageUserKey packageUserKey = new PackageUserKey(null, null);
         final HashSet<Long> folderIds = new HashSet<>();
-        mapOverItems(MAP_RECURSE, new ItemOperator() {
-            @Override
-            public boolean evaluate(ItemInfo info, View v) {
-                if (info instanceof ShortcutInfo && v instanceof BubbleTextView
-                        && packageUserKey.updateFromItemInfo(info)) {
-                    if (updatedBadges.contains(packageUserKey)) {
-                        ((BubbleTextView) v).applyBadgeState(info, true /* animate */);
-                        folderIds.add(info.container);
-                    }
+        mapOverItems(MAP_RECURSE, (info, v) -> {
+            if (info instanceof ShortcutInfo && v instanceof BubbleTextView
+                    && packageUserKey.updateFromItemInfo(info)) {
+                if (updatedBadges.contains(packageUserKey)) {
+                    ((BubbleTextView) v).applyBadgeState(info, true /* animate */);
+                    folderIds.add(info.container);
                 }
-                // process all the shortcuts
-                return false;
             }
+            // process all the shortcuts
+            return false;
         });
 
         // Update folder icons

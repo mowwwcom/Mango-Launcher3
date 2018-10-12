@@ -90,6 +90,10 @@ public class LauncherStylePreference extends DialogPreference {
     protected void onDialogClosed(boolean positiveResult) {
         persistInt(mChoice);
         updateSummary(mChoice);
+        OnPreferenceChangeListener listener = getOnPreferenceChangeListener();
+        if (listener != null) {
+            listener.onPreferenceChange(this, mChoice);
+        }
     }
 
     private void updateSummary(int choice) {

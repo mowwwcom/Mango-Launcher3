@@ -35,7 +35,6 @@ import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.LauncherSettings.Settings;
 import com.android.launcher3.ShortcutInfo;
-import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.util.ContentWriter;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.LooperExecutor;
@@ -228,7 +227,7 @@ public class ModelWriter {
 
         final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
         mWorkerExecutor.execute(() -> {
-            cr.insert(Favorites.CONTENT_URI, writer.getValues(mContext));
+            cr.insert(Favorites.getContentUri(), writer.getValues(mContext));
 
             synchronized (mBgDataModel) {
                 checkItemInfoLocked(item.id, item, stackTrace);
@@ -277,7 +276,7 @@ public class ModelWriter {
 
         mWorkerExecutor.execute(() -> {
             ContentResolver cr = mContext.getContentResolver();
-            cr.delete(LauncherSettings.Favorites.CONTENT_URI,
+            cr.delete(LauncherSettings.Favorites.getContentUri(),
                     LauncherSettings.Favorites.CONTAINER + "=" + info.id, null);
             mBgDataModel.removeItem(mContext, info.contents);
             info.contents.clear();

@@ -16,8 +16,6 @@
 
 package com.android.launcher3.provider;
 
-import static com.android.launcher3.Utilities.getDevicePrefs;
-
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
@@ -34,6 +32,7 @@ import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.LongSparseArray;
 import android.util.SparseBooleanArray;
+
 import com.android.launcher3.AutoInstallsLayout.LayoutParserCallback;
 import com.android.launcher3.DefaultLayoutParser;
 import com.android.launcher3.LauncherAppState;
@@ -51,9 +50,12 @@ import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.model.GridSizeMigrationTask;
 import com.android.launcher3.util.LongArrayMap;
+
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
+
+import static com.android.launcher3.Utilities.getDevicePrefs;
 
 /**
  * Utility class to import data from another Launcher which is based on Launcher3 schema.
@@ -109,7 +111,7 @@ public class ImportDataTask {
             v.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, i);
             screenIdMap.put(allScreens.get(i), (long) i);
             screenOps.add(ContentProviderOperation.newInsert(
-                    LauncherSettings.WorkspaceScreens.CONTENT_URI).withValues(v).build());
+                    LauncherSettings.WorkspaceScreens.getContentUri()).withValues(v).build());
         }
         mContext.getContentResolver().applyBatch(LauncherProvider.AUTHORITY, screenOps);
         importWorkspaceItems(allScreens.get(0), screenIdMap);
@@ -284,7 +286,7 @@ public class ImportDataTask {
                 values.put(Favorites.SPANY, spanY);
                 values.put(Favorites.TITLE, c.getString(titleIndex));
                 insertOperations.add(ContentProviderOperation
-                        .newInsert(Favorites.CONTENT_URI).withValues(values).build());
+                        .newInsert(Favorites.getContentUri()).withValues(values).build());
                 if (container < 0) {
                     totalItemsOnWorkspace++;
                 }
@@ -454,7 +456,7 @@ public class ImportDataTask {
             }
             mExistingItems.put(screen, intent);
             values.put(Favorites.SCREEN, screen);
-            mOutOps.add(ContentProviderOperation.newInsert(Favorites.CONTENT_URI).withValues(values).build());
+            mOutOps.add(ContentProviderOperation.newInsert(Favorites.getContentUri()).withValues(values).build());
             return 0;
         }
     }

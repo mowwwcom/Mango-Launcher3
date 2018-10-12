@@ -113,7 +113,7 @@ public class ContentWriter {
 
     public static final class CommitParams {
 
-        final Uri mUri = LauncherSettings.Favorites.CONTENT_URI;
+        final Uri mUri = LauncherSettings.Favorites.getContentUri();
         String mWhere;
         String[] mSelectionArgs;
 

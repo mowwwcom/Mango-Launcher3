@@ -18,7 +18,6 @@ package com.android.launcher3.model;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Process;
 import android.os.UserHandle;
 import android.util.ArrayMap;
@@ -162,12 +161,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
 
         final ArrayMap<ComponentName, AppInfo> addedOrUpdatedApps = new ArrayMap<>();
         if (!addedOrModified.isEmpty()) {
-            scheduleCallbackTask(new CallbackTask() {
-                @Override
-                public void execute(Callbacks callbacks) {
-                    callbacks.bindAppsAddedOrUpdated(addedOrModified);
-                }
-            });
+            scheduleCallbackTask(callbacks -> callbacks.bindAppsAddedOrUpdated(addedOrModified));
             for (AppInfo ai : addedOrModified) {
                 addedOrUpdatedApps.put(ai.componentName, ai);
             }
@@ -287,12 +281,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
             }
 
             if (!widgets.isEmpty()) {
-                scheduleCallbackTask(new CallbackTask() {
-                    @Override
-                    public void execute(Callbacks callbacks) {
-                        callbacks.bindWidgetsRestored(widgets);
-                    }
-                });
+                scheduleCallbackTask(callbacks -> callbacks.bindWidgetsRestored(widgets));
             }
         }
 
