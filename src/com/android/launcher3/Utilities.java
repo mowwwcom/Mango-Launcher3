@@ -27,6 +27,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -54,10 +55,13 @@ import com.android.launcher3.config.FeatureFlags;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -619,5 +623,47 @@ public final class Utilities {
             return mPackageNameAndClassName;
         }
         return mPackageNameAndClassName;
+    }
+
+    public static boolean isNotNull(Object object) {
+        return object != null;
+    }
+
+    public static boolean isNull(Object object) {
+        return object == null;
+    }
+
+    public static boolean isListNotEmpty(List list) {
+        return isNotNull(list) && !list.isEmpty();
+    }
+
+    public static boolean isListEmpty(List list) {
+        return isNull(list) || list.isEmpty();
+    }
+
+    public static void close(Cursor cursor) {
+        if (isNotNull(cursor)) {
+            cursor.close();
+        }
+    }
+
+    public static void close(InputStream is) {
+        try {
+            if (Utilities.isNotNull(is)) {
+                is.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void close(OutputStream os) {
+        try {
+            if (Utilities.isNotNull(os)) {
+                os.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
