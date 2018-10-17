@@ -47,8 +47,9 @@ public abstract class BaseModelUpdateTask implements ModelUpdateTask {
     private AllAppsList mAllAppsList;
     private Executor mUiExecutor;
 
+    @Override
     public void init(LauncherAppState app, LauncherModel model,
-            BgDataModel dataModel, AllAppsList allAppsList, Executor uiExecutor) {
+                     BgDataModel dataModel, AllAppsList allAppsList, Executor uiExecutor) {
         mApp = app;
         mModel = model;
         mDataModel = dataModel;
@@ -93,49 +94,28 @@ public abstract class BaseModelUpdateTask implements ModelUpdateTask {
         return mModel.getWriter(false /* hasVerticalHotseat */, false /* verifyChanges */);
     }
 
-
     public void bindUpdatedShortcuts(
             final ArrayList<ShortcutInfo> updatedShortcuts, final UserHandle user) {
         if (!updatedShortcuts.isEmpty()) {
-            scheduleCallbackTask(new CallbackTask() {
-                @Override
-                public void execute(Callbacks callbacks) {
-                    callbacks.bindShortcutsChanged(updatedShortcuts, user);
-                }
-            });
+            scheduleCallbackTask(callbacks -> callbacks.bindShortcutsChanged(updatedShortcuts, user));
         }
     }
 
     public void bindDeepShortcuts(BgDataModel dataModel) {
         final MultiHashMap<ComponentKey, String> shortcutMapCopy = dataModel.deepShortcutMap.clone();
-        scheduleCallbackTask(new CallbackTask() {
-            @Override
-            public void execute(Callbacks callbacks) {
-                callbacks.bindDeepShortcutMap(shortcutMapCopy);
-            }
-        });
+        scheduleCallbackTask(callbacks -> callbacks.bindDeepShortcutMap(shortcutMapCopy));
     }
 
     public void bindUpdatedWidgets(BgDataModel dataModel) {
         final ArrayList<WidgetListRowEntry> widgets =
                 dataModel.widgetsModel.getWidgetsList(mApp.getContext());
-        scheduleCallbackTask(new CallbackTask() {
-            @Override
-            public void execute(Callbacks callbacks) {
-                callbacks.bindAllWidgets(widgets);
-            }
-        });
+        scheduleCallbackTask(callbacks -> callbacks.bindAllWidgets(widgets));
     }
 
     public void deleteAndBindComponentsRemoved(final ItemInfoMatcher matcher) {
         getModelWriter().deleteItemsFromDatabase(matcher);
 
         // Call the components-removed callback
-        scheduleCallbackTask(new CallbackTask() {
-            @Override
-            public void execute(Callbacks callbacks) {
-                callbacks.bindWorkspaceComponentsRemoved(matcher);
-            }
-        });
+        scheduleCallbackTask(callbacks -> callbacks.bindWorkspaceComponentsRemoved(matcher));
     }
 }

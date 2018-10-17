@@ -8,29 +8,31 @@
 
     <RadioGroup
         android:id="@+id/radios"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:padding="3dp">
 
         <RadioButton
             android:id="@+id/cb_standard"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/launcher_style_standard"/>
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher_home"/>
+            android:src="@drawable/ic_style_standard"/>
 
         <RadioButton
             android:id="@+id/cb_drawer"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/launcher_style_drawer"/>
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher_home"/>
+            android:src="@drawable/ic_style_drawer"/>
     </RadioGroup>
 </LinearLayout>

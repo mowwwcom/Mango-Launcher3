@@ -18,6 +18,8 @@ package com.android.launcher3.model;
 
 import android.os.Looper;
 import android.util.Log;
+import android.util.LongSparseArray;
+import android.util.Pair;
 
 import com.android.launcher3.AllAppsList;
 import com.android.launcher3.AppInfo;
@@ -308,24 +310,28 @@ public class LoaderResults {
     }
 
     public void bindAllApps2Workspace(ArrayList<ItemInfo> data) {
-        // TODO 计算 screenId
         ArrayList<Long> screens = new ArrayList<>(mBgDataModel.workspaceScreens);
         Collections.sort(screens);
-        Long maxScreenId = screens.get(screens.size() - 1);
-        // TODO 计算 cellX, cellY
-
-
+        ArrayList<Long> workspaceScreen = new ArrayList<>(screens);
+        ArrayList<Long> workspaceItems = new ArrayList<>();
+        for (ItemInfo item : data) {
+            Pair<Long, int[]> pair = findSpaceForItem(workspaceScreen, workspaceItems);
+            item.screenId = pair.first;
+            item.cellX = pair.second[0];
+            item.cellY = pair.second[1];
+            Log.e(TAG, "item:" + item.toString());
+        }
         // 1. add new screen for items
-        ArrayList<Long> orderedScreenIds = new ArrayList<>();
-        mUiExecutor.execute(() -> {
-            Callbacks callbacks12 = mCallbacks.get();
-            if (callbacks12 != null) {
-                orderedScreenIds.add(1L);
-                callbacks12.bindScreens(orderedScreenIds);
-            }
-        });
+        if (!workspaceScreen.isEmpty()) {
+            workspaceScreen.removeAll(mBgDataModel.workspaceScreens);
+            mUiExecutor.execute(() -> {
+                Callbacks callbacks12 = mCallbacks.get();
+                if (callbacks12 != null) {
+                    callbacks12.bindScreens(workspaceScreen);
+                }
+            });
+        }
         // 2. bind items
-
         bindWorkspaceItems(data, new ArrayList<>(), mUiExecutor);
     }
 
@@ -376,4 +382,123 @@ public class LoaderResults {
         }
         return idleLock;
     }
+
+    private Pair<Long, int[]> findSpaceForItem(ArrayList<Long> workspaceScreens,
+                                               ArrayList<Long> addedWorkspaceScreensFinal) {
+        // Use sBgItemsIdMap as all the items are already loaded.
+        LongSparseArray<ArrayList<ItemInfo>> screenItems = new LongSparseArray<>();
+
+        synchronized (mBgDataModel.itemsIdMap) {
+            for (ItemInfo info : mBgDataModel.itemsIdMap) {
+                if (info.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                    ArrayList<ItemInfo> items = screenItems.get(info.screenId);
+                    if (items == null) {
+                        items = new ArrayList<>();
+                        screenItems.put(info.screenId, items);
+                    }
+                    items.add(info);
+                }
+            }
+        }
+
+        // Find appropriate space for the item.
+        long screenId = 0;
+        int[] cordinates = new int[2];
+        boolean found = false;
+
+        int screenCount = workspaceScreens.size();
+        // start with the second screen
+        final int second = 2;
+        int preferredScreenIndex = screenCount <= second ? screenCount : second;
+        if (preferredScreenIndex < screenCount) {
+            screenId = workspaceScreens.get(preferredScreenIndex);
+            Log.e(TAG, "screenId1:" + screenId);
+            found = findNextAvailableIconSpaceInScreen(
+                    screenItems.get(screenId), cordinates, 1, 1);
+        }
+        if (!found) {
+            // Search on any of the screens starting from the second screen
+            for (int screen = second; screen < screenCount; screen++) {
+                screenId = workspaceScreens.get(screen);
+                Log.e(TAG, "screenId2:" + screenId);
+                if (screenId < 0) {
+                    break;
+                }
+                if (findNextAvailableIconSpaceInScreen(
+                        screenItems.get(screenId), cordinates, 1, 1)) {
+                    // We found a space for it
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found) {
+            // Still no position found. Add a new screen to the end.
+            long maxScreenId = workspaceScreens.get(workspaceScreens.size() - 1);
+            screenId = maxScreenId + 1;
+            Log.e(TAG, "screenId3:" + screenId);
+
+            // Save the screen id for binding in the workspace
+            workspaceScreens.add(screenId);
+            addedWorkspaceScreensFinal.add(screenId);
+
+            // If we still can't find an empty space, then God help us all!!!
+            if (!findNextAvailableIconSpaceInScreen(
+                    screenItems.get(screenId), cordinates, 1, 1)) {
+                throw new RuntimeException("Can't find space to add the item");
+            }
+        }
+        return Pair.create(screenId, cordinates);
+    }
+
+
+    private boolean findNextAvailableIconSpaceInScreen(ArrayList<ItemInfo> occupiedPos,
+                                                       int[] xy, int spanX, int spanY) {
+        InvariantDeviceProfile profile = mApp.getInvariantDeviceProfile();
+
+        final int xCount = profile.numColumns;
+        final int yCount = profile.numRows;
+        boolean[][] occupied = new boolean[xCount][yCount];
+        if (occupiedPos != null) {
+            for (ItemInfo r : occupiedPos) {
+                int right = r.cellX + r.spanX;
+                int bottom = r.cellY + r.spanY;
+                for (int x = r.cellX; 0 <= x && x < right && x < xCount; x++) {
+                    for (int y = r.cellY; 0 <= y && y < bottom && y < yCount; y++) {
+                        occupied[x][y] = true;
+                    }
+                }
+            }
+        }
+        return findVacantCell(xy, spanX, spanY, xCount, yCount, occupied);
+    }
+
+    public static boolean findVacantCell(int[] vacant, int spanX, int spanY,
+                                         int xCount, int yCount, boolean[][] occupied) {
+
+        for (int y = 0; (y + spanY) <= yCount; y++) {
+            for (int x = 0; (x + spanX) <= xCount; x++) {
+                boolean available = !occupied[x][y];
+                out:
+                for (int i = x; i < x + spanX; i++) {
+                    for (int j = y; j < y + spanY; j++) {
+                        available = available && !occupied[i][j];
+                        if (!available) {
+                            break out;
+                        }
+                    }
+                }
+
+                if (available) {
+                    vacant[0] = x;
+                    vacant[1] = y;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }
