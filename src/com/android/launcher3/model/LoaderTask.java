@@ -266,6 +266,7 @@ public class LoaderTask implements Runnable {
             }
             if (!exist) {
                 ShortcutInfo newItem = app.makeShortcut();
+                newItem.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
                 shortcuts.add(newItem);
             }
             exist = false;

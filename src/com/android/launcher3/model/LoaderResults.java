@@ -41,6 +41,7 @@ import com.android.launcher3.widget.WidgetListRowEntry;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -314,12 +315,35 @@ public class LoaderResults {
         Collections.sort(screens);
         ArrayList<Long> workspaceScreen = new ArrayList<>(screens);
         ArrayList<Long> workspaceItems = new ArrayList<>();
+        int rank = 0;
+        // Use sBgItemsIdMap as all the items are already loaded.
+        LongSparseArray<ArrayList<ItemInfo>> screenItems = new LongSparseArray<>();
+
+        synchronized (mBgDataModel.itemsIdMap) {
+            for (ItemInfo info : mBgDataModel.itemsIdMap) {
+                if (info.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                    ArrayList<ItemInfo> items = screenItems.get(info.screenId);
+                    if (items == null) {
+                        items = new ArrayList<>();
+                        screenItems.put(info.screenId, items);
+                    }
+                    items.add(info);
+                }
+            }
+        }
         for (ItemInfo item : data) {
-            Pair<Long, int[]> pair = findSpaceForItem(workspaceScreen, workspaceItems);
+            Pair<Long, int[]> pair = findSpaceForItem(screenItems, workspaceScreen, workspaceItems);
             item.screenId = pair.first;
             item.cellX = pair.second[0];
             item.cellY = pair.second[1];
+            item.rank = rank++;
             Log.e(TAG, "item:" + item.toString());
+            ArrayList<ItemInfo> screen = screenItems.get(item.screenId);
+            if (screen == null) {
+                screen = new ArrayList<>();
+                screenItems.put(item.screenId, screen);
+            }
+            screen.add(item);
         }
         // 1. add new screen for items
         if (!workspaceScreen.isEmpty()) {
@@ -383,23 +407,9 @@ public class LoaderResults {
         return idleLock;
     }
 
-    private Pair<Long, int[]> findSpaceForItem(ArrayList<Long> workspaceScreens,
+    private Pair<Long, int[]> findSpaceForItem(LongSparseArray<ArrayList<ItemInfo>> screenItems,
+                                               ArrayList<Long> workspaceScreens,
                                                ArrayList<Long> addedWorkspaceScreensFinal) {
-        // Use sBgItemsIdMap as all the items are already loaded.
-        LongSparseArray<ArrayList<ItemInfo>> screenItems = new LongSparseArray<>();
-
-        synchronized (mBgDataModel.itemsIdMap) {
-            for (ItemInfo info : mBgDataModel.itemsIdMap) {
-                if (info.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
-                    ArrayList<ItemInfo> items = screenItems.get(info.screenId);
-                    if (items == null) {
-                        items = new ArrayList<>();
-                        screenItems.put(info.screenId, items);
-                    }
-                    items.add(info);
-                }
-            }
-        }
 
         // Find appropriate space for the item.
         long screenId = 0;
@@ -407,12 +417,12 @@ public class LoaderResults {
         boolean found = false;
 
         int screenCount = workspaceScreens.size();
+        Log.e(TAG, "screens:" + Arrays.toString(workspaceScreens.toArray()));
         // start with the second screen
-        final int second = 2;
+        final int second = 1;
         int preferredScreenIndex = screenCount <= second ? screenCount : second;
         if (preferredScreenIndex < screenCount) {
             screenId = workspaceScreens.get(preferredScreenIndex);
-            Log.e(TAG, "screenId1:" + screenId);
             found = findNextAvailableIconSpaceInScreen(
                     screenItems.get(screenId), cordinates, 1, 1);
         }
@@ -420,7 +430,6 @@ public class LoaderResults {
             // Search on any of the screens starting from the second screen
             for (int screen = second; screen < screenCount; screen++) {
                 screenId = workspaceScreens.get(screen);
-                Log.e(TAG, "screenId2:" + screenId);
                 if (screenId < 0) {
                     break;
                 }
@@ -437,7 +446,6 @@ public class LoaderResults {
             // Still no position found. Add a new screen to the end.
             long maxScreenId = workspaceScreens.get(workspaceScreens.size() - 1);
             screenId = maxScreenId + 1;
-            Log.e(TAG, "screenId3:" + screenId);
 
             // Save the screen id for binding in the workspace
             workspaceScreens.add(screenId);
@@ -493,6 +501,7 @@ public class LoaderResults {
                 if (available) {
                     vacant[0] = x;
                     vacant[1] = y;
+                    Log.e(TAG, "available at:" + x + "," + y);
                     return true;
                 }
             }
