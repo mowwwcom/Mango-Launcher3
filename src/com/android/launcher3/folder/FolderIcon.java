@@ -13,6 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Copyright (C) 2008 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.android.launcher3.folder;
 
@@ -30,6 +45,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Property;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -60,6 +76,7 @@ import com.android.launcher3.Workspace;
 import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.badge.BadgeRenderer;
 import com.android.launcher3.badge.FolderBadgeInfo;
+import com.android.launcher3.classify.FavoriteSettings;
 import com.android.launcher3.dragndrop.BaseItemDragListener;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.dragndrop.DragView;
@@ -74,10 +91,13 @@ import java.util.List;
  * An icon that can appear on in the workspace representing an {@link Folder}.
  */
 public class FolderIcon extends FrameLayout implements FolderListener {
-    @Thunk Launcher mLauncher;
-    @Thunk Folder mFolder;
+    @Thunk
+    Launcher mLauncher;
+    @Thunk
+    Folder mFolder;
     private FolderInfo mInfo;
-    @Thunk static boolean sStaticValuesDirty = true;
+    @Thunk
+    static boolean sStaticValuesDirty = true;
 
     private CheckLongPressHelper mLongPressHelper;
     private StylusEventHelper mStylusEventHelper;
@@ -90,7 +110,8 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     // Delay when drag enters until the folder opens, in miliseconds.
     private static final int ON_OPEN_DELAY = 800;
 
-    @Thunk BubbleTextView mFolderName;
+    @Thunk
+    BubbleTextView mFolderName;
 
     PreviewBackground mBackground = new PreviewBackground();
     private boolean mBackgroundIsVisible = true;
@@ -146,7 +167,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     }
 
     public static FolderIcon fromXml(int resId, Launcher launcher, ViewGroup group,
-            FolderInfo folderInfo) {
+                                     FolderInfo folderInfo) {
         @SuppressWarnings("all") // suppress dead code warning
         final boolean error = INITIAL_ITEM_ANIMATION_DURATION >= DROP_IN_ANIMATION_DURATION;
         if (error) {
@@ -180,8 +201,9 @@ public class FolderIcon extends FrameLayout implements FolderListener {
         icon.setAccessibilityDelegate(launcher.getAccessibilityDelegate());
 
         folderInfo.addListener(icon);
-
         icon.setOnFocusChangeListener(launcher.mFocusHandler);
+
+        Log.e("folderIcon", "addFolder:" + folderInfo.title);
         return icon;
     }
 
@@ -241,6 +263,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     }
 
     OnAlarmListener mOnOpenListener = new OnAlarmListener() {
+        @Override
         public void onAlarm(Alarm alarm) {
             mFolder.beginExternalDrag();
             mFolder.animateOpen();
@@ -252,8 +275,8 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     }
 
     public void performCreateAnimation(final ShortcutInfo destInfo, final View destView,
-            final ShortcutInfo srcInfo, final DragView srcView, Rect dstRect,
-            float scaleRelativeToDragLayer) {
+                                       final ShortcutInfo srcInfo, final DragView srcView, Rect dstRect,
+                                       float scaleRelativeToDragLayer) {
         prepareCreateAnimation(destView);
         addItem(destInfo);
         // This will animate the first item from it's position as an icon into its
@@ -278,8 +301,8 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     }
 
     private void onDrop(final ShortcutInfo item, DragView animateView, Rect finalRect,
-            float scaleRelativeToDragLayer, int index,
-            boolean itemReturnedOnFailedDrop) {
+                        float scaleRelativeToDragLayer, int index,
+                        boolean itemReturnedOnFailedDrop) {
         item.cellX = -1;
         item.cellY = -1;
 
@@ -373,7 +396,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
         if (d.dragInfo instanceof AppInfo) {
             // Came from all apps -- make a copy
             item = ((AppInfo) d.dragInfo).makeShortcut();
-        } else if (d.dragSource instanceof BaseItemDragListener){
+        } else if (d.dragSource instanceof BaseItemDragListener) {
             // Came from a different window -- make a copy
             item = new ShortcutInfo((ShortcutInfo) d.dragInfo);
         } else {
@@ -455,7 +478,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
         super.dispatchDraw(canvas);
 
         if (!mBackgroundIsVisible) return;
-
+        // TODO recomputePreviewDrawingParams 里数据没有初始化导致文件夹图标无法显示
         mPreviewItemManager.recomputePreviewDrawingParams();
 
         if (!mBackground.drawingDelegated()) {
@@ -463,7 +486,9 @@ public class FolderIcon extends FrameLayout implements FolderListener {
         }
 
         if (mFolder == null) return;
-        if (mFolder.getItemCount() == 0 && !mAnimating) return;
+        // 未分类的文件夹不显示
+        if (FavoriteSettings.Classify.isNoType(mFolder.mInfo.classify)
+                && mFolder.getItemCount() == 0 && !mAnimating) return;
 
         final int saveCount;
 

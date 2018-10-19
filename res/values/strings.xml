@@ -369,5 +369,8 @@
     <string name="str_time_hours_no_seconds" msgid="663342892615646712">"<xliff:g id="HOURS">%1$d</xliff:g>hour<xliff:g id="MINUTES">%2$d</xliff:g>min"</string>
     <string name="str_time_minutes_no_seconds" msgid="7780294302606853082">"<xliff:g id="MINUTES">%1$d</xliff:g>min"</string>
 
+    <string name="folder_system">System</string>
+    <string name="folder_tools">Tools</string>
+    <string name="folder_shopping">Shopping</string>
 
 </resources>

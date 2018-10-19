@@ -45,6 +45,15 @@ public class ItemInfo {
      * {@link LauncherSettings.Favorites#ITEM_TYPE_CUSTOM_APPWIDGET}.
      */
     public int itemType;
+    /**
+     * One of {@link LauncherSettings.Favorites#ITEM_TYPE_APPLICATION},
+     * {@link LauncherSettings.Favorites#ITEM_TYPE_SHORTCUT},
+     * {@link LauncherSettings.Favorites#ITEM_TYPE_DEEP_SHORTCUT}
+     * {@link LauncherSettings.Favorites#ITEM_TYPE_FOLDER},
+     * {@link LauncherSettings.Favorites#ITEM_TYPE_APPWIDGET} or
+     * {@link LauncherSettings.Favorites#ITEM_TYPE_CUSTOM_APPWIDGET}.
+     */
+    public int classify;
 
     /**
      * The id of the container that holds this item. For the desktop, this will be
@@ -127,6 +136,7 @@ public class ItemInfo {
         rank = info.rank;
         screenId = info.screenId;
         itemType = info.itemType;
+        classify = info.classify;
         container = info.container;
         user = info.user;
         contentDescription = info.contentDescription;
@@ -147,6 +157,7 @@ public class ItemInfo {
 
     public void writeToValues(ContentWriter writer) {
         writer.put(LauncherSettings.Favorites.ITEM_TYPE, itemType)
+                .put(LauncherSettings.Favorites.CLASSIFY, classify)
                 .put(LauncherSettings.Favorites.CONTAINER, container)
                 .put(LauncherSettings.Favorites.SCREEN, screenId)
                 .put(LauncherSettings.Favorites.CELLX, cellX)
@@ -158,6 +169,7 @@ public class ItemInfo {
 
     public void readFromValues(ContentValues values) {
         itemType = values.getAsInteger(LauncherSettings.Favorites.ITEM_TYPE);
+        classify = values.getAsInteger(LauncherSettings.Favorites.CLASSIFY);
         container = values.getAsLong(LauncherSettings.Favorites.CONTAINER);
         screenId = values.getAsLong(LauncherSettings.Favorites.SCREEN);
         cellX = values.getAsInteger(LauncherSettings.Favorites.CELLX);

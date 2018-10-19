@@ -169,6 +169,7 @@ public class LauncherSettings {
          * <P>Type: INTEGER</P>
          */
         public static final String CONTAINER = "container";
+        public static final String CLASSIFY = "classify";
 
         /**
          * The icon is a resource identified by a package name and an integer id.
@@ -311,6 +312,7 @@ public class LauncherSettings {
                     "spanX INTEGER," +
                     "spanY INTEGER," +
                     "itemType INTEGER," +
+                    "classify INTEGER," +
                     "appWidgetId INTEGER NOT NULL DEFAULT -1," +
                     "iconPackage TEXT," +
                     "iconResource TEXT," +

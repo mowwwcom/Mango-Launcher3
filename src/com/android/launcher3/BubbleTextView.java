@@ -202,7 +202,9 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         if (promiseStateChanged || (info.hasPromiseIconUi())) {
             applyPromiseState(promiseStateChanged);
         }
-        if (!LauncherStyleHandler.isDrawer) {
+
+        if (!LauncherStyleHandler.isDrawer && info.usingLowResIcon) {
+            // standard模式下的lowResIcon需要转换为highResIcon
             verifyHighRes();
         }
 

@@ -1,6 +1,5 @@
 package com.android.launcher3.util;
 
-import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.Pair;
 
@@ -9,7 +8,6 @@ import com.android.launcher3.ItemInfo;
 import com.android.launcher3.LauncherAppState;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * @author tic
@@ -33,7 +31,7 @@ public class SpaceHelper {
         boolean found = false;
 
         int screenCount = workspaceScreens.size();
-        Log.e(TAG, "screens:" + Arrays.toString(workspaceScreens.toArray()));
+        // Log.e(TAG, "screens:" + Arrays.toString(workspaceScreens.toArray()));
         // start with the second screen
         final int second = 1;
         int preferredScreenIndex = screenCount <= second ? screenCount : second;

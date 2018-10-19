@@ -65,6 +65,7 @@
 
     <!-- XML attributes used by default_workspace.xml -->
     <declare-styleable name="Favorite">
+        <attr name="classify" format="string" />
         <attr name="className" format="string" />
         <attr name="packageName" format="string" />
         <attr name="container" format="string" />

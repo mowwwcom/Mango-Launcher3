@@ -340,6 +340,8 @@ public class LoaderTask implements Runnable {
                         LauncherSettings.Favorites.RANK);
                 final int optionsIndex = c.getColumnIndexOrThrow(
                         LauncherSettings.Favorites.OPTIONS);
+                final int classifyIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.CLASSIFY);
 
                 final LongSparseArray<UserHandle> allUsers = c.allUsers;
                 final LongSparseArray<Boolean> quietMode = new LongSparseArray<>();
@@ -578,6 +580,7 @@ public class LoaderTask implements Runnable {
 
                                     info.intent = intent;
                                     info.rank = c.getInt(rankIndex);
+                                    info.classify = c.getInt(classifyIndex);
                                     info.spanX = 1;
                                     info.spanY = 1;
                                     info.runtimeStatusFlags |= disabledState;
@@ -609,6 +612,7 @@ public class LoaderTask implements Runnable {
                                 folderInfo.spanX = 1;
                                 folderInfo.spanY = 1;
                                 folderInfo.options = c.getInt(optionsIndex);
+                                folderInfo.classify = c.getInt(classifyIndex);
 
                                 // no special handling required for restored folders
                                 c.markRestored();

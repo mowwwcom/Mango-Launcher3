@@ -37,7 +37,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 public class InvariantDeviceProfile {
 
@@ -265,12 +264,8 @@ public class InvariantDeviceProfile {
 
         // Sort the profiles by their closeness to the dimensions
         ArrayList<InvariantDeviceProfile> pointsByNearness = points;
-        Collections.sort(pointsByNearness, new Comparator<InvariantDeviceProfile>() {
-            public int compare(InvariantDeviceProfile a, InvariantDeviceProfile b) {
-                return Float.compare(dist(width, height, a.minWidthDps, a.minHeightDps),
-                        dist(width, height, b.minWidthDps, b.minHeightDps));
-            }
-        });
+        Collections.sort(pointsByNearness, (a, b) -> Float.compare(dist(width, height, a.minWidthDps, a.minHeightDps),
+                dist(width, height, b.minWidthDps, b.minHeightDps)));
 
         return pointsByNearness;
     }

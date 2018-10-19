@@ -24,10 +24,10 @@ public class LauncherStyleHandler {
 
     public static int getAppliedValue(Context context) {
         int value = getDevicePrefs(context).getInt(KEY_PREFERENCE, STYLE_DRAWER);
-        isDrawer = value == STYLE_DRAWER;
-        return value;
-//        isDrawer = false;
-//        return STYLE_STANDARD;
+//        isDrawer = value == STYLE_DRAWER;
+//        return value;
+        isDrawer = false;
+        return STYLE_STANDARD;
     }
 
     public static boolean isSupported(Activity activity) {
