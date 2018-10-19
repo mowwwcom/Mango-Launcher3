@@ -36,12 +36,12 @@ import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LooperIdleLock;
 import com.android.launcher3.util.MultiHashMap;
+import com.android.launcher3.util.SpaceHelper;
 import com.android.launcher3.util.ViewOnDrawExecutor;
 import com.android.launcher3.widget.WidgetListRowEntry;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -318,7 +318,7 @@ public class LoaderResults {
         int rank = 0;
         // Use sBgItemsIdMap as all the items are already loaded.
         LongSparseArray<ArrayList<ItemInfo>> screenItems = new LongSparseArray<>();
-
+        SpaceHelper spaceHelper = new SpaceHelper(mApp);
         synchronized (mBgDataModel.itemsIdMap) {
             for (ItemInfo info : mBgDataModel.itemsIdMap) {
                 if (info.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
@@ -332,12 +332,11 @@ public class LoaderResults {
             }
         }
         for (ItemInfo item : data) {
-            Pair<Long, int[]> pair = findSpaceForItem(screenItems, workspaceScreen, workspaceItems);
+            Pair<Long, int[]> pair = spaceHelper.findSpaceForItem(screenItems, workspaceScreen, workspaceItems);
             item.screenId = pair.first;
             item.cellX = pair.second[0];
             item.cellY = pair.second[1];
-            item.rank = rank++;
-            Log.e(TAG, "item:" + item.toString());
+//            Log.e(TAG, "item:" + item.toString());
             ArrayList<ItemInfo> screen = screenItems.get(item.screenId);
             if (screen == null) {
                 screen = new ArrayList<>();
@@ -347,6 +346,7 @@ public class LoaderResults {
         }
         // 1. add new screen for items
         if (!workspaceScreen.isEmpty()) {
+            // remove already exist screen before insert data
             workspaceScreen.removeAll(mBgDataModel.workspaceScreens);
             mUiExecutor.execute(() -> {
                 Callbacks callbacks12 = mCallbacks.get();
@@ -357,6 +357,8 @@ public class LoaderResults {
         }
         // 2. bind items
         bindWorkspaceItems(data, new ArrayList<>(), mUiExecutor);
+
+        // 3. update icon lowRes -> highRes
     }
 
     public void bindDeepShortcuts() {
@@ -406,108 +408,4 @@ public class LoaderResults {
         }
         return idleLock;
     }
-
-    private Pair<Long, int[]> findSpaceForItem(LongSparseArray<ArrayList<ItemInfo>> screenItems,
-                                               ArrayList<Long> workspaceScreens,
-                                               ArrayList<Long> addedWorkspaceScreensFinal) {
-
-        // Find appropriate space for the item.
-        long screenId = 0;
-        int[] cordinates = new int[2];
-        boolean found = false;
-
-        int screenCount = workspaceScreens.size();
-        Log.e(TAG, "screens:" + Arrays.toString(workspaceScreens.toArray()));
-        // start with the second screen
-        final int second = 1;
-        int preferredScreenIndex = screenCount <= second ? screenCount : second;
-        if (preferredScreenIndex < screenCount) {
-            screenId = workspaceScreens.get(preferredScreenIndex);
-            found = findNextAvailableIconSpaceInScreen(
-                    screenItems.get(screenId), cordinates, 1, 1);
-        }
-        if (!found) {
-            // Search on any of the screens starting from the second screen
-            for (int screen = second; screen < screenCount; screen++) {
-                screenId = workspaceScreens.get(screen);
-                if (screenId < 0) {
-                    break;
-                }
-                if (findNextAvailableIconSpaceInScreen(
-                        screenItems.get(screenId), cordinates, 1, 1)) {
-                    // We found a space for it
-                    found = true;
-                    break;
-                }
-            }
-        }
-
-        if (!found) {
-            // Still no position found. Add a new screen to the end.
-            long maxScreenId = workspaceScreens.get(workspaceScreens.size() - 1);
-            screenId = maxScreenId + 1;
-
-            // Save the screen id for binding in the workspace
-            workspaceScreens.add(screenId);
-            addedWorkspaceScreensFinal.add(screenId);
-
-            // If we still can't find an empty space, then God help us all!!!
-            if (!findNextAvailableIconSpaceInScreen(
-                    screenItems.get(screenId), cordinates, 1, 1)) {
-                throw new RuntimeException("Can't find space to add the item");
-            }
-        }
-        return Pair.create(screenId, cordinates);
-    }
-
-
-    private boolean findNextAvailableIconSpaceInScreen(ArrayList<ItemInfo> occupiedPos,
-                                                       int[] xy, int spanX, int spanY) {
-        InvariantDeviceProfile profile = mApp.getInvariantDeviceProfile();
-
-        final int xCount = profile.numColumns;
-        final int yCount = profile.numRows;
-        boolean[][] occupied = new boolean[xCount][yCount];
-        if (occupiedPos != null) {
-            for (ItemInfo r : occupiedPos) {
-                int right = r.cellX + r.spanX;
-                int bottom = r.cellY + r.spanY;
-                for (int x = r.cellX; 0 <= x && x < right && x < xCount; x++) {
-                    for (int y = r.cellY; 0 <= y && y < bottom && y < yCount; y++) {
-                        occupied[x][y] = true;
-                    }
-                }
-            }
-        }
-        return findVacantCell(xy, spanX, spanY, xCount, yCount, occupied);
-    }
-
-    public static boolean findVacantCell(int[] vacant, int spanX, int spanY,
-                                         int xCount, int yCount, boolean[][] occupied) {
-
-        for (int y = 0; (y + spanY) <= yCount; y++) {
-            for (int x = 0; (x + spanX) <= xCount; x++) {
-                boolean available = !occupied[x][y];
-                out:
-                for (int i = x; i < x + spanX; i++) {
-                    for (int j = y; j < y + spanY; j++) {
-                        available = available && !occupied[i][j];
-                        if (!available) {
-                            break out;
-                        }
-                    }
-                }
-
-                if (available) {
-                    vacant[0] = x;
-                    vacant[1] = y;
-                    Log.e(TAG, "available at:" + x + "," + y);
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
 }

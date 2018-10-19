@@ -49,6 +49,7 @@ import com.android.launcher3.graphics.DrawableFactory;
 import com.android.launcher3.graphics.IconPalette;
 import com.android.launcher3.graphics.PreloadIconDrawable;
 import com.android.launcher3.model.PackageItemInfo;
+import com.android.launcher3.style.LauncherStyleHandler;
 
 import java.text.NumberFormat;
 
@@ -200,6 +201,9 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         setTag(info);
         if (promiseStateChanged || (info.hasPromiseIconUi())) {
             applyPromiseState(promiseStateChanged);
+        }
+        if (!LauncherStyleHandler.isDrawer) {
+            verifyHighRes();
         }
 
         applyBadgeState(info, false /* animate */);

@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.LauncherActivityInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageInstaller.SessionInfo;
 import android.graphics.Bitmap;
@@ -68,7 +69,6 @@ import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.Provider;
 import com.android.launcher3.util.TraceHelper;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -267,6 +267,7 @@ public class LoaderTask implements Runnable {
             if (!exist) {
                 ShortcutInfo newItem = app.makeShortcut();
                 newItem.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+                newItem.usingLowResIcon = true;
                 shortcuts.add(newItem);
             }
             exist = false;
@@ -876,6 +877,7 @@ public class LoaderTask implements Runnable {
             for (int i = 0; i < apps.size(); i++) {
                 LauncherActivityInfo app = apps.get(i);
                 // This builds the icon bitmaps.
+                // TODO init install time as modifyTime
                 mBgAllAppsList.add(new AppInfo(app, user, quietMode), app);
             }
         }
