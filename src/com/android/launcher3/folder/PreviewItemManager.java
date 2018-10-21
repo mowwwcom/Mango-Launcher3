@@ -99,6 +99,11 @@ public class PreviewItemManager {
         }
     }
 
+    public void computePreviewWithDefaultParams() {
+        computePreviewDrawingParams(mIcon.getMeasuredWidth(),
+                mIcon.getMeasuredWidth());
+    }
+
     private void computePreviewDrawingParams(int drawableSize, int totalSize) {
         if (mIntrinsicIconSize != drawableSize || mTotalWidth != totalSize ||
                 mPrevTopPadding != mIcon.getPaddingTop()) {

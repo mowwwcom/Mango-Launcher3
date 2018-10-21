@@ -80,6 +80,7 @@ import com.android.launcher3.classify.FavoriteSettings;
 import com.android.launcher3.dragndrop.BaseItemDragListener;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.dragndrop.DragView;
+import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
@@ -478,8 +479,11 @@ public class FolderIcon extends FrameLayout implements FolderListener {
         super.dispatchDraw(canvas);
 
         if (!mBackgroundIsVisible) return;
-        // TODO recomputePreviewDrawingParams 里数据没有初始化导致文件夹图标无法显示
-        mPreviewItemManager.recomputePreviewDrawingParams();
+        if (LauncherStyleHandler.isDrawer) {
+            mPreviewItemManager.recomputePreviewDrawingParams();
+        } else {
+            mPreviewItemManager.computePreviewWithDefaultParams();
+        }
 
         if (!mBackground.drawingDelegated()) {
             mBackground.drawBackground(canvas);
