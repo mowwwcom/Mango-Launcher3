@@ -19,7 +19,7 @@ android {
     buildToolsVersion '28.0.2'
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -133,7 +133,6 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:${SUPPORT_LIBS_VERSION}"
     implementation "com.android.support:appcompat-v7:${SUPPORT_LIBS_VERSION}"
     implementation "com.android.support:preference-v7:${SUPPORT_LIBS_VERSION}"
-    // implementation "com.android.support:preference-v14:${SUPPORT_LIBS_VERSION}"
     implementation 'com.google.protobuf.nano:protobuf-javanano:3.0.0-alpha-7'
     implementation "com.google.guava:guava:26.0-android"
 

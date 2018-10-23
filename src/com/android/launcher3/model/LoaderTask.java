@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.LauncherActivityInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageInstaller.SessionInfo;
 import android.graphics.Bitmap;
@@ -241,10 +240,8 @@ public class LoaderTask implements Runnable {
     }
 
     private ArrayList<ItemInfo> loadAllApps2Workspace() {
-        @SuppressWarnings("unchecked")
-        final ArrayList<AppInfo> list = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
-        @SuppressWarnings("unchecked")
-        final ArrayList<ItemInfo> workspace = (ArrayList<ItemInfo>) mBgDataModel.workspaceItems.clone();
+        @SuppressWarnings("unchecked") final ArrayList<AppInfo> list = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
+        @SuppressWarnings("unchecked") final ArrayList<ItemInfo> workspace = (ArrayList<ItemInfo>) mBgDataModel.workspaceItems.clone();
         ArrayList<ItemInfo> shortcuts = new ArrayList<>();
         final int count = workspace.size();
         boolean exist = false;
@@ -872,17 +869,21 @@ public class LoaderTask implements Runnable {
             // Query for the set of apps
             final List<LauncherActivityInfo> apps = mLauncherApps.getActivityList(null, user);
             // Fail if we don't have any apps
-            // TODO: Fix this. Only fail for the current user.
             if (apps == null || apps.isEmpty()) {
                 return;
             }
+            if (apps.get(0).getFirstInstallTime() > 0) {
+                // sort by install time
+                Collections.sort(apps, ((o1, o2) -> (int) (o1.getFirstInstallTime() - o2.getFirstInstallTime())));
+            }
+
             boolean quietMode = mUserManager.isQuietModeEnabled(user);
             // Create the ApplicationInfos
             for (int i = 0; i < apps.size(); i++) {
                 LauncherActivityInfo app = apps.get(i);
                 // This builds the icon bitmaps.
-                // TODO init install time as modifyTime
-                mBgAllAppsList.add(new AppInfo(app, user, quietMode), app);
+                AppInfo appInfo = new AppInfo(app, user, quietMode);
+                mBgAllAppsList.add(appInfo, app);
             }
         }
 
