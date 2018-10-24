@@ -20,6 +20,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.Pair;
+import android.util.SparseArray;
 
 import com.android.launcher3.AllAppsList;
 import com.android.launcher3.AppInfo;
@@ -46,6 +47,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
@@ -310,7 +312,7 @@ public class LoaderResults {
         }
     }
 
-    public void bindAllApps2Workspace(ArrayList<ItemInfo> data) {
+    public void bindAllApps2Workspace(SparseArray<ArrayList<ItemInfo>> data) {
         ArrayList<Long> screens = new ArrayList<>(mBgDataModel.workspaceScreens);
         Collections.sort(screens);
         ArrayList<Long> workspaceScreen = new ArrayList<>(screens);
@@ -330,33 +332,44 @@ public class LoaderResults {
                 }
             }
         }
+        // 1. handle desk icon
+        ArrayList<ItemInfo> items = data.get(0);
+        if (!items.isEmpty()) {
+            for (ItemInfo item : items) {
+                Pair<Long, int[]> pair = spaceHelper.findSpaceForItem(screenItems, workspaceScreen, workspaceItems);
+                item.screenId = pair.first;
+                item.cellX = pair.second[0];
+                item.cellY = pair.second[1];
 
-        for (ItemInfo item : data) {
-            Pair<Long, int[]> pair = spaceHelper.findSpaceForItem(screenItems, workspaceScreen, workspaceItems);
-            item.screenId = pair.first;
-            item.cellX = pair.second[0];
-            item.cellY = pair.second[1];
-
-            ArrayList<ItemInfo> screen = screenItems.get(item.screenId);
-            if (screen == null) {
-                screen = new ArrayList<>();
-                screenItems.put(item.screenId, screen);
+                ArrayList<ItemInfo> screen = screenItems.get(item.screenId);
+                if (screen == null) {
+                    screen = new ArrayList<>();
+                    screenItems.put(item.screenId, screen);
+                }
+                screen.add(item);
             }
-            screen.add(item);
         }
-        // 1. add new screen for items
+        // 2. add new screen for items
         if (!workspaceScreen.isEmpty()) {
             // remove already exist screen before insert data
             workspaceScreen.removeAll(mBgDataModel.workspaceScreens);
-            mUiExecutor.execute(() -> {
-                Callbacks callbacks12 = mCallbacks.get();
-                if (callbacks12 != null) {
-                    callbacks12.bindScreens(workspaceScreen);
-                }
-            });
+            if (!workspaceScreen.isEmpty()) {
+                mUiExecutor.execute(() -> {
+                    Callbacks callbacks12 = mCallbacks.get();
+                    if (callbacks12 != null) {
+                        callbacks12.bindScreens(workspaceScreen);
+                    }
+                });
+            }
         }
-        // 2. bind items
-        bindWorkspaceItems(data, new ArrayList<>(), mUiExecutor);
+        // 3. handle folder's child icon
+        List<ItemInfo> child = data.get(1);
+        if (!child.isEmpty()) {
+
+            items.addAll(child);
+        }
+        // 4. bind items
+        bindWorkspaceItems(items, new ArrayList<>(), mUiExecutor);
     }
 
     public void bindDeepShortcuts() {

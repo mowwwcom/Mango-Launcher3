@@ -33,6 +33,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.MutableInt;
+import android.util.SparseArray;
 
 import com.android.launcher3.AllAppsList;
 import com.android.launcher3.AppInfo;
@@ -195,7 +196,7 @@ public class LoaderTask implements Runnable {
 
             if (!LauncherStyleHandler.isDrawer) {
                 TraceHelper.partitionSection(TAG, "step 2.3.1: loading all apps into workspace");
-                ArrayList<ItemInfo> data = loadAllApps2Workspace();
+                SparseArray<ArrayList<ItemInfo>> data = loadAllApps2Workspace();
 
                 TraceHelper.partitionSection(TAG, "step 2.3.2: Binding all apps into workspace");
                 verifyNotStopped();
@@ -240,17 +241,23 @@ public class LoaderTask implements Runnable {
         TraceHelper.endSection(TAG);
     }
 
-    private ArrayList<ItemInfo> loadAllApps2Workspace() {
+    private SparseArray<ArrayList<ItemInfo>> loadAllApps2Workspace() {
         @SuppressWarnings("unchecked") final ArrayList<AppInfo> list = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
         @SuppressWarnings("unchecked") final ArrayList<ItemInfo> workspace = (ArrayList<ItemInfo>) mBgDataModel.workspaceItems.clone();
         ClassifyModel classifyModel = mApp.getClassifyModel();
         ArrayList<ItemInfo> shortcuts = new ArrayList<>();
-        final int count = workspace.size();
-        boolean exist = false;
+        ArrayList<ItemInfo> folderItems = new ArrayList<>();
+
+        SparseArray<ArrayList<ItemInfo>> apps = new SparseArray<>();
+        apps.put(0, shortcuts);
+        apps.put(1, folderItems);
 
         FolderInfo systemTarget = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_SYSTEM);
         FolderInfo shoppingTarget = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_SHOPPING);
         FolderInfo toolsTarget = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_TOOLS);
+
+        final int count = workspace.size();
+        boolean exist = false;
         for (AppInfo app : list) {
             // check exist
             for (int i = 0; i < count; i++) {
@@ -287,11 +294,16 @@ public class LoaderTask implements Runnable {
                         break;
                 }
                 newItem.usingLowResIcon = true;
-                shortcuts.add(newItem);
+                if (newItem.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                    shortcuts.add(newItem);
+                } else {
+                    folderItems.add(newItem);
+                }
             }
             exist = false;
         }
-        return shortcuts;
+        Log.e(TAG, "需要排序的图标:" + apps.size());
+        return apps;
     }
 
     public synchronized void stopLocked() {

@@ -1935,7 +1935,11 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
                         continue;
                     }
                 }
+                workspace.addInScreenFromBind(view, item);
+            } else if (item.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
+                workspace.addInScreenFromBind(view, item);
             } else {
+                // add child to folder
                 switch (item.itemType) {
                     case LauncherSettings.Favorites.ITEM_TYPE_APPLICATION:
                     case LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT:
@@ -1949,12 +1953,11 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
                         } else if (container == toolsTarget.id) {
                             toolsTarget.add(info, true);
                         }
-
                         break;
                     }
                 }
             }
-            workspace.addInScreenFromBind(view, item);
+
             if (animateIcons) {
                 // Animate all the applications up now
                 view.setAlpha(0f);
