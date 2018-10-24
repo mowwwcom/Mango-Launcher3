@@ -3542,4 +3542,14 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
 
         mCustomContentCallbacks = callbacks;
     }
+
+    public void removeCustomContentPage() {
+        CellLayout customScreen = getScreenWithId(CUSTOM_CONTENT_SCREEN_ID);
+        if (customScreen != null) {
+            removeView(customScreen);
+
+            mWorkspaceScreens.remove(CUSTOM_CONTENT_SCREEN_ID);
+            mScreenOrder.remove(CUSTOM_CONTENT_SCREEN_ID);
+        }
+    }
 }

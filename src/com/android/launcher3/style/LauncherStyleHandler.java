@@ -1,5 +1,6 @@
 package com.android.launcher3.style;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -48,6 +49,7 @@ public class LauncherStyleHandler {
         }
 
         @Override
+        @SuppressLint("ApplySharedPref")
         public boolean onPreferenceChange(Preference preference, Object o) {
             int newValue = (int) o;
             if (getAppliedValue(mContext) != newValue) {

@@ -37,6 +37,7 @@ import android.util.SparseArray;
 
 import com.android.launcher3.AllAppsList;
 import com.android.launcher3.AppInfo;
+import com.android.launcher3.BuildConfig;
 import com.android.launcher3.FolderInfo;
 import com.android.launcher3.IconCache;
 import com.android.launcher3.InstallShortcutReceiver;
@@ -277,6 +278,10 @@ public class LoaderTask implements Runnable {
             }
 
             if (!exist) {
+                if (BuildConfig.APPLICATION_ID.equals(app.componentName.getPackageName())) {
+                    // ignore myself
+                    continue;
+                }
                 ShortcutInfo newItem = app.makeShortcut();
                 newItem.classify = classifyModel.getType(app.componentName.getPackageName());
                 switch (newItem.classify) {

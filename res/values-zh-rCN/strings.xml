@@ -172,4 +172,7 @@
     <string name="folder_system">系统</string>
     <string name="folder_tools">工具</string>
     <string name="folder_shopping">购物</string>
+    <string name="enable_dashboard_label">智能助手</string>
+    <string name="enable_dashboard_description">桌面最左屏显示，为您提供服务直达、情景智能等服务</string>
+
 </resources>

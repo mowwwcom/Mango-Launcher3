@@ -1820,7 +1820,6 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         // Create the custom content page (this call updates mDefaultScreen which calls
         // setCurrentPage() so ensure that all pages are added before calling this).
         if (hasCustomContentToLeft()) {
-            mWorkspace.createCustomContentContainer();
             populateCustomContentContainer();
         }
 

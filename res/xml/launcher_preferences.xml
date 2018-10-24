@@ -72,6 +72,13 @@
             android:title="@string/auto_add_shortcuts_label"/>
 
         <SwitchPreference
+            android:defaultValue="true"
+            android:key="pref_add_dashboard_to_home"
+            android:persistent="true"
+            android:summary="@string/enable_dashboard_description"
+            android:title="@string/enable_dashboard_label"/>
+
+        <SwitchPreference
             android:defaultValue="@bool/allow_rotation"
             android:key="pref_allowRotation"
             android:persistent="true"

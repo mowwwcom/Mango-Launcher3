@@ -372,5 +372,6 @@
     <string name="folder_system">System</string>
     <string name="folder_tools">Tools</string>
     <string name="folder_shopping">Shopping</string>
-
+    <string name="enable_dashboard_label">Smart dashboard</string>
+    <string name="enable_dashboard_description">Leftest desktop screen, provide quick service, smart scene service and so on</string>
 </resources>

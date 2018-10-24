@@ -32,6 +32,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
 import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
@@ -44,6 +45,7 @@ import com.android.launcher3.LauncherFiles;
 import com.android.launcher3.R;
 import com.android.launcher3.SessionCommitReceiver;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.dashboard.SmartAssistants;
 import com.android.launcher3.graphics.IconShapeOverride;
 import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.qsb.QsbHelper;
@@ -168,7 +170,7 @@ public class SettingsActivity extends BaseCompatActivity {
                 if (QsbHelper.isSupported(getActivity())) {
                     QsbHelper.handlePreferenceUI((ListPreference) positionPref);
                 }
-                positionPref.setDefaultValue(QsbHelper.POSITION_NONE);
+                //positionPref.setDefaultValue(QsbHelper.POSITION_NONE);
             }
 
             Preference launcherStyle = findPreference(LauncherStyleHandler.KEY_PREFERENCE);
@@ -176,7 +178,12 @@ public class SettingsActivity extends BaseCompatActivity {
                 if (LauncherStyleHandler.isSupported(getActivity())) {
                     LauncherStyleHandler.handlePreferenceUI((LauncherStylePreference) launcherStyle);
                 }
-                launcherStyle.setDefaultValue(LauncherStyleHandler.STYLE_DRAWER);
+                //launcherStyle.setDefaultValue(LauncherStyleHandler.STYLE_DRAWER);
+            }
+
+            Preference smartAssistant = findPreference(SmartAssistants.PREFERENCE_KEY_SMART_ASSISTANT);
+            if (smartAssistant != null) {
+                SmartAssistants.handlePreferenceUI((SwitchPreference)smartAssistant);
             }
         }
 
