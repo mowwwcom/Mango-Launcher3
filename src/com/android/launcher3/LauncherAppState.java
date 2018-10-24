@@ -28,6 +28,7 @@ import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.PackageInstallerCompat;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.model.ClassifyModel;
 import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.util.ConfigMonitor;
 import com.android.launcher3.util.Preconditions;
@@ -46,6 +47,7 @@ public class LauncherAppState {
 
     private final Context mContext;
     private final LauncherModel mModel;
+    private final ClassifyModel mClassifyModel;
     private final IconCache mIconCache;
     private final WidgetPreviewLoader mWidgetCache;
     private final InvariantDeviceProfile mInvariantDeviceProfile;
@@ -86,6 +88,7 @@ public class LauncherAppState {
         mInvariantDeviceProfile = new InvariantDeviceProfile(mContext);
         mIconCache = new IconCache(mContext, mInvariantDeviceProfile);
         mWidgetCache = new WidgetPreviewLoader(mContext, mIconCache);
+        mClassifyModel = new ClassifyModel(this);
         mModel = new LauncherModel(this, mIconCache, AppFilter.newInstance(mContext));
 
         LauncherAppsCompat.getInstance(mContext).addOnAppsChangedCallback(mModel);
@@ -103,6 +106,8 @@ public class LauncherAppState {
         if (FeatureFlags.IS_DOGFOOD_BUILD) {
             filter.addAction(ACTION_FORCE_ROLOAD);
         }
+
+        mClassifyModel.init(mContext);
 
         mContext.registerReceiver(mModel, filter);
         UserManagerCompat.getInstance(mContext).enableAndResetCache();
@@ -151,6 +156,10 @@ public class LauncherAppState {
 
     public LauncherModel getModel() {
         return mModel;
+    }
+
+    public ClassifyModel getClassifyModel() {
+        return mClassifyModel;
     }
 
     public WidgetPreviewLoader getWidgetCache() {

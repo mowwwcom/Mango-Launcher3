@@ -315,7 +315,6 @@ public class LoaderResults {
         Collections.sort(screens);
         ArrayList<Long> workspaceScreen = new ArrayList<>(screens);
         ArrayList<Long> workspaceItems = new ArrayList<>();
-        int rank = 0;
         // Use sBgItemsIdMap as all the items are already loaded.
         LongSparseArray<ArrayList<ItemInfo>> screenItems = new LongSparseArray<>();
         SpaceHelper spaceHelper = new SpaceHelper(mApp);
@@ -331,12 +330,13 @@ public class LoaderResults {
                 }
             }
         }
+
         for (ItemInfo item : data) {
             Pair<Long, int[]> pair = spaceHelper.findSpaceForItem(screenItems, workspaceScreen, workspaceItems);
             item.screenId = pair.first;
             item.cellX = pair.second[0];
             item.cellY = pair.second[1];
-//            Log.e(TAG, "item:" + item.toString());
+
             ArrayList<ItemInfo> screen = screenItems.get(item.screenId);
             if (screen == null) {
                 screen = new ArrayList<>();
@@ -357,8 +357,6 @@ public class LoaderResults {
         }
         // 2. bind items
         bindWorkspaceItems(data, new ArrayList<>(), mUiExecutor);
-
-        // 3. update icon lowRes -> highRes
     }
 
     public void bindDeepShortcuts() {

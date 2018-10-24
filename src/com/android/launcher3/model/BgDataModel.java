@@ -388,4 +388,23 @@ public class BgDataModel {
             }
         }
     }
+
+    /**
+     * get folder id by classify
+     * @param classify classify
+     * @return folder id
+     */
+    public long getFolder(int classify) {
+        Iterator<FolderInfo> iterator = folders.iterator();
+        long id = 0;
+        while (iterator.hasNext()) {
+            FolderInfo folder = iterator.next();
+            if (folder.classify != 0
+                    && folder.classify == classify) {
+                id = folder.id;
+                break;
+            }
+        }
+        return id;
+    }
 }

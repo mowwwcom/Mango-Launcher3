@@ -47,6 +47,7 @@ import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.ShortcutInfo;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.Workspace;
+import com.android.launcher3.classify.FavoriteSettings;
 import com.android.launcher3.compat.AppWidgetManagerCompat;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.PackageInstallerCompat;
@@ -242,9 +243,14 @@ public class LoaderTask implements Runnable {
     private ArrayList<ItemInfo> loadAllApps2Workspace() {
         @SuppressWarnings("unchecked") final ArrayList<AppInfo> list = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
         @SuppressWarnings("unchecked") final ArrayList<ItemInfo> workspace = (ArrayList<ItemInfo>) mBgDataModel.workspaceItems.clone();
+        ClassifyModel classifyModel = mApp.getClassifyModel();
         ArrayList<ItemInfo> shortcuts = new ArrayList<>();
         final int count = workspace.size();
         boolean exist = false;
+
+        long systemId = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_SYSTEM);
+        long shoppingId = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_SHOPPING);
+        long toolsId = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_TOOLS);
         for (AppInfo app : list) {
             // check exist
             for (int i = 0; i < count; i++) {
@@ -254,16 +260,35 @@ public class LoaderTask implements Runnable {
                         && item.screenId != Workspace.FIRST_SCREEN_ID) {
                     if (item instanceof ShortcutInfo) {
                         ShortcutInfo si = (ShortcutInfo) item;
-                        if (app.componentName.getPackageName().equals(si.getTargetComponent().getPackageName())) {
+                        if (app.componentName.getPackageName()
+                                .equals(si.getTargetComponent().getPackageName())) {
                             exist = true;
                             break;
                         }
                     }
                 }
             }
+
             if (!exist) {
                 ShortcutInfo newItem = app.makeShortcut();
-                newItem.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+                newItem.classify = classifyModel.getType(app.componentName.getPackageName());
+                switch (newItem.classify) {
+                    case FavoriteSettings.Classify.TYPE_SYSTEM:
+                        Log.e(TAG, "系统应用:" + newItem.title);
+                        newItem.container = systemId;
+                        break;
+                    case FavoriteSettings.Classify.TYPE_TOOLS:
+                        newItem.container = toolsId;
+                        Log.e(TAG, "工具:" + newItem.title);
+                        break;
+                    case FavoriteSettings.Classify.TYPE_SHOPPING:
+                        newItem.container = shoppingId;
+                        Log.e(TAG, "购物:" + newItem.title);
+                        break;
+                    default:
+                        newItem.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+                        break;
+                }
                 newItem.usingLowResIcon = true;
                 shortcuts.add(newItem);
             }
