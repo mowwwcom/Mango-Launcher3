@@ -16,16 +16,6 @@
 
 package com.android.launcher3;
 
-import static android.content.pm.ActivityInfo.CONFIG_ORIENTATION;
-import static android.content.pm.ActivityInfo.CONFIG_SCREEN_SIZE;
-
-import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
-import static com.android.launcher3.LauncherState.ALL_APPS;
-import static com.android.launcher3.LauncherState.NORMAL;
-import static com.android.launcher3.dragndrop.DragLayer.ALPHA_INDEX_LAUNCHER_LOAD;
-import static com.android.launcher3.logging.LoggerUtils.newContainerTarget;
-import static com.android.launcher3.logging.LoggerUtils.newTarget;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -80,6 +70,7 @@ import com.android.launcher3.allapps.AllAppsContainerView;
 import com.android.launcher3.allapps.AllAppsTransitionController;
 import com.android.launcher3.allapps.DiscoveryBounce;
 import com.android.launcher3.badge.BadgeInfo;
+import com.android.launcher3.classify.FavoriteSettings;
 import com.android.launcher3.compat.AppWidgetManagerCompat;
 import com.android.launcher3.compat.LauncherAppsCompatVO;
 import com.android.launcher3.config.FeatureFlags;
@@ -139,6 +130,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static android.content.pm.ActivityInfo.CONFIG_ORIENTATION;
+import static android.content.pm.ActivityInfo.CONFIG_SCREEN_SIZE;
+import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
+import static com.android.launcher3.LauncherState.ALL_APPS;
+import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.dragndrop.DragLayer.ALPHA_INDEX_LAUNCHER_LOAD;
+import static com.android.launcher3.logging.LoggerUtils.newContainerTarget;
+import static com.android.launcher3.logging.LoggerUtils.newTarget;
 
 /**
  * Default launcher application.
@@ -428,6 +428,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     /**
      * Call this after onCreate to set or clear overlay.
      */
+    @Override
     public void setLauncherOverlay(LauncherOverlay overlay) {
         if (overlay != null) {
             overlay.setOverlayCallbacks(new LauncherOverlayCallbacksImpl());
@@ -435,6 +436,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         mWorkspace.setLauncherOverlay(overlay);
     }
 
+    @Override
     public boolean setLauncherCallbacks(LauncherCallbacks callbacks) {
         mLauncherCallbacks = callbacks;
         return true;
@@ -1353,6 +1355,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         }
     }
 
+    @Override
     public LauncherAccessibilityDelegate getAccessibilityDelegate() {
         return mAccessibilityDelegate;
     }
@@ -1676,6 +1679,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         }
     }
 
+    @Override
     public boolean startActivitySafely(View v, Intent intent, ItemInfo item) {
         boolean success = super.startActivitySafely(v, intent, item);
         if (success && v instanceof BubbleTextView) {
@@ -1872,6 +1876,11 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         Workspace workspace = mWorkspace;
         long newItemsScreenId = -1;
         int end = items.size();
+
+        FolderInfo systemTarget = LauncherModel.sBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_SYSTEM);
+        FolderInfo shoppingTarget = LauncherModel.sBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_SHOPPING);
+        FolderInfo toolsTarget = LauncherModel.sBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_TOOLS);
+
         for (int i = 0; i < end; i++) {
             final ItemInfo item = items.get(i);
 
@@ -1924,6 +1933,24 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
                         Log.d(TAG, desc);
                         getModelWriter().deleteItemFromDatabase(item);
                         continue;
+                    }
+                }
+            } else {
+                switch (item.itemType) {
+                    case LauncherSettings.Favorites.ITEM_TYPE_APPLICATION:
+                    case LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT:
+                    case LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT: {
+                        ShortcutInfo info = (ShortcutInfo) item;
+                        long container = item.container;
+                        if (container == shoppingTarget.id) {
+                            shoppingTarget.add(info, true);
+                        } else if (container == systemTarget.id) {
+                            systemTarget.add(info, true);
+                        } else if (container == toolsTarget.id) {
+                            toolsTarget.add(info, true);
+                        }
+
+                        break;
                     }
                 }
             }
@@ -2112,6 +2139,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         return info;
     }
 
+    @Override
     public void onPageBoundSynchronously(int page) {
         mSynchronouslyBoundPage = page;
     }
@@ -2160,6 +2188,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
      * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
+    @Override
     public void finishBindingItems() {
         TraceHelper.beginSection("finishBindingItems");
         mWorkspace.restoreInstanceStateForRemainingPages();
@@ -2451,7 +2480,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     /**
      * To be overridden by subclasses to populate the custom content container and call
-     * {@link #addToCustomContentPage}. This will only be invoked if
+     * {@link Workspace#addToCustomContentPage}. This will only be invoked if
      * {@link #hasCustomContentToLeft()} is {@code true}.
      */
     protected void populateCustomContentContainer() {

@@ -394,17 +394,17 @@ public class BgDataModel {
      * @param classify classify
      * @return folder id
      */
-    public long getFolder(int classify) {
+    public FolderInfo getFolder(int classify) {
         Iterator<FolderInfo> iterator = folders.iterator();
-        long id = 0;
+        FolderInfo target = null;
         while (iterator.hasNext()) {
             FolderInfo folder = iterator.next();
             if (folder.classify != 0
                     && folder.classify == classify) {
-                id = folder.id;
+                target = folder;
                 break;
             }
         }
-        return id;
+        return target;
     }
 }

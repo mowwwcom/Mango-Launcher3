@@ -248,9 +248,9 @@ public class LoaderTask implements Runnable {
         final int count = workspace.size();
         boolean exist = false;
 
-        long systemId = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_SYSTEM);
-        long shoppingId = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_SHOPPING);
-        long toolsId = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_TOOLS);
+        FolderInfo systemTarget = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_SYSTEM);
+        FolderInfo shoppingTarget = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_SHOPPING);
+        FolderInfo toolsTarget = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_TOOLS);
         for (AppInfo app : list) {
             // check exist
             for (int i = 0; i < count; i++) {
@@ -274,16 +274,13 @@ public class LoaderTask implements Runnable {
                 newItem.classify = classifyModel.getType(app.componentName.getPackageName());
                 switch (newItem.classify) {
                     case FavoriteSettings.Classify.TYPE_SYSTEM:
-                        Log.e(TAG, "系统应用:" + newItem.title);
-                        newItem.container = systemId;
+                        newItem.container = systemTarget.id;
                         break;
                     case FavoriteSettings.Classify.TYPE_TOOLS:
-                        newItem.container = toolsId;
-                        Log.e(TAG, "工具:" + newItem.title);
+                        newItem.container = toolsTarget.id;
                         break;
                     case FavoriteSettings.Classify.TYPE_SHOPPING:
-                        newItem.container = shoppingId;
-                        Log.e(TAG, "购物:" + newItem.title);
+                        newItem.container = shoppingTarget.id;
                         break;
                     default:
                         newItem.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
