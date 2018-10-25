@@ -423,7 +423,7 @@ public class LoaderCursor extends CursorWrapper {
                 return true;
             }
         } else if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
-            if (!workspaceScreens.contains((Long) item.screenId)) {
+            if (!workspaceScreens.contains(item.screenId)) {
                 // The item has an invalid screen id.
                 return false;
             }
@@ -434,9 +434,10 @@ public class LoaderCursor extends CursorWrapper {
 
         final int countX = mIDP.numColumns;
         final int countY = mIDP.numRows;
-        if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP &&
-                item.cellX < 0 || item.cellY < 0 ||
-                item.cellX + item.spanX > countX || item.cellY + item.spanY > countY) {
+        if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP
+                && item.cellX < 0 || item.cellY < 0
+                || item.cellX + item.spanX > countX
+                || item.cellY + item.spanY > countY) {
             Log.e(TAG, "Error loading shortcut " + item
                     + " into cell (" + containerIndex + "-" + item.screenId + ":"
                     + item.cellX + "," + item.cellY

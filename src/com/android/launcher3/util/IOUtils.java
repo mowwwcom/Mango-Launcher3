@@ -19,6 +19,7 @@ package com.android.launcher3.util;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -52,4 +53,55 @@ public class IOUtils {
         }
         return total;
     }
+
+    public static boolean copy(File from, File to) {
+        if (!from.exists()) {
+            return false;
+        }
+        if (!from.isFile()) {
+            return false;
+        }
+        if (!from.canRead()) {
+            return false;
+        }
+        if (!to.getParentFile().exists()) {
+            to.getParentFile().mkdirs();
+        }
+        if (to.exists()) {
+            to.delete();
+        }
+        java.io.FileInputStream fosfrom = null;
+        java.io.FileOutputStream fosto = null;
+        try {
+            fosfrom = new java.io.FileInputStream(
+                    from);
+
+            fosto = new FileOutputStream(to);
+
+            byte bt[] = new byte[1024];
+
+            int c;
+
+            while ((c = fosfrom.read(bt)) > 0) {
+
+                fosto.write(bt, 0, c); // 将内容写到新文件当中
+
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (fosfrom != null) {
+                    fosfrom.close();
+                }
+                if (fosto != null) {
+                    fosto.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
 }

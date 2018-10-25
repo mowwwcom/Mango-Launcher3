@@ -1181,6 +1181,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         return mHotseatSearchBox;
     }
 
+    @Override
     public <T extends View> T getOverviewPanel() {
         return (T) mOverviewPanel;
     }

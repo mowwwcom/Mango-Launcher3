@@ -1,5 +1,6 @@
 package com.android.launcher3;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +11,9 @@ import android.view.View;
 
 import com.android.launcher3.dashboard.SmartAssistantModel;
 import com.android.launcher3.dashboard.SmartAssistants;
+import com.android.launcher3.test.DumpReceiver;
 import com.android.launcher3.util.Broadcasts;
+import com.android.launcher3.util.security.Security;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -20,6 +23,10 @@ import java.util.ArrayList;
  * @author tic
  * created on 18-10-9
  */
+@Security({
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+})
 public class LauncherM extends Launcher {
 
 
@@ -35,7 +42,14 @@ public class LauncherM extends Launcher {
         IntentFilter filter = new IntentFilter();
         filter.addAction(SmartAssistants.ACTION_ENABLE_SMART_ASSISTANT);
         Broadcasts.registerLocal(this, mLocalReceiver, filter);
+
+        IntentFilter dumpFilter = new IntentFilter();
+        dumpFilter.addAction(DumpReceiver.ACTION_DUMP_DB);
+
+        registerReceiver(mDumpReceiver, dumpFilter);
     }
+
+    BroadcastReceiver mDumpReceiver = new DumpReceiver();
 
     private BroadcastReceiver mLocalReceiver = new BroadcastReceiver() {
         @Override
@@ -81,6 +95,7 @@ public class LauncherM extends Launcher {
         @Override
         public void onDestroy() {
             Broadcasts.unRegisterLocal(LauncherM.this, mLocalReceiver);
+            unregisterReceiver(mDumpReceiver);
         }
 
         @Override

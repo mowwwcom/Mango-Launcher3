@@ -25,8 +25,10 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View.AccessibilityDelegate;
 
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
@@ -35,6 +37,7 @@ import com.android.launcher3.logging.UserEventDispatcher.UserEventDelegate;
 import com.android.launcher3.uioverrides.UiFactory;
 import com.android.launcher3.userevent.nano.LauncherLogProto;
 import com.android.launcher3.util.SystemUiController;
+import com.android.launcher3.util.security.PermissionManager;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -84,6 +87,8 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
     // animation
     @InvisibilityFlags private int mForceInvisible;
 
+    private PermissionManager mPermissionManager;
+
     public DeviceProfile getDeviceProfile() {
         return mDeviceProfile;
     }
@@ -92,6 +97,7 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
         return null;
     }
 
+    @Override
     public void modifyUserEvent(LauncherLogProto.LauncherEvent event) {}
 
     public final UserEventDispatcher getUserEventDispatcher() {
@@ -117,6 +123,14 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
             mSystemUiController = new SystemUiController(getWindow());
         }
         return mSystemUiController;
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mPermissionManager = new PermissionManager();
+        mPermissionManager.requestPermission(this);
     }
 
     @Override

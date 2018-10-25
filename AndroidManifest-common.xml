@@ -77,6 +77,13 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name="com.android.launcher3.test.DumpReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.mango.launcher.DUMP_DB"/>
+            </intent-filter>
+        </receiver>
+
         <service
             android:name="com.android.launcher3.uioverrides.dynamicui.WallpaperManagerCompatVL$ColorExtractionService"
             android:exported="false"

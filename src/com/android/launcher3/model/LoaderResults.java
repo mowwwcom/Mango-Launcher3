@@ -43,6 +43,7 @@ import com.android.launcher3.widget.WidgetListRowEntry;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -315,11 +316,18 @@ public class LoaderResults {
     public void bindAllApps2Workspace(SparseArray<ArrayList<ItemInfo>> data) {
         ArrayList<Long> screens = new ArrayList<>(mBgDataModel.workspaceScreens);
         Collections.sort(screens);
+
         ArrayList<Long> workspaceScreen = new ArrayList<>(screens);
         ArrayList<Long> workspaceItems = new ArrayList<>();
         // Use sBgItemsIdMap as all the items are already loaded.
         LongSparseArray<ArrayList<ItemInfo>> screenItems = new LongSparseArray<>();
         SpaceHelper spaceHelper = new SpaceHelper(mApp);
+
+        boolean isVertical = mApp.getInvariantDeviceProfile()
+                .getDeviceProfile(mApp.getContext())
+                .isVerticalBarLayout();
+        ModelWriter writer = mApp.getModel().getWriter(isVertical, true);
+
         synchronized (mBgDataModel.itemsIdMap) {
             for (ItemInfo info : mBgDataModel.itemsIdMap) {
                 if (info.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
@@ -354,6 +362,7 @@ public class LoaderResults {
             // remove already exist screen before insert data
             workspaceScreen.removeAll(mBgDataModel.workspaceScreens);
             if (!workspaceScreen.isEmpty()) {
+                Log.e(TAG, "add screens:" + Arrays.toString(workspaceScreen.toArray()));
                 mUiExecutor.execute(() -> {
                     Callbacks callbacks12 = mCallbacks.get();
                     if (callbacks12 != null) {
@@ -365,11 +374,16 @@ public class LoaderResults {
         // 3. handle folder's child icon
         List<ItemInfo> child = data.get(1);
         if (!child.isEmpty()) {
-
             items.addAll(child);
         }
-        // 4. bind items
-        bindWorkspaceItems(items, new ArrayList<>(), mUiExecutor);
+
+        if (!items.isEmpty()) {
+            // 4. bind items
+            bindWorkspaceItems(items, new ArrayList<>(), mUiExecutor);
+            for (ItemInfo item : items) {
+                writer.addItemToDatabase(item, item.container, item.screenId, item.cellX, item.cellY);
+            }
+        }
     }
 
     public void bindDeepShortcuts() {

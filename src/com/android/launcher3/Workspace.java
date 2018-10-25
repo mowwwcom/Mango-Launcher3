@@ -2516,6 +2516,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             bg.isClipping = false;
         }
 
+        @Override
         public void onAlarm(Alarm alarm) {
             mFolderCreateBg = bg;
             mFolderCreateBg.animateToAccept(layout, cellX, cellY);
@@ -2645,19 +2646,16 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
                 item.spanY = resultSpan[1];
             }
 
-            Runnable onAnimationCompleteRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    // Normally removeExtraEmptyScreen is called in Workspace#onDragEnd, but when
-                    // adding an item that may not be dropped right away (due to a config activity)
-                    // we defer the removal until the activity returns.
-                    deferRemoveExtraEmptyScreen();
+            Runnable onAnimationCompleteRunnable = () -> {
+                // Normally removeExtraEmptyScreen is called in Workspace#onDragEnd, but when
+                // adding an item that may not be dropped right away (due to a config activity)
+                // we defer the removal until the activity returns.
+                deferRemoveExtraEmptyScreen();
 
-                    // When dragging and dropping from customization tray, we deal with creating
-                    // widgets/shortcuts/folders in a slightly different way
-                    mLauncher.addPendingItem(pendingInfo, container, screenId, mTargetCell,
-                            item.spanX, item.spanY);
-                }
+                // When dragging and dropping from customization tray, we deal with creating
+                // widgets/shortcuts/folders in a slightly different way
+                mLauncher.addPendingItem(pendingInfo, container, screenId, mTargetCell,
+                        item.spanX, item.spanY);
             };
             boolean isWidget = pendingInfo.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET
                     || pendingInfo.itemType == LauncherSettings.Favorites.ITEM_TYPE_CUSTOM_APPWIDGET;
@@ -3288,20 +3286,17 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
     }
 
     public void updateRestoreItems(final HashSet<ItemInfo> updates) {
-        mapOverItems(MAP_RECURSE, new ItemOperator() {
-            @Override
-            public boolean evaluate(ItemInfo info, View v) {
-                if (info instanceof ShortcutInfo && v instanceof BubbleTextView
-                        && updates.contains(info)) {
-                    ((BubbleTextView) v).applyPromiseState(false /* promiseStateChanged */);
-                } else if (v instanceof PendingAppWidgetHostView
-                        && info instanceof LauncherAppWidgetInfo
-                        && updates.contains(info)) {
-                    ((PendingAppWidgetHostView) v).applyState();
-                }
-                // process all the shortcuts
-                return false;
+        mapOverItems(MAP_RECURSE, (info, v) -> {
+            if (info instanceof ShortcutInfo && v instanceof BubbleTextView
+                    && updates.contains(info)) {
+                ((BubbleTextView) v).applyPromiseState(false /* promiseStateChanged */);
+            } else if (v instanceof PendingAppWidgetHostView
+                    && info instanceof LauncherAppWidgetInfo
+                    && updates.contains(info)) {
+                ((PendingAppWidgetHostView) v).applyState();
             }
+            // process all the shortcuts
+            return false;
         });
     }
 
@@ -3326,17 +3321,14 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             } else {
                 // widgetRefresh will automatically run when the packages are updated.
                 // For now just update the progress bars
-                mapOverItems(MAP_NO_RECURSE, new ItemOperator() {
-                    @Override
-                    public boolean evaluate(ItemInfo info, View view) {
-                        if (view instanceof PendingAppWidgetHostView
-                                && changedInfo.contains(info)) {
-                            ((LauncherAppWidgetInfo) info).installProgress = 100;
-                            ((PendingAppWidgetHostView) view).applyState();
-                        }
-                        // process all the shortcuts
-                        return false;
+                mapOverItems(MAP_NO_RECURSE, (info, view) -> {
+                    if (view instanceof PendingAppWidgetHostView
+                            && changedInfo.contains(info)) {
+                        ((LauncherAppWidgetInfo) info).installProgress = 100;
+                        ((PendingAppWidgetHostView) view).applyState();
                     }
+                    // process all the shortcuts
+                    return false;
                 });
             }
         }

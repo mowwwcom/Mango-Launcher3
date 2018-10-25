@@ -26,6 +26,7 @@ import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageInstaller.SessionInfo;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Process;
 import android.os.UserHandle;
@@ -283,19 +284,26 @@ public class LoaderTask implements Runnable {
                     continue;
                 }
                 ShortcutInfo newItem = app.makeShortcut();
+                newItem.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
                 newItem.classify = classifyModel.getType(app.componentName.getPackageName());
+
                 switch (newItem.classify) {
                     case FavoriteSettings.Classify.TYPE_SYSTEM:
-                        newItem.container = systemTarget.id;
+                        if (systemTarget != null) {
+                            newItem.container = systemTarget.id;
+                        }
                         break;
                     case FavoriteSettings.Classify.TYPE_TOOLS:
-                        newItem.container = toolsTarget.id;
+                        if (toolsTarget != null) {
+                            newItem.container = toolsTarget.id;
+                        }
                         break;
                     case FavoriteSettings.Classify.TYPE_SHOPPING:
-                        newItem.container = shoppingTarget.id;
+                        if (shoppingTarget != null) {
+                            newItem.container = shoppingTarget.id;
+                        }
                         break;
                     default:
-                        newItem.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
                         break;
                 }
                 newItem.usingLowResIcon = true;
@@ -307,7 +315,8 @@ public class LoaderTask implements Runnable {
             }
             exist = false;
         }
-        Log.e(TAG, "需要排序的图标:" + apps.size());
+        Log.e(TAG, "需要排序的图标:" + apps.get(0).size());
+        Log.e(TAG, "需要排序的文件夹图标:" + apps.get(1).size());
         return apps;
     }
 
@@ -357,10 +366,9 @@ public class LoaderTask implements Runnable {
             mBgDataModel.workspaceScreens.addAll(LauncherModel.loadWorkspaceScreensDb(context));
 
             Map<ShortcutKey, ShortcutInfoCompat> shortcutKeyToPinnedShortcuts = new HashMap<>();
-            final LoaderCursor c = new LoaderCursor(contentResolver.query(
-                    LauncherSettings.Favorites.getContentUri(),
+            Uri uri = LauncherSettings.Favorites.getContentUri();
+            final LoaderCursor c = new LoaderCursor(contentResolver.query(uri,
                     null, null, null, null), mApp);
-
             HashMap<ComponentKey, AppWidgetProviderInfo> widgetProvidersMap = null;
 
             try {

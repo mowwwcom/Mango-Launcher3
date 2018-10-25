@@ -58,6 +58,7 @@ import com.android.launcher3.model.DbDowngradeHelper;
 import com.android.launcher3.provider.LauncherDbUtils;
 import com.android.launcher3.provider.LauncherDbUtils.SQLiteTransaction;
 import com.android.launcher3.provider.RestoreDbTask;
+import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.util.NoLocaleSQLiteHelper;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.util.Thunk;
@@ -467,12 +468,14 @@ public class LauncherProvider extends ContentProvider {
     synchronized private void loadDefaultFavoritesIfNecessary() {
         SharedPreferences sp = Utilities.getPrefs(getContext());
 
-        boolean isEmpty = Favorites.getTableName().equals(Favorites.TABLE_NAME);
-
-        if (sp.getBoolean(EMPTY_DATABASE_CREATED, false)
-                || sp.getBoolean(EMPTY_DATABASE_STANDARD_CREATED, false)) {
+        boolean isEmpty;
+        if (LauncherStyleHandler.isDrawer) {
+            isEmpty = sp.getBoolean(EMPTY_DATABASE_CREATED, false);
+        } else {
+            isEmpty = sp.getBoolean(EMPTY_DATABASE_STANDARD_CREATED, false);
+        }
+        if (isEmpty) {
             Log.d(TAG, "loading default workspace");
-
             AppWidgetHost widgetHost = mOpenHelper.newLauncherWidgetHost();
             AutoInstallsLayout loader = createWorkspaceLoaderFromAppRestriction(widgetHost);
             if (loader == null) {
@@ -507,7 +510,7 @@ public class LauncherProvider extends ContentProvider {
                 mOpenHelper.loadFavorites(mOpenHelper.getWritableDatabase(),
                         getDefaultLayoutParser(widgetHost));
             }
-            clearFlagEmptyDbCreated(isEmpty ? EMPTY_DATABASE_CREATED : EMPTY_DATABASE_STANDARD_CREATED);
+            clearFlagEmptyDbCreated(LauncherStyleHandler.isDrawer ? EMPTY_DATABASE_CREATED : EMPTY_DATABASE_STANDARD_CREATED);
         }
     }
 
