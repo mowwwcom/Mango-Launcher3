@@ -16,12 +16,15 @@
 
 package com.android.launcher3;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ProviderInfo;
 import android.os.Looper;
+import android.os.Process;
 import android.util.Log;
 
 import com.android.launcher3.compat.LauncherAppsCompat;
@@ -34,6 +37,7 @@ import com.android.launcher3.util.ConfigMonitor;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.util.SettingsObserver;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static com.android.launcher3.ui.settings.SettingsActivity.NOTIFICATION_BADGING;
@@ -52,6 +56,8 @@ public class LauncherAppState {
     private final WidgetPreviewLoader mWidgetCache;
     private final InvariantDeviceProfile mInvariantDeviceProfile;
     private final SettingsObserver mNotificationBadgingObserver;
+    /** static for newInstance failed */
+    private static LauncherProvider mLauncherProvider;
 
     public static LauncherAppState getInstance(final Context context) {
         if (INSTANCE == null) {
@@ -60,7 +66,7 @@ public class LauncherAppState {
             } else {
                 try {
                     return new MainThreadExecutor().submit(() -> LauncherAppState.getInstance(context)).get();
-                } catch (InterruptedException|ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -177,10 +183,17 @@ public class LauncherAppState {
         return LauncherAppState.getInstance(context).getInvariantDeviceProfile();
     }
 
+    @SuppressLint("Recycle")
     private static LauncherProvider getLocalProvider(Context context) {
-        try (ContentProviderClient cl = context.getContentResolver()
-                .acquireContentProviderClient(LauncherProvider.AUTHORITY)) {
-            return (LauncherProvider) cl.getLocalContentProvider();
+        if (mLauncherProvider == null) {
+            try (ContentProviderClient cl = context.getContentResolver()
+                    .acquireContentProviderClient(LauncherProvider.AUTHORITY)) {
+                mLauncherProvider = (LauncherProvider) cl.getLocalContentProvider();
+            } catch (Exception e) {
+                // new Instance when exception
+                mLauncherProvider = new LauncherProvider();
+            }
         }
+        return mLauncherProvider;
     }
 }
