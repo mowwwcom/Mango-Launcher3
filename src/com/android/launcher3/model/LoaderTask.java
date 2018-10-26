@@ -73,6 +73,7 @@ import com.android.launcher3.util.Provider;
 import com.android.launcher3.util.TraceHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -260,6 +261,7 @@ public class LoaderTask implements Runnable {
 
         final int count = workspace.size();
         boolean exist = false;
+        // TODO 过滤主屏，HotSeat的应用
         for (AppInfo app : list) {
             // check exist
             for (int i = 0; i < count; i++) {
@@ -363,7 +365,9 @@ public class LoaderTask implements Runnable {
             final HashMap<String, SessionInfo> installingPkgs =
                     mPackageInstaller.updateAndGetActiveSessionCache();
             mFirstScreenBroadcast = new FirstScreenBroadcast(installingPkgs);
-            mBgDataModel.workspaceScreens.addAll(LauncherModel.loadWorkspaceScreensDb(context));
+            ArrayList<Long> screens = LauncherModel.loadWorkspaceScreensDb(context);
+            Log.e(TAG, "screens:" + Arrays.toString(screens.toArray()));
+            mBgDataModel.workspaceScreens.addAll(screens);
 
             Map<ShortcutKey, ShortcutInfoCompat> shortcutKeyToPinnedShortcuts = new HashMap<>();
             Uri uri = LauncherSettings.Favorites.getContentUri();

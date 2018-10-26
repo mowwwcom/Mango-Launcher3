@@ -1836,7 +1836,10 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
             long screenId = orderedScreenIds.get(i);
             if (!FeatureFlags.QSB_ON_FIRST_SCREEN || screenId != Workspace.FIRST_SCREEN_ID) {
                 // No need to bind the first screen, as its always bound.
-                mWorkspace.insertNewWorkspaceScreenBeforeEmptyScreen(screenId);
+                if(mWorkspace.getScreenOrder().indexOf(screenId) < 0) {
+                    // screen not exist
+                    mWorkspace.insertNewWorkspaceScreenBeforeEmptyScreen(screenId);
+                }
             }
         }
     }

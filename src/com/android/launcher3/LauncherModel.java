@@ -290,7 +290,6 @@ public class LauncherModel extends BroadcastReceiver
         final ArrayList<Long> screensCopy = new ArrayList<Long>(screens);
         final ContentResolver cr = context.getContentResolver();
         final Uri uri = LauncherSettings.WorkspaceScreens.getContentUri();
-
         // Remove any negative screen ids -- these aren't persisted
         Iterator<Long> iter = screensCopy.iterator();
         while (iter.hasNext()) {

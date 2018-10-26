@@ -43,7 +43,6 @@ import com.android.launcher3.widget.WidgetListRowEntry;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -315,7 +314,6 @@ public class LoaderResults {
 
     public void bindAllApps2Workspace(SparseArray<ArrayList<ItemInfo>> data) {
         ArrayList<Long> screens = new ArrayList<>(mBgDataModel.workspaceScreens);
-        Collections.sort(screens);
 
         ArrayList<Long> workspaceScreen = new ArrayList<>(screens);
         ArrayList<Long> workspaceItems = new ArrayList<>();
@@ -360,9 +358,8 @@ public class LoaderResults {
         // 2. add new screen for items
         if (!workspaceScreen.isEmpty()) {
             // remove already exist screen before insert data
-            workspaceScreen.removeAll(mBgDataModel.workspaceScreens);
+            // workspaceScreen.removeAll(mBgDataModel.workspaceScreens);
             if (!workspaceScreen.isEmpty()) {
-                Log.e(TAG, "add screens:" + Arrays.toString(workspaceScreen.toArray()));
                 mUiExecutor.execute(() -> {
                     Callbacks callbacks12 = mCallbacks.get();
                     if (callbacks12 != null) {

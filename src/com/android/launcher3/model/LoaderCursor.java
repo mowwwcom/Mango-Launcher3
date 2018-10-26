@@ -376,7 +376,7 @@ public class LoaderCursor extends CursorWrapper {
         if (checkItemPlacement(info, dataModel.workspaceScreens)) {
             dataModel.addItem(mContext, info, false);
         } else {
-            markDeleted("Item position overlap");
+            markDeleted("Item position overlap:" + info.title);
         }
     }
 
