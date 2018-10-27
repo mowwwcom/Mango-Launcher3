@@ -475,7 +475,7 @@ public class LauncherProvider extends ContentProvider {
             isEmpty = sp.getBoolean(EMPTY_DATABASE_STANDARD_CREATED, false);
         }
         if (isEmpty) {
-            Log.d(TAG, "loading default workspace");
+            Log.d(TAG, "loadDefaultFavoritesIfNecessary");
             AppWidgetHost widgetHost = mOpenHelper.newLauncherWidgetHost();
             AutoInstallsLayout loader = createWorkspaceLoaderFromAppRestriction(widgetHost);
             if (loader == null) {

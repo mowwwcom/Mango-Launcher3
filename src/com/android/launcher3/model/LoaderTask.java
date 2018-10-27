@@ -66,6 +66,7 @@ import com.android.launcher3.shortcuts.ShortcutInfoCompat;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.util.ComponentKey;
+import com.android.launcher3.util.LongArrayMap;
 import com.android.launcher3.util.LooperIdleLock;
 import com.android.launcher3.util.MultiHashMap;
 import com.android.launcher3.util.PackageManagerHelper;
@@ -245,6 +246,7 @@ public class LoaderTask implements Runnable {
     }
 
     private SparseArray<ArrayList<ItemInfo>> loadAllApps2Workspace() {
+        // TODO 多线程操作问题:拷贝集合，注意内存消耗,GC点
         @SuppressWarnings("unchecked") final ArrayList<AppInfo> list = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
         @SuppressWarnings("unchecked") final ArrayList<ItemInfo> workspace = (ArrayList<ItemInfo>) mBgDataModel.workspaceItems.clone();
         ClassifyModel classifyModel = mApp.getClassifyModel();
@@ -260,31 +262,43 @@ public class LoaderTask implements Runnable {
         FolderInfo toolsTarget = mBgDataModel.getFolder(FavoriteSettings.Classify.TYPE_TOOLS);
 
         final int count = workspace.size();
+
+        Log.e(TAG, "loadAllApps2Workspace:" + count);
+        for (ItemInfo i :
+                workspace) {
+            Log.e(TAG, i.toString());
+        }
         boolean exist = false;
-        // TODO 过滤主屏，HotSeat的应用
         for (AppInfo app : list) {
-            // check exist
+            if (BuildConfig.APPLICATION_ID
+                    .equals(app.componentName.getPackageName())) {
+                // ignore myself
+                continue;
+            }
+            // check icon exist
+            out:
             for (int i = 0; i < count; i++) {
                 ItemInfo item = workspace.get(i);
-                // ignore first screen
-                if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP
-                        && item.screenId != Workspace.FIRST_SCREEN_ID) {
-                    if (item instanceof ShortcutInfo) {
-                        ShortcutInfo si = (ShortcutInfo) item;
+                if (item instanceof FolderInfo) {
+                    // folder first
+                    ArrayList<ShortcutInfo> contents = ((FolderInfo) item).contents;
+                    for (ShortcutInfo si : contents) {
                         if (app.componentName.getPackageName()
                                 .equals(si.getTargetComponent().getPackageName())) {
                             exist = true;
-                            break;
+                            break out;
                         }
+                    }
+                } else if (item instanceof ShortcutInfo) {
+                    if (app.componentName.getPackageName()
+                            .equals(item.getTargetComponent().getPackageName())) {
+                        exist = true;
+                        break;
                     }
                 }
             }
 
             if (!exist) {
-                if (BuildConfig.APPLICATION_ID.equals(app.componentName.getPackageName())) {
-                    // ignore myself
-                    continue;
-                }
                 ShortcutInfo newItem = app.makeShortcut();
                 newItem.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
                 newItem.classify = classifyModel.getType(app.componentName.getPackageName());
@@ -366,7 +380,6 @@ public class LoaderTask implements Runnable {
                     mPackageInstaller.updateAndGetActiveSessionCache();
             mFirstScreenBroadcast = new FirstScreenBroadcast(installingPkgs);
             ArrayList<Long> screens = LauncherModel.loadWorkspaceScreensDb(context);
-            Log.e(TAG, "screens:" + Arrays.toString(screens.toArray()));
             mBgDataModel.workspaceScreens.addAll(screens);
 
             Map<ShortcutKey, ShortcutInfoCompat> shortcutKeyToPinnedShortcuts = new HashMap<>();
@@ -374,6 +387,9 @@ public class LoaderTask implements Runnable {
             final LoaderCursor c = new LoaderCursor(contentResolver.query(uri,
                     null, null, null, null), mApp);
             HashMap<ComponentKey, AppWidgetProviderInfo> widgetProvidersMap = null;
+
+            Log.e(TAG, "loadWorkSpace:" + c.getCount());
+            Log.e(TAG, "loadWorkSpace workspaceScreens:" + mBgDataModel.workspaceScreens.size());
 
             try {
                 final int appWidgetIdIndex = c.getColumnIndexOrThrow(

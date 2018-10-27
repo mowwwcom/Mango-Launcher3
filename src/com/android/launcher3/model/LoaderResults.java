@@ -28,6 +28,7 @@ import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherAppWidgetInfo;
+import com.android.launcher3.LauncherModel;
 import com.android.launcher3.LauncherModel.Callbacks;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.MainThreadExecutor;
@@ -357,8 +358,8 @@ public class LoaderResults {
         }
         // 2. add new screen for items
         if (!workspaceScreen.isEmpty()) {
-            // remove already exist screen before insert data
-            // workspaceScreen.removeAll(mBgDataModel.workspaceScreens);
+            // TODO:留意多线程操作的影响
+            LauncherModel.updateWorkspaceScreenOrder(mApp.getContext(), workspaceScreen);
             if (!workspaceScreen.isEmpty()) {
                 mUiExecutor.execute(() -> {
                     Callbacks callbacks12 = mCallbacks.get();

@@ -203,8 +203,6 @@ public class FolderIcon extends FrameLayout implements FolderListener {
 
         folderInfo.addListener(icon);
         icon.setOnFocusChangeListener(launcher.mFocusHandler);
-
-        Log.e("folderIcon", "addFolder:" + folderInfo.title);
         return icon;
     }
 
