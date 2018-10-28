@@ -247,8 +247,12 @@ public class LoaderTask implements Runnable {
 
     private SparseArray<ArrayList<ItemInfo>> loadAllApps2Workspace() {
         // TODO 多线程操作问题:拷贝集合，注意内存消耗,GC点
-        @SuppressWarnings("unchecked") final ArrayList<AppInfo> list = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
-        @SuppressWarnings("unchecked") final ArrayList<ItemInfo> workspace = (ArrayList<ItemInfo>) mBgDataModel.workspaceItems.clone();
+        @SuppressWarnings("unchecked") final ArrayList<AppInfo> list
+                = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
+
+        @SuppressWarnings("unchecked") final ArrayList<ItemInfo> workspace
+                = (ArrayList<ItemInfo>) mBgDataModel.workspaceItems.clone();
+
         ClassifyModel classifyModel = mApp.getClassifyModel();
         ArrayList<ItemInfo> shortcuts = new ArrayList<>();
         ArrayList<ItemInfo> folderItems = new ArrayList<>();
@@ -264,10 +268,10 @@ public class LoaderTask implements Runnable {
         final int count = workspace.size();
 
         Log.e(TAG, "loadAllApps2Workspace:" + count);
-        for (ItemInfo i :
-                workspace) {
-            Log.e(TAG, i.toString());
-        }
+//        for (ItemInfo i :
+//                workspace) {
+//            Log.e(TAG, i.toString());
+//        }
         boolean exist = false;
         for (AppInfo app : list) {
             if (BuildConfig.APPLICATION_ID
@@ -281,7 +285,9 @@ public class LoaderTask implements Runnable {
                 ItemInfo item = workspace.get(i);
                 if (item instanceof FolderInfo) {
                     // folder first
-                    ArrayList<ShortcutInfo> contents = ((FolderInfo) item).contents;
+                    @SuppressWarnings("unchecked")
+                    ArrayList<ShortcutInfo> contents = (ArrayList<ShortcutInfo>)
+                            ((FolderInfo) item).contents.clone();
                     for (ShortcutInfo si : contents) {
                         if (app.componentName.getPackageName()
                                 .equals(si.getTargetComponent().getPackageName())) {

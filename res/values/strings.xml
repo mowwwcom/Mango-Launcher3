@@ -374,4 +374,6 @@
     <string name="folder_shopping">Shopping</string>
     <string name="enable_dashboard_label">Smart dashboard</string>
     <string name="enable_dashboard_description">Leftest desktop screen, provide quick service, smart scene service and so on</string>
+    <string name="set_default_launcher_label">Mango Launcher is not default launcher</string>
+    <string name="set_default_launcher_summary">Click to set Mango Launcher as default launcher</string>
 </resources>

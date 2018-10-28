@@ -53,6 +53,7 @@ import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.ui.BaseCompatActivity;
 import com.android.launcher3.util.ListViewHighlighter;
 import com.android.launcher3.util.SettingsObserver;
+import com.android.launcher3.util.system.LauncherReset;
 import com.android.launcher3.views.ButtonPreference;
 
 import java.util.Objects;
@@ -87,12 +88,30 @@ public class SettingsActivity extends BaseCompatActivity {
         bar.setHomeButtonEnabled(true);
         bar.setDisplayHomeAsUpEnabled(true);
 
+        setContentView(R.layout.activity_settings);
+
+        setDefaultLauncherVisible();
+        // Display the fragment as the main content.
         if (savedInstanceState == null) {
-            // Display the fragment as the main content.
             getFragmentManager().beginTransaction()
-                    .replace(android.R.id.content, getNewFragment())
+                    .replace(R.id.setting_content, getNewFragment())
                     .commit();
         }
+    }
+
+    private void setDefaultLauncherVisible() {
+        View view = findViewById(R.id.ll_set_default_launcher);
+        boolean isHome = Utilities.isOurHome(this);
+        view.setVisibility(isHome ? View.GONE : View.VISIBLE);
+        if (!isHome) {
+            view.setOnClickListener(v -> LauncherReset.goToLauncherSetting(this));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setDefaultLauncherVisible();
     }
 
     @Override
@@ -121,6 +140,7 @@ public class SettingsActivity extends BaseCompatActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+
             if (savedInstanceState != null) {
                 mPreferenceHighlighted = savedInstanceState.getBoolean(SAVE_HIGHLIGHTED_KEY);
             }
@@ -170,7 +190,6 @@ public class SettingsActivity extends BaseCompatActivity {
                 if (QsbHelper.isSupported(getActivity())) {
                     QsbHelper.handlePreferenceUI((ListPreference) positionPref);
                 }
-                //positionPref.setDefaultValue(QsbHelper.POSITION_NONE);
             }
 
             Preference launcherStyle = findPreference(LauncherStyleHandler.KEY_PREFERENCE);
@@ -178,12 +197,11 @@ public class SettingsActivity extends BaseCompatActivity {
                 if (LauncherStyleHandler.isSupported(getActivity())) {
                     LauncherStyleHandler.handlePreferenceUI((LauncherStylePreference) launcherStyle);
                 }
-                //launcherStyle.setDefaultValue(LauncherStyleHandler.STYLE_DRAWER);
             }
 
             Preference smartAssistant = findPreference(SmartAssistants.PREFERENCE_KEY_SMART_ASSISTANT);
             if (smartAssistant != null) {
-                SmartAssistants.handlePreferenceUI((SwitchPreference)smartAssistant);
+                SmartAssistants.handlePreferenceUI((SwitchPreference) smartAssistant);
             }
         }
 

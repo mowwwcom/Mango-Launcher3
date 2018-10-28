@@ -175,4 +175,7 @@
     <string name="enable_dashboard_label">智能助手</string>
     <string name="enable_dashboard_description">桌面最左屏显示，为您提供服务直达、情景智能等服务</string>
 
+    <string name="set_default_launcher_label">Mango Launcher不是默认桌面</string>
+    <string name="set_default_launcher_summary">Mango Launcher尚未被设置为默认桌面，点击设置为默认。</string>
+
 </resources>

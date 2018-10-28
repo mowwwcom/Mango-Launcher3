@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 /*
 * Copyright (C) 2008 The Android Open Source Project
 *
@@ -119,7 +118,7 @@
 
     <style name="WidgetContainerTheme.Dark" />
 
-    <style name="FastScrollerPopup" >
+    <style name="FastScrollerPopup">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:minWidth">@dimen/fastscroll_popup_width</item>
         <item name="android:layout_height">@dimen/fastscroll_popup_height</item>
@@ -191,6 +190,7 @@
         <item name="android:colorControlHighlight">#BDBDBD</item>
         <item name="android:colorForeground">@color/all_apps_bg_hand_fill</item>
     </style>
+
     <style name="AllAppsEmptySearchBackground.Dark">
         <item name="android:colorPrimary">#9AA0A6</item>
         <item name="android:colorControlHighlight">#DFE1E5</item>
@@ -204,5 +204,10 @@
 
     <style name="Text.small" parent="Text">
         <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Text.bold" parent="Text">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">22sp</item>
     </style>
 </resources>

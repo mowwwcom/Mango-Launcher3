@@ -21,11 +21,12 @@ import java.util.ArrayList;
 
 /**
  * @author tic
- * created on 18-10-9
+ *         created on 18-10-9
  */
 @Security({
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_SETTINGS,
 })
 public class LauncherM extends Launcher {
 
@@ -170,11 +171,18 @@ public class LauncherM extends Launcher {
 
         @Override
         public void populateCustomContentContainer() {
+            if (mSmartAssistant == null) {
+                mSmartAssistant = new SmartAssistantModel();
+            }
+
             if (SmartAssistants.isEnabled(LauncherM.this)) {
-                View customContent = getLayoutInflater().inflate(R.layout.view_dashboard, getDragLayer(), false);
+                View customContent = getLayoutInflater()
+                        .inflate(R.layout.view_dashboard, getDragLayer(), false);
 
                 mWorkspace.createCustomContentContainer();
-                mWorkspace.addToCustomContentPage(customContent, mSmartAssistant.getCustomCallback(), "dash-board");
+                mWorkspace.addToCustomContentPage(customContent,
+                        mSmartAssistant.getCustomCallback(),
+                        "dash-board");
             } else {
                 mWorkspace.removeCustomContentPage();
             }
