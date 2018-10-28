@@ -629,30 +629,4 @@ public final class Utilities {
     public static boolean isListEmpty(List list) {
         return isNull(list) || list.isEmpty();
     }
-
-    public static void close(Cursor cursor) {
-        if (isNotNull(cursor)) {
-            cursor.close();
-        }
-    }
-
-    public static void close(InputStream is) {
-        try {
-            if (Utilities.isNotNull(is)) {
-                is.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void close(OutputStream os) {
-        try {
-            if (Utilities.isNotNull(os)) {
-                os.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

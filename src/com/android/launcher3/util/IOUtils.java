@@ -16,6 +16,10 @@
 
 package com.android.launcher3.util;
 
+import android.database.Cursor;
+
+import com.android.launcher3.Utilities;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -104,4 +108,31 @@ public class IOUtils {
         return true;
     }
 
+
+
+    public static void close(Cursor cursor) {
+        if (Utilities.isNotNull(cursor)) {
+            cursor.close();
+        }
+    }
+
+    public static void close(InputStream is) {
+        try {
+            if (Utilities.isNotNull(is)) {
+                is.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void close(OutputStream os) {
+        try {
+            if (Utilities.isNotNull(os)) {
+                os.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
