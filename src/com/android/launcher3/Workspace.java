@@ -55,6 +55,7 @@ import com.android.launcher3.accessibility.AccessibleDragListenerAdapter;
 import com.android.launcher3.accessibility.WorkspaceAccessibilityHelper;
 import com.android.launcher3.anim.AnimatorSetBuilder;
 import com.android.launcher3.anim.Interpolators;
+import com.android.launcher3.anim.ScreenPageAnimation;
 import com.android.launcher3.badge.FolderBadgeInfo;
 import com.android.launcher3.compat.AppWidgetManagerCompat;
 import com.android.launcher3.config.FeatureFlags;
@@ -1352,19 +1353,32 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         // goToState(SPRING_LOADED) and onStartStateTransition.
         if (!workspaceInModalState() && !mIsSwitchingState && !mDragController.isDragging()) {
             int screenCenter = getScrollX() + getMeasuredWidth() / 2;
-            for (int i = 0; i < getChildCount(); i++) {
-                CellLayout child = (CellLayout) getChildAt(i);
-                if (child != null) {
-                    float scrollProgress = getScrollProgress(screenCenter, child, i);
-                    float alpha = 1 - Math.abs(scrollProgress);
-                    if (mWorkspaceFadeInAdjacentScreens) {
-                        child.getShortcutsAndWidgets().setAlpha(alpha);
-                    } else {
-                        // Pages that are off-screen aren't important for accessibility.
-                        child.getShortcutsAndWidgets().setImportantForAccessibility(
-                                alpha > 0 ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
-                                        : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-                    }
+//            for (int i = 0; i < getChildCount(); i++) {
+//                CellLayout child = (CellLayout) getChildAt(i);
+//                if (child != null) {
+//                    float scrollProgress = getScrollProgress(screenCenter, child, i);
+//                    float alpha = 1 - Math.abs(scrollProgress);
+//                    if (mWorkspaceFadeInAdjacentScreens) {
+//                        child.getShortcutsAndWidgets().setAlpha(alpha);
+//                    } else {
+//                        // Pages that are off-screen aren't important for accessibility.
+//                        child.getShortcutsAndWidgets().setImportantForAccessibility(
+//                                alpha > 0 ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
+//                                        : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+//                    }
+//                }
+//            }
+
+            float mDensity = getResources().getDisplayMetrics().density;
+            int count = getChildCount();
+            for (int i = 0; i < count; i++) {
+                if (hasCustomContent() && i== 0) {
+                    continue; // skip custom CellLayout when in OverViewMode
+                }
+                View v = getPageAt(i);
+                if (v != null) {
+                    float scrollProgress = getScrollProgress(screenCenter, v, i);
+                    ScreenPageAnimation.getInstance().pageViewAnime(scrollProgress, i, count, mDensity, v);
                 }
             }
         }

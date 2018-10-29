@@ -857,6 +857,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     class LauncherOverlayCallbacksImpl implements LauncherOverlayCallbacks {
 
+        @Override
         public void onScrollChanged(float progress) {
             if (mWorkspace != null) {
                 mWorkspace.onOverlayScrollChanged(progress);
