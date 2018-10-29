@@ -45,5 +45,7 @@
 
     <color name="bg_activity">#FEFEFE</color>
     <color name="bg_icon">#F2F3F5</color>
-    <color name="text">#000000</color>
+    <color name="text_dark">#000000</color>
+    <color name="text_light">#FFFFFF</color>
+    <color name="text_lighter">#EBEDF4</color>
 </resources>

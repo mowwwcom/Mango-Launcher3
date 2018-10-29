@@ -16,11 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.ButtonDropTarget.TOOLTIP_DEFAULT;
-import static com.android.launcher3.ButtonDropTarget.TOOLTIP_LEFT;
-import static com.android.launcher3.ButtonDropTarget.TOOLTIP_RIGHT;
-import static com.android.launcher3.anim.AlphaUpdateListener.updateVisibility;
-
 import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.graphics.Rect;
@@ -35,6 +30,11 @@ import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.dragndrop.DragController;
 import com.android.launcher3.dragndrop.DragController.DragListener;
 import com.android.launcher3.dragndrop.DragOptions;
+
+import static com.android.launcher3.ButtonDropTarget.TOOLTIP_DEFAULT;
+import static com.android.launcher3.ButtonDropTarget.TOOLTIP_LEFT;
+import static com.android.launcher3.ButtonDropTarget.TOOLTIP_RIGHT;
+import static com.android.launcher3.anim.AlphaUpdateListener.updateVisibility;
 
 /*
  * The top bar containing various drop targets: Delete/App Info/Uninstall.
@@ -143,20 +143,23 @@ public class DropTargetBar extends FrameLayout
             }
         } else {
             int visibleCount = getVisibleButtonsCount();
-            int availableWidth = width / visibleCount;
-            boolean textVisible = true;
-            for (ButtonDropTarget buttons : mDropTargets) {
-                if (buttons.getVisibility() != GONE) {
-                    textVisible = textVisible && !buttons.isTextTruncated(availableWidth);
+            if (visibleCount > 0) {
+                // Standard & System app show nothing
+                int availableWidth = width / visibleCount;
+                boolean textVisible = true;
+                for (ButtonDropTarget buttons : mDropTargets) {
+                    if (buttons.getVisibility() != GONE) {
+                        textVisible = textVisible && !buttons.isTextTruncated(availableWidth);
+                    }
                 }
-            }
 
-            int widthSpec = MeasureSpec.makeMeasureSpec(availableWidth, MeasureSpec.AT_MOST);
-            int heightSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
-            for (ButtonDropTarget button : mDropTargets) {
-                if (button.getVisibility() != GONE) {
-                    button.setTextVisible(textVisible);
-                    button.measure(widthSpec, heightSpec);
+                int widthSpec = MeasureSpec.makeMeasureSpec(availableWidth, MeasureSpec.AT_MOST);
+                int heightSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
+                for (ButtonDropTarget button : mDropTargets) {
+                    if (button.getVisibility() != GONE) {
+                        button.setTextVisible(textVisible);
+                        button.measure(widthSpec, heightSpec);
+                    }
                 }
             }
         }
@@ -179,16 +182,19 @@ public class DropTargetBar extends FrameLayout
             }
         } else {
             int visibleCount = getVisibleButtonsCount();
-            int frameSize = (right - left) / visibleCount;
+            if (visibleCount > 0) {
 
-            int start = frameSize / 2;
-            int halfWidth;
-            for (ButtonDropTarget button : mDropTargets) {
-                if (button.getVisibility() != GONE) {
-                    halfWidth = button.getMeasuredWidth() / 2;
-                    button.layout(start - halfWidth, 0,
-                            start + halfWidth, button.getMeasuredHeight());
-                    start = start + frameSize;
+                int frameSize = (right - left) / visibleCount;
+
+                int start = frameSize / 2;
+                int halfWidth;
+                for (ButtonDropTarget button : mDropTargets) {
+                    if (button.getVisibility() != GONE) {
+                        halfWidth = button.getMeasuredWidth() / 2;
+                        button.layout(start - halfWidth, 0,
+                                start + halfWidth, button.getMeasuredHeight());
+                        start = start + frameSize;
+                    }
                 }
             }
         }

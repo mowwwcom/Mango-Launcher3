@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -17,28 +18,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_alert_light" />
+            android:src="@drawable/ic_alert_light"/>
 
         <TextView
             android:id="@+id/text_view"
-            style="@style/Text"
+            style="@style/Text.light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
             android:layout_toEndOf="@id/image"
             android:layout_toRightOf="@id/image"
-            android:text="@string/set_default_launcher_label" />
+            android:text="@string/set_default_launcher_label"/>
 
         <TextView
-            style="@style/Text"
+            style="@style/Text.small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/text_view"
             android:layout_alignStart="@id/text_view"
             android:layout_below="@id/text_view"
             android:text="@string/set_default_launcher_summary"
-            android:textColor="@color/notification_icon_default_color" />
+            android:textColor="@color/text_lighter"/>
 
     </RelativeLayout>
 
@@ -53,7 +53,7 @@
             android:id="@+id/iv_avatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_user" />
+            android:src="@drawable/ic_user"/>
 
         <TextView
             android:id="@+id/tv_user_info"
@@ -63,12 +63,12 @@
             android:lines="1"
             android:padding="3dp"
             android:singleLine="true"
-            android:text="User login" />
+            android:text="User login"/>
 
     </LinearLayout>
 
     <FrameLayout
         android:id="@+id/setting_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 </LinearLayout>

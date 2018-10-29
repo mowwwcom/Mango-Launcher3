@@ -198,7 +198,12 @@
     </style>
 
     <style name="Text">
-        <item name="android:textColor">@color/text</item>
+        <item name="android:textColor">@color/text_dark</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Text.light">
+        <item name="android:textColor">@color/text_light</item>
         <item name="android:textSize">16sp</item>
     </style>
 

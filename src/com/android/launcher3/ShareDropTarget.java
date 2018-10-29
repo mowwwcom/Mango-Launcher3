@@ -29,15 +29,20 @@ import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ControlType;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 
-public class DeleteDropTarget extends ButtonDropTarget {
+/**
+ * ShareApp support
+ *
+ * @author tic
+ */
+public class ShareDropTarget extends ButtonDropTarget {
 
     private int mControlType = ControlType.DEFAULT_CONTROLTYPE;
 
-    public DeleteDropTarget(Context context, AttributeSet attrs) {
+    public ShareDropTarget(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public DeleteDropTarget(Context context, AttributeSet attrs, int defStyle) {
+    public ShareDropTarget(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -51,7 +56,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
     }
 
     @Override
-    public void onDragStart(DropTarget.DragObject dragObject, DragOptions options) {
+    public void onDragStart(DragObject dragObject, DragOptions options) {
         super.onDragStart(dragObject, options);
         setTextBasedOnDragSource(dragObject.dragInfo);
         setControlTypeBasedOnDragSource(dragObject.dragInfo);
@@ -75,7 +80,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
     @Override
     protected boolean supportsDrop(ItemInfo info) {
         if (!LauncherStyleHandler.isDrawer) {
-            return info instanceof FolderInfo || info instanceof LauncherAppWidgetInfo;
+            return false;
         }
         return true;
     }
