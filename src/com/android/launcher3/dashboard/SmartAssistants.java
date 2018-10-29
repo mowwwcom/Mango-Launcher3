@@ -19,7 +19,8 @@ public class SmartAssistants {
     public static final String ACTION_ENABLE_SMART_ASSISTANT = "action_enable_smart_assistant";
 
     public static boolean isEnabled(Context context) {
-        return Utilities.getDevicePrefs(context).getBoolean(PREFERENCE_KEY_SMART_ASSISTANT, true);
+//        return Utilities.getDevicePrefs(context).getBoolean(PREFERENCE_KEY_SMART_ASSISTANT, true);
+        return false;
     }
 
     public static void handlePreferenceUI(SwitchPreference preference) {

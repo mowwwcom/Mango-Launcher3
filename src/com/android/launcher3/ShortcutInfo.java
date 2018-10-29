@@ -26,6 +26,7 @@ import android.text.TextUtils;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.shortcuts.ShortcutInfoCompat;
+import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.util.ContentWriter;
 
 /**
@@ -89,7 +90,9 @@ public class ShortcutInfo extends ItemInfoWithIcon {
     private int mInstallProgress;
 
     public ShortcutInfo() {
-        itemType = LauncherSettings.BaseLauncherColumns.ITEM_TYPE_SHORTCUT;
+        itemType = LauncherStyleHandler.isDrawer ?
+                LauncherSettings.BaseLauncherColumns.ITEM_TYPE_SHORTCUT
+                : LauncherSettings.BaseLauncherColumns.ITEM_TYPE_APPLICATION;
     }
 
     public ShortcutInfo(ShortcutInfo info) {
@@ -101,7 +104,9 @@ public class ShortcutInfo extends ItemInfoWithIcon {
         mInstallProgress = info.mInstallProgress;
     }
 
-    /** TODO: Remove this.  It's only called by ApplicationInfo.makeShortcut. */
+    /**
+     * TODO: Remove this.  It's only called by ApplicationInfo.makeShortcut.
+     */
     public ShortcutInfo(AppInfo info) {
         super(info);
         title = Utilities.trim(info.title);
@@ -181,7 +186,9 @@ public class ShortcutInfo extends ItemInfoWithIcon {
         disabledMessage = shortcutInfo.getDisabledMessage();
     }
 
-    /** Returns the ShortcutInfo id associated with the deep shortcut. */
+    /**
+     * Returns the ShortcutInfo id associated with the deep shortcut.
+     */
     public String getDeepShortcutId() {
         return itemType == Favorites.ITEM_TYPE_DEEP_SHORTCUT ?
                 getIntent().getStringExtra(ShortcutInfoCompat.EXTRA_SHORTCUT_ID) : null;

@@ -25,6 +25,7 @@ import com.android.launcher3.accessibility.LauncherAccessibilityDelegate;
 import com.android.launcher3.dragndrop.DragOptions;
 import com.android.launcher3.folder.Folder;
 import com.android.launcher3.logging.LoggerUtils;
+import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ControlType;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 
@@ -73,6 +74,9 @@ public class DeleteDropTarget extends ButtonDropTarget {
 
     @Override
     protected boolean supportsDrop(ItemInfo info) {
+        if (!LauncherStyleHandler.isDrawer) {
+            return false;
+        }
         return true;
     }
 
