@@ -1,17 +1,18 @@
 package com.android.launcher3.uioverrides;
 
-import static com.android.launcher3.LauncherState.ALL_APPS;
-import static com.android.launcher3.LauncherState.NORMAL;
-
 import android.view.MotionEvent;
 
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.LauncherStateManager.AnimationComponents;
+import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.touch.AbstractStateChangeTouchController;
 import com.android.launcher3.touch.SwipeDetector;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
+
+import static com.android.launcher3.LauncherState.ALL_APPS;
+import static com.android.launcher3.LauncherState.NORMAL;
 
 /**
  * TouchController to switch between NORMAL and ALL_APPS state.
@@ -28,6 +29,10 @@ public class AllAppsSwipeController extends AbstractStateChangeTouchController {
     protected boolean canInterceptTouch(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             mTouchDownEvent = ev;
+        }
+        if(mLauncher.isInState(NORMAL) && mLauncher.getAppsView().shouldContainerScroll(ev)
+                && !LauncherStyleHandler.isDrawer) {
+            return false;
         }
         if (mCurrentAnimation != null) {
             // If we are already animating from a previous state, we can intercept.

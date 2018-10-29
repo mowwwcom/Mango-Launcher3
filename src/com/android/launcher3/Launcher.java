@@ -588,12 +588,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
                         "returned from the widget configuration activity.");
                 result = RESULT_CANCELED;
                 completeTwoStageWidgetDrop(result, appWidgetId, requestArgs);
-                final Runnable onComplete = new Runnable() {
-                    @Override
-                    public void run() {
-                        getStateManager().goToState(NORMAL);
-                    }
-                };
+                final Runnable onComplete = () -> getStateManager().goToState(NORMAL);
 
                 mWorkspace.removeExtraEmptyScreenDelayed(true, onComplete,
                         ON_ACTIVITY_RESULT_ANIMATION_DELAY, false);
