@@ -41,6 +41,7 @@ import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.BitmapInfo;
 import com.android.launcher3.graphics.LauncherIcons;
+import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.util.FlagOp;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.LongArrayMap;
@@ -101,9 +102,11 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                     appsList.addPackage(context, packages[i], mUser);
 
                     // Automatically add homescreen icon for work profile apps for below O device.
-                    if (!Utilities.ATLEAST_OREO && !Process.myUserHandle().equals(mUser)) {
+                    // if (!Utilities.ATLEAST_OREO && !Process.myUserHandle().equals(mUser)) {
+                    if (!LauncherStyleHandler.isDrawer) {
                         SessionCommitReceiver.queueAppIconAddition(context, packages[i], mUser);
                     }
+                    // }
                 }
                 flagOp = FlagOp.removeFlag(ShortcutInfo.FLAG_DISABLED_NOT_AVAILABLE);
                 break;
