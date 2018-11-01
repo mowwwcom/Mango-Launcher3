@@ -42,14 +42,20 @@
         <item>@string/qsb_position_none</item>
         <item>@string/qsb_position_top</item>
         <item>@string/qsb_position_bottom</item>
+        <item>@string/qsb_position_hotseat</item>
     </string-array>
     <string-array translatable="false" name="qsb_position_values">
         <item>-1</item>
         <item>0</item>
         <item>1</item>
+        <item>2</item>
     </string-array>
     <string-array translatable="false" name="launcher_style_names">
         <!-- Option to not change the launcher style. [CHAR LIMIT=50] -->
+        <item>@string/launcher_style_standard</item>
+        <item>@string/launcher_style_drawer</item>
+    </string-array>
+    <string-array translatable="false" name="launcher_style_values">
         <item>@string/launcher_style_standard</item>
         <item>@string/launcher_style_drawer</item>
     </string-array>

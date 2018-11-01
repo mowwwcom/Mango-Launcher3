@@ -20,11 +20,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v7.preference.Preference;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -108,7 +106,7 @@ public class IconShapeOverride {
         return getDevicePrefs(context).getString(KEY_PREFERENCE, "");
     }
 
-    public static void handlePreferenceUi(ListPreference preference) {
+    public static void handlePreferenceUi(android.support.v7.preference.ListPreference preference) {
         Context context = preference.getContext();
         preference.setValue(getAppliedValue(context));
         preference.setOnPreferenceChangeListener(new PreferenceChangeHandler(context));
@@ -136,7 +134,7 @@ public class IconShapeOverride {
         }
     }
 
-    private static class PreferenceChangeHandler implements OnPreferenceChangeListener {
+    private static class PreferenceChangeHandler implements Preference.OnPreferenceChangeListener {
 
         private final Context mContext;
 

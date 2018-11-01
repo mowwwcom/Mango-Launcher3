@@ -22,9 +22,15 @@
         android:id="@id/search_container_workspace"
         android:padding="0dp" >
 
-    <fragment
-        android:name="com.android.launcher3.qsb.QsbContainerView$QsbFragment"
+    <TextView
         android:layout_width="match_parent"
-        android:tag="qsb_view"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:text="@string/abandoned_search"/>
+
+    <!--<fragment-->
+        <!--android:name="com.android.launcher3.qsb.QsbContainerView$QsbFragment"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:tag="qsb_view"-->
+        <!--android:layout_height="match_parent"/>-->
 </com.android.launcher3.qsb.QsbContainerView>

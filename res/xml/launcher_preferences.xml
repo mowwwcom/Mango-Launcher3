@@ -38,10 +38,10 @@
             android:summary="%s"
             android:title="@string/qsb_position"/>
 
-        <com.android.launcher3.ui.settings.LauncherStylePreference
-            android:defaultValue="1"
+        <com.android.launcher3.style.LauncherStylePreference
+            android:defaultValue=""
             android:entries="@array/launcher_style_names"
-            android:entryValues="@array/simple_values"
+            android:entryValues="@array/launcher_style_values"
             android:key="pref_launcher_style"
             android:persistent="true"
             android:summary="%s"

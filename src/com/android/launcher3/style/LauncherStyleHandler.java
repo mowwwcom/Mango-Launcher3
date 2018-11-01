@@ -4,11 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.preference.Preference;
+import android.support.v7.preference.Preference;
 
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
-import com.android.launcher3.ui.settings.LauncherStylePreference;
 import com.android.launcher3.util.OverrideApplyHandler;
 
 import static com.android.launcher3.Utilities.getDevicePrefs;
@@ -23,12 +22,12 @@ public class LauncherStyleHandler {
     public static final int STYLE_DRAWER = 1;
     public static boolean isDrawer = false;
 
-    public static int getAppliedValue(Context context) {
-        int value = getDevicePrefs(context).getInt(KEY_PREFERENCE, STYLE_DRAWER);
+    public static String getAppliedValue(Context context) {
+        String value = getDevicePrefs(context).getString(KEY_PREFERENCE, String.valueOf(STYLE_DRAWER));
 //        isDrawer = value == STYLE_DRAWER;
 //        return value;
         isDrawer = false;
-        return STYLE_STANDARD;
+        return String.valueOf(STYLE_STANDARD);
     }
 
     public static boolean isSupported(Activity activity) {
@@ -37,6 +36,9 @@ public class LauncherStyleHandler {
 
     public static void handlePreferenceUI(LauncherStylePreference preference) {
         Context context = preference.getContext();
+        String value = getAppliedValue(context);
+        preference.setValue(value);
+        preference.setSummary((Integer.valueOf(value) == STYLE_DRAWER) ? R.string.launcher_style_drawer : R.string.launcher_style_standard);
         preference.setOnPreferenceChangeListener(new LauncherStyleHandler.PreferenceChangeHandler(context));
     }
 
@@ -51,7 +53,7 @@ public class LauncherStyleHandler {
         @Override
         @SuppressLint("ApplySharedPref")
         public boolean onPreferenceChange(Preference preference, Object o) {
-            int newValue = (int) o;
+            String newValue = (String) o;
             if (getAppliedValue(mContext) != newValue) {
                 // Value has changed
                 ProgressDialog.show(mContext,
@@ -61,7 +63,7 @@ public class LauncherStyleHandler {
                         false /* cancelable */);
                 OverrideApplyHandler.applyWith(mContext, () -> {
                     // Synchronously write the preference.
-                    getDevicePrefs(mContext).edit().putInt(KEY_PREFERENCE, newValue).commit();
+                    getDevicePrefs(mContext).edit().putString(KEY_PREFERENCE, newValue).commit();
                     // Clear the icon cache.
                     LauncherAppState.getInstance(mContext).getIconCache().clear();
                 });

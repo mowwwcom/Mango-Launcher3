@@ -16,8 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.LauncherState.ALL_APPS;
-
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -37,6 +35,8 @@ import com.android.launcher3.userevent.nano.LauncherLogProto.Action;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ControlType;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
+
+import static com.android.launcher3.LauncherState.ALL_APPS;
 
 public class Hotseat extends FrameLayout implements LogContainerProvider, Insettable {
 
@@ -90,7 +90,7 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
         if (hasVerticalHotseat) {
             mContent.setGridSize(1, idp.numHotseatIcons);
         } else {
-            mContent.setGridSize(idp.numHotseatIcons, 1);
+            mContent.setGridSize(idp.numHotseatIcons, 2);
         }
 
         if (!FeatureFlags.NO_ALL_APPS_ICON) {
@@ -172,5 +172,11 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
 
         setLayoutParams(lp);
         InsettableFrameLayout.dispatchInsets(this, insets);
+    }
+
+    public void addQsb(View qsb) {
+        CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 1, 4, 1);
+        lp.canReorder = false;
+        mContent.addViewToCellLayout(qsb, 0, qsb.getId(), lp, true);
     }
 }

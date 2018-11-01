@@ -107,16 +107,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.android.launcher3.ui.settings.MangoSettingsActivity"
-            android:autoRemoveFromRecents="true"
-            android:label="@string/mango_settings"
-            android:theme="@style/AppTheme">
-            <intent-filter>
-                <!--<action android:name="android.intent.action.APPLICATION_PREFERENCES"/>-->
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
         <!--
         The settings provider contains Home's data, like the workspace favorites. The permissions
         should be changed to what is defined above. The authorities should also be changed to
@@ -128,6 +118,17 @@
             android:exported="true"
             android:readPermission="com.android.launcher3.permission.READ_SETTINGS"
             android:writePermission="com.android.launcher3.permission.WRITE_SETTINGS"/>
+
+        <receiver
+            android:name="com.android.launcher3.widget.custom.SearchbarWidget"
+            android:label="@string/abandoned_search">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/search_appwidget_info"/>
+        </receiver>
 
     </application>
 </manifest>

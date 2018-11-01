@@ -3,8 +3,8 @@ package com.android.launcher3.qsb;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.preference.ListPreference;
-import android.preference.Preference;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
 
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
@@ -21,6 +21,7 @@ public class QsbHelper {
     public static final int POSITION_NONE = -1;
     public static final int POSITION_TOP = 0;
     public static final int POSITION_BOTTOM = 1;
+    public static final int POSITION_HOTSEAT = 2;
 
     public static boolean isSupported(Activity activity) {
         return true;

@@ -42,33 +42,44 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="10dp">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/iv_avatar"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_user"/>
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_user_info"
-            style="@style/Text.bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:lines="1"
-            android:padding="3dp"
-            android:singleLine="true"
-            android:text="User login"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
 
-    </LinearLayout>
+                <ImageView
+                    android:id="@+id/iv_avatar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_user"/>
 
-    <FrameLayout
-        android:id="@+id/setting_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+                <TextView
+                    android:id="@+id/tv_user_info"
+                    style="@style/Text.bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:lines="1"
+                    android:padding="3dp"
+                    android:singleLine="true"
+                    android:text="User login"/>
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/setting_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
 </LinearLayout>

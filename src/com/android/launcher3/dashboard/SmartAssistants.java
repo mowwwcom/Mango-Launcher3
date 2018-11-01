@@ -3,8 +3,8 @@ package com.android.launcher3.dashboard;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.preference.Preference;
-import android.preference.SwitchPreference;
+import android.support.v14.preference.SwitchPreference;
+import android.support.v7.preference.Preference;
 
 import com.android.launcher3.Utilities;
 import com.android.launcher3.util.Broadcasts;

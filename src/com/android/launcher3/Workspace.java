@@ -512,14 +512,24 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             // In transposed layout, we add the QSB in the Grid. As workspace does not touch the
             // edges, we do not need a full width QSB.
             qsb = LayoutInflater.from(getContext())
-                    .inflate(R.layout.search_container_workspace, firstPage, false);
+                    .inflate(R.layout.search_container_workspace,
+                            position == QsbHelper.POSITION_HOTSEAT ? null : firstPage,
+                            false);
         }
-        int cellY = (position == QsbHelper.POSITION_TOP) ? 0 : firstPage.getCountY() - 1;
-        CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, cellY,
-                firstPage.getCountX(), 1);
-        lp.canReorder = false;
-        if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {
-            Log.e(TAG, "Failed to add to item at (0, 0) to CellLayout");
+
+        if (position < QsbHelper.POSITION_HOTSEAT) {
+            // to homescreen
+            int cellY = position == QsbHelper.POSITION_TOP ? 0 : firstPage.getCountY() - 1;
+            CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, cellY,
+                    firstPage.getCountX(), 1);
+            lp.canReorder = false;
+            if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {
+                Log.e(TAG, "Failed to add to item at (0, 0) to CellLayout");
+            }
+        } else {
+            // to hotseat
+            Hotseat hotseat = mLauncher.getHotseat();
+            hotseat.addQsb(qsb);
         }
     }
 
@@ -1112,7 +1122,6 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
-
         // Update the page indicator progress.
         boolean isTransitioning = mIsSwitchingState
                 || (getLayoutTransition() != null && getLayoutTransition().isRunning());
@@ -1372,7 +1381,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             float mDensity = getResources().getDisplayMetrics().density;
             int count = getChildCount();
             for (int i = 0; i < count; i++) {
-                if (hasCustomContent() && i== 0) {
+                if (hasCustomContent() && i == 0) {
                     continue; // skip custom CellLayout when in OverViewMode
                 }
                 View v = getPageAt(i);

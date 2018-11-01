@@ -149,6 +149,7 @@
     <string name="qsb_position_none">无搜索栏</string>
     <string name="qsb_position_top">顶部</string>
     <string name="qsb_position_bottom">底部</string>
+    <string name="qsb_position_hotseat">托盘</string>
     <string name="launcher">桌面</string>
     <string name="folder">文件夹</string>
     <string name="appearance">外观</string>
