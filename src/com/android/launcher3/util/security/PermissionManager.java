@@ -1,40 +1,56 @@
 package com.android.launcher3.util.security;
 
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
-import com.android.launcher3.BaseActivity;
+import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
  * @author tic
- *         created on 18-6-27
+ * created on 18-6-27
  */
 
 public final class PermissionManager {
 
-    private BaseActivity activity;
+    private Callback mCallback;
     private String[] unauthorizedPermission;
+
+    public PermissionManager(Callback callback) {
+        this.mCallback = Preconditions.checkNotNull(callback, "Callback cannot be null");
+    }
+
+    public interface Callback {
+        /**
+         * get contenxt
+         */
+        Activity getActivity();
+
+        /**
+         * permission refused
+         *
+         * @param permissions p
+         */
+        void onPermissionRefuse(@NonNull String permissions);
+    }
 
     /**
      * 请求获取权限
-     *
-     * @param activity
      */
-    public void requestPermission(BaseActivity activity) {
-        this.activity = activity;
-        Security permissions = activity.getClass().getAnnotation(Security.class);
+    public void requestPermission() {
+        Security permissions = mCallback.getActivity().getClass().getAnnotation(Security.class);
         if (permissions == null) {
             Log.d("PermissionManager", "no permission request");
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !havePermission(permissions.value())) {
-            activity.requestPermissions(this.unauthorizedPermission, 0x123);
+            mCallback.getActivity().requestPermissions(this.unauthorizedPermission, 0x123);
         }
     }
 
@@ -49,7 +65,8 @@ public final class PermissionManager {
         ArrayList<String> permissionList = new ArrayList<>();
 
         for (String permission : permissions) {
-            if (activity.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            if (mCallback.getActivity()
+                    .checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
                 permissionList.add(permission);
             }
         }
@@ -72,7 +89,7 @@ public final class PermissionManager {
     public void onRequestPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         for (int i = 0; i < grantResults.length; i++) {
             if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                activity.onPermissionRefuse(permissions[i]);
+                mCallback.onPermissionRefuse(permissions[i]);
             }
         }
     }

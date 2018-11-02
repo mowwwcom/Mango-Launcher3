@@ -44,7 +44,10 @@ import java.io.PrintWriter;
 import java.lang.annotation.Retention;
 import java.util.ArrayList;
 
-public abstract class BaseActivity extends Activity implements UserEventDelegate{
+/**
+ * @author tic
+ */
+public abstract class BaseActivity extends Activity implements UserEventDelegate, PermissionManager.Callback {
 
     public static final int INVISIBLE_BY_STATE_HANDLER = 1 << 0;
     public static final int INVISIBLE_BY_APP_TRANSITIONS = 1 << 1;
@@ -55,7 +58,8 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
     @IntDef(
             flag = true,
             value = {INVISIBLE_BY_STATE_HANDLER, INVISIBLE_BY_APP_TRANSITIONS})
-    public @interface InvisibilityFlags{}
+    public @interface InvisibilityFlags {
+    }
 
     private final ArrayList<OnDeviceProfileChangeListener> mDPChangeListeners = new ArrayList<>();
     private final ArrayList<MultiWindowModeChangedListener> mMultiWindowModeChangedListeners =
@@ -70,6 +74,7 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
     /**
      * State flag indicating if the user is active or the actitvity when to background as a result
      * of user action.
+     *
      * @see #isUserActive()
      */
     private static final int ACTIVITY_STATE_USER_ACTIVE = 1 << 2;
@@ -78,14 +83,16 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
     @IntDef(
             flag = true,
             value = {ACTIVITY_STATE_STARTED, ACTIVITY_STATE_RESUMED, ACTIVITY_STATE_USER_ACTIVE})
-    public @interface ActivityFlags{}
+    public @interface ActivityFlags {
+    }
 
     @ActivityFlags
     private int mActivityFlags;
 
     // When the recents animation is running, the visibility of the Launcher is managed by the
     // animation
-    @InvisibilityFlags private int mForceInvisible;
+    @InvisibilityFlags
+    private int mForceInvisible;
 
     private PermissionManager mPermissionManager;
 
@@ -98,7 +105,8 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
     }
 
     @Override
-    public void modifyUserEvent(LauncherLogProto.LauncherEvent event) {}
+    public void modifyUserEvent(LauncherLogProto.LauncherEvent event) {
+    }
 
     public final UserEventDispatcher getUserEventDispatcher() {
         if (mUserEventDispatcher == null) {
@@ -129,8 +137,8 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mPermissionManager = new PermissionManager();
-        mPermissionManager.requestPermission(this);
+        mPermissionManager = new PermissionManager(this);
+        mPermissionManager.requestPermission();
     }
 
     @Override
@@ -223,6 +231,7 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
     /**
      * Used to set the override visibility state, used only to handle the transition home with the
      * recents animation.
+     *
      * @see LauncherAppTransitionManagerImpl.getWallpaperOpenRunner()
      */
     public void addForceInvisibleFlag(@InvisibilityFlags int flag) {
@@ -263,7 +272,13 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
     /**
      * for override
      */
+    @Override
     public void onPermissionRefuse(@NonNull String permissions) {
 
+    }
+
+    @Override
+    public Activity getActivity() {
+        return this;
     }
 }
