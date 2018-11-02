@@ -1,12 +1,13 @@
 package com.android.launcher3.ui;
 
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,18 +26,22 @@ public abstract class BaseCompatActivity extends AppCompatActivity implements Pe
 
     private ViewGroup mContent;
     private PermissionManager mSecurity;
-    private ActionBar mActionBar;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
         mContent = findViewById(R.id.main_content);
+        mToolbar = findViewById(R.id.toolbar);
 
-        mActionBar = getActionBar();
-        if (mActionBar == null) {
+        if (mToolbar == null) {
             Log.i(TAG, "No actionBar");
+        } else {
+            mToolbar.setTitle("");
+            setSupportActionBar(mToolbar);
         }
+
 
         View view = loadLayout(mContent);
         if (view != null) {
@@ -49,26 +54,30 @@ public abstract class BaseCompatActivity extends AppCompatActivity implements Pe
     }
 
     protected void showHomeButton() {
-        if (mActionBar == null) {
+        ActionBar actionbar = getSupportActionBar();
+        if (actionbar == null) {
             Log.i(TAG, "No actionBar found");
         } else {
-            mActionBar.setDisplayShowHomeEnabled(true);
+            actionbar.setDisplayShowHomeEnabled(true);
+            actionbar.setHomeButtonEnabled(true);
         }
     }
 
     protected void showBackButton() {
-        if (mActionBar == null) {
+        ActionBar actionbar = getSupportActionBar();
+        if (mToolbar == null) {
             Log.i(TAG, "No actionBar found");
         } else {
-            mActionBar.setDisplayHomeAsUpEnabled(true);
+            actionbar.setDisplayHomeAsUpEnabled(true);
+            actionbar.setHomeButtonEnabled(true);
         }
     }
 
 
     @Override
     public void setTitle(CharSequence charSequence) {
-        if (mActionBar != null) {
-            mActionBar.setTitle(charSequence);
+        if (mToolbar != null) {
+            mToolbar.setTitle(charSequence);
         } else {
             super.setTitle(charSequence);
         }

@@ -94,6 +94,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.android.launcher3.ui.user.UserEntryActivity"
+            android:label="@string/launcher"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
         <!--
         The settings activity. When extending keep the intent filter present
         -->
@@ -101,7 +111,7 @@
             android:name="com.android.launcher3.ui.settings.SettingsActivity"
             android:autoRemoveFromRecents="true"
             android:label="@string/mango_settings"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES"/>
                 <category android:name="android.intent.category.DEFAULT"/>

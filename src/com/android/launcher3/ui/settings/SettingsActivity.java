@@ -28,7 +28,6 @@ import android.provider.Settings;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -77,12 +76,9 @@ public class SettingsActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActionBar bar = getSupportActionBar();
-        bar.setHomeButtonEnabled(true);
-        bar.setDisplayHomeAsUpEnabled(true);
 
-        setContentView(R.layout.activity_settings);
-
+        showBackButton();
+        setTitle(R.string.mango_settings);
         setDefaultLauncherVisible();
         // Display the fragment as the main content.
         if (savedInstanceState == null) {
@@ -90,6 +86,11 @@ public class SettingsActivity extends BaseCompatActivity {
                     .replace(R.id.setting_content, getNewFragment())
                     .commit();
         }
+    }
+
+    @Override
+    protected int layout() {
+        return R.layout.activity_settings;
     }
 
     private void setDefaultLauncherVisible() {
