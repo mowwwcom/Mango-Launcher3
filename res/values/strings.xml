@@ -377,4 +377,9 @@
     <string name="enable_dashboard_description">Leftest desktop screen, provide quick service, smart scene service and so on</string>
     <string name="set_default_launcher_label">Mango Launcher is not default launcher</string>
     <string name="set_default_launcher_summary">Click to set Mango Launcher as default launcher</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="hint_account">enter account</string>
+    <string name="hint_password">enter password</string>
+
 </resources>

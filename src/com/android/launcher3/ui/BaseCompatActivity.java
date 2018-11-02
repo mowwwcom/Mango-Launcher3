@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -65,7 +66,7 @@ public abstract class BaseCompatActivity extends AppCompatActivity implements Pe
 
     protected void showBackButton() {
         ActionBar actionbar = getSupportActionBar();
-        if (mToolbar == null) {
+        if (actionbar == null) {
             Log.i(TAG, "No actionBar found");
         } else {
             actionbar.setDisplayHomeAsUpEnabled(true);
@@ -76,8 +77,9 @@ public abstract class BaseCompatActivity extends AppCompatActivity implements Pe
 
     @Override
     public void setTitle(CharSequence charSequence) {
-        if (mToolbar != null) {
-            mToolbar.setTitle(charSequence);
+        ActionBar actionbar = getSupportActionBar();
+        if (actionbar != null) {
+            actionbar.setTitle(charSequence);
         } else {
             super.setTitle(charSequence);
         }
@@ -106,6 +108,14 @@ public abstract class BaseCompatActivity extends AppCompatActivity implements Pe
     protected void addView(View view) {
         mContent.removeAllViews();
         mContent.addView(view);
+    }
+
+    protected void replace(Fragment fragment) {
+        mContent.removeAllViews();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_content, fragment)
+                .commit();
     }
 
     @Override

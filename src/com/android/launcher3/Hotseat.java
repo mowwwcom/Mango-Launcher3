@@ -90,7 +90,7 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
         if (hasVerticalHotseat) {
             mContent.setGridSize(1, idp.numHotseatIcons);
         } else {
-            mContent.setGridSize(idp.numHotseatIcons, 2);
+            mContent.setGridSize(idp.numHotseatIcons, 1);
         }
 
         if (!FeatureFlags.NO_ALL_APPS_ICON) {
@@ -156,10 +156,10 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
         if (grid.isVerticalBarLayout()) {
             lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
             if (grid.isSeascape()) {
-                lp.gravity = Gravity.LEFT;
+                lp.gravity = Gravity.START;
                 lp.width = grid.hotseatBarSizePx + insets.left + grid.hotseatBarSidePaddingPx;
             } else {
-                lp.gravity = Gravity.RIGHT;
+                lp.gravity = Gravity.END;
                 lp.width = grid.hotseatBarSizePx + insets.right + grid.hotseatBarSidePaddingPx;
             }
         } else {
@@ -175,8 +175,8 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
     }
 
     public void addQsb(View qsb) {
-        CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 1, 4, 1);
+        CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 0, 4, 1);
         lp.canReorder = false;
-        mContent.addViewToCellLayout(qsb, 0, qsb.getId(), lp, true);
+        mContent.addViewToCellLayout(qsb, -1, qsb.getId(), lp, true);
     }
 }
