@@ -46,7 +46,9 @@ import com.android.launcher3.style.LauncherStyleDialogFragment;
 import com.android.launcher3.style.LauncherStyleHandler;
 import com.android.launcher3.style.LauncherStylePreference;
 import com.android.launcher3.ui.BaseCompatActivity;
+import com.android.launcher3.ui.user.UserEntryActivity;
 import com.android.launcher3.util.SettingsObserver;
+import com.android.launcher3.util.system.Activities;
 import com.android.launcher3.util.system.LauncherReset;
 import com.android.launcher3.views.ButtonPreference;
 
@@ -86,6 +88,9 @@ public class SettingsActivity extends BaseCompatActivity {
                     .replace(R.id.setting_content, getNewFragment())
                     .commit();
         }
+        findViewById(R.id.relative_layout).setOnClickListener(v -> {
+            Activities.goTo(this, UserEntryActivity.class);
+        });
     }
 
     @Override

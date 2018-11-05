@@ -10,7 +10,7 @@
         android:text="11111111111"/>
 
     <FrameLayout
-        android:id="@+id/frament_entry"
+        android:id="@+id/fragment_entry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

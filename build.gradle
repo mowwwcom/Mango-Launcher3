@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        jcenter()
         mavenCentral()
         google()
     }
@@ -9,10 +10,12 @@ buildscript {
     }
 }
 
+
 final String SUPPORT_LIBS_VERSION = '28.0.0'
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.protobuf'
+apply from: 'versions.gradle'
 
 android {
     compileSdkVersion 28
@@ -27,10 +30,34 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
+
+    signingConfigs {
+        debug {
+            storeFile file('/dev/keys/mango-launcher-debug')
+            storePassword "mangolauncher3"
+            keyAlias "Launcher"
+            keyPassword "mangolauncher3"
+        }
+
+        release {
+            storeFile file('/dev/keys/mango-launcher-debug')
+            storePassword "mangolauncher3"
+            keyAlias "Launcher"
+            keyPassword "mangolauncher3"
+        }
+    }
+
     buildTypes {
         debug {
             minifyEnabled false
+            signingConfig signingConfigs.debug
         }
+
+//        release {
+//            minifyEnabled false
+//            signingConfig signingConfigs.release
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//        }
     }
 
     compileOptions {
@@ -99,7 +126,7 @@ android {
         }
 
         mango {
-            java.srcDirs = ['src_flags', "src_ui_overrides"]
+            java.srcDirs = ['src_flags', "src_ui_overrides", "src_oauth"]
         }
 
         aosp {
@@ -128,18 +155,6 @@ repositories {
 }
 
 dependencies {
-    implementation "com.android.support:design:${SUPPORT_LIBS_VERSION}"
-    implementation "com.android.support:support-v4:${SUPPORT_LIBS_VERSION}"
-    implementation "com.android.support:support-dynamic-animation:${SUPPORT_LIBS_VERSION}"
-    implementation "com.android.support:recyclerview-v7:${SUPPORT_LIBS_VERSION}"
-    implementation "com.android.support:appcompat-v7:${SUPPORT_LIBS_VERSION}"
-    implementation "com.android.support:preference-v7:${SUPPORT_LIBS_VERSION}"
-
-    implementation 'com.google.protobuf.nano:protobuf-javanano:3.0.0-alpha-7'
-    implementation "com.google.guava:guava:26.0-android"
-
-    quickstepImplementation fileTree(dir: "quickstep/libs", include: 'sysui_shared.jar')
-
     testImplementation 'junit:junit:4.12'
     androidTestImplementation "org.mockito:mockito-core:1.9.5"
     androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
@@ -149,6 +164,19 @@ dependencies {
     androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
     androidTestImplementation "com.android.support:support-annotations:${SUPPORT_LIBS_VERSION}"
 
+    implementation "com.android.support:design:${SUPPORT_LIBS_VERSION}"
+    implementation "com.android.support:support-v4:${SUPPORT_LIBS_VERSION}"
+    implementation "com.android.support:support-dynamic-animation:${SUPPORT_LIBS_VERSION}"
+    implementation "com.android.support:recyclerview-v7:${SUPPORT_LIBS_VERSION}"
+    implementation "com.android.support:appcompat-v7:${SUPPORT_LIBS_VERSION}"
+    implementation "com.android.support:preference-v7:${SUPPORT_LIBS_VERSION}"
+
+
+    implementation 'com.google.protobuf.nano:protobuf-javanano:3.0.0-alpha-7'
+    implementation "com.google.guava:guava:26.0-android"
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4'
+
+    quickstepImplementation fileTree(dir: "quickstep/libs", include: 'sysui_shared.jar')
 }
 
 protobuf {

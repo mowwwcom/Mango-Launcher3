@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2015 Google Inc.
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2015 Google Inc.
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -17,41 +16,46 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:key="pref_key_storage_settings"
+        android:key="pref_key_appearance_settings"
         android:title="@string/appearance">
 
         <ListPreference
             android:defaultValue=""
             android:entries="@array/icon_shape_override_paths_names"
             android:entryValues="@array/icon_shape_override_paths_values"
+            android:icon="@drawable/ic_shape"
             android:key="pref_override_icon_shape"
             android:persistent="false"
             android:summary="%s"
-            android:title="@string/icon_shape_override_label"/>
+            android:title="@string/icon_shape_override_label" />
 
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/qsb_position_names"
             android:entryValues="@array/qsb_position_values"
+            android:icon="@drawable/ic_search"
             android:key="pref_qsb_position"
             android:persistent="true"
             android:summary="%s"
-            android:title="@string/qsb_position"/>
+            android:title="@string/qsb_position" />
 
         <com.android.launcher3.style.LauncherStylePreference
             android:defaultValue=""
             android:entries="@array/launcher_style_names"
             android:entryValues="@array/launcher_style_values"
+            android:icon="@drawable/ic_launcher_style"
             android:key="pref_launcher_style"
             android:persistent="true"
             android:summary="%s"
-            android:title="@string/launcher_style"/>
+            android:title="@string/launcher_style" />
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="pref_key_storage_settings"
+        android:key="pref_key_home_settings"
         android:title="@string/settings_button_text">
+
         <com.android.launcher3.views.ButtonPreference
+            android:icon="@drawable/ic_badging"
             android:key="pref_icon_badging"
             android:persistent="false"
             android:title="@string/icon_badging_title"
@@ -60,7 +64,7 @@
                 <!-- This extra highlights the "Allow icon badges" field in Notification settings -->
                 <extra
                     android:name=":settings:fragment_args_key"
-                    android:value="notification_badging"/>
+                    android:value="notification_badging" />
             </intent>
         </com.android.launcher3.views.ButtonPreference>
 
@@ -69,21 +73,23 @@
             android:key="pref_add_icon_to_home"
             android:persistent="true"
             android:summary="@string/auto_add_shortcuts_description"
-            android:title="@string/auto_add_shortcuts_label"/>
+            android:title="@string/auto_add_shortcuts_label" />
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="pref_add_dashboard_to_home"
+            android:icon="@drawable/ic_smart_b"
             android:persistent="true"
             android:summary="@string/enable_dashboard_description"
-            android:title="@string/enable_dashboard_label"/>
+            android:title="@string/enable_dashboard_label" />
 
         <SwitchPreference
             android:defaultValue="@bool/allow_rotation"
+            android:icon="@drawable/ic_rotate"
             android:key="pref_allowRotation"
             android:persistent="true"
             android:summary="@string/allow_rotation_desc"
-            android:title="@string/allow_rotation_title"/>
+            android:title="@string/allow_rotation_title" />
 
     </PreferenceCategory>
 </PreferenceScreen>

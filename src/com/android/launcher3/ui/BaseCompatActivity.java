@@ -2,6 +2,7 @@ package com.android.launcher3.ui;
 
 
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,7 +20,7 @@ import com.android.launcher3.util.security.PermissionManager;
 
 /**
  * @author tic
- * created on 18-9-17
+ *         created on 18-9-17
  */
 public abstract class BaseCompatActivity extends AppCompatActivity implements PermissionManager.Callback {
 
@@ -43,7 +44,6 @@ public abstract class BaseCompatActivity extends AppCompatActivity implements Pe
             setSupportActionBar(mToolbar);
         }
 
-
         View view = loadLayout(mContent);
         if (view != null) {
             mContent.removeAllViews();
@@ -52,6 +52,12 @@ public abstract class BaseCompatActivity extends AppCompatActivity implements Pe
 
         mSecurity = new PermissionManager(this);
         mSecurity.requestPermission();
+    }
+
+    protected void hideToolbar(boolean hide) {
+        if (mToolbar != null) {
+            mToolbar.setVisibility(hide ? View.GONE : View.VISIBLE);
+        }
     }
 
     protected void showHomeButton() {
@@ -93,7 +99,7 @@ public abstract class BaseCompatActivity extends AppCompatActivity implements Pe
     private View loadLayout(ViewGroup group) {
         int layout = layout();
         if (layout == 0) {
-            throw new RuntimeException("please override layout method");
+            return null;
         } else {
             return LayoutInflater.from(this).inflate(layout, group, false);
         }

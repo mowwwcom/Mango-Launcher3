@@ -1,0 +1,8 @@
+def deps = [:]
+
+def views = [:]
+views.circular = "com.github.aliab:circular-music-progressbar:v1.3.0"
+deps.views = views
+
+ext.deps = [:]
+ext.deps = deps

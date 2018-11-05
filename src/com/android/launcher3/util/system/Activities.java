@@ -15,4 +15,9 @@ public class Activities {
         Intent intent = new Intent(action);
         context.startActivity(intent);
     }
+
+    public static void goTo(Context context, Class clazz) {
+        Intent intent = new Intent(context, clazz);
+        context.startActivity(intent);
+    }
 }
