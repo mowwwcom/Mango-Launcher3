@@ -12,19 +12,26 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.android.launcher3.R;
 import com.android.launcher3.uioverrides.progress.CircularMusicProgressBar;
+import com.mango.oath.wechat.Wechat;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
 
 /**
  * @author tic
- *         created on 18-11-3
+ * created on 18-11-3
  */
 public class LoginFragment extends Fragment implements View.OnClickListener {
 
     private CircularMusicProgressBar mAvatar;
     private View mRegister;
     private View mLogin;
+    /**
+     * check again when receive data
+     */
+    private String csrf;
 
     @Nullable
     @Override
@@ -46,6 +53,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
         mRegister.setOnClickListener(this);
         mLogin.setOnClickListener(this);
+
+        view.findViewById(R.id.login_facebook).setOnClickListener(this);
+        view.findViewById(R.id.login_google).setOnClickListener(this);
+        view.findViewById(R.id.login_twitter).setOnClickListener(this);
+        view.findViewById(R.id.login_wechat).setOnClickListener(this);
+        view.findViewById(R.id.login_weibo).setOnClickListener(this);
     }
 
     @Override
@@ -61,13 +74,30 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     mAvatar.clearAnimation();
                     UserInfoFragment f = new UserInfoFragment();
                     setTransition(f);
-                    replace(f, mLogin, UserInfoFragment.SHARED_ELEMENT,false);
+                    replace(f, mLogin, UserInfoFragment.SHARED_ELEMENT, false);
                 }, 3000);
                 break;
             case R.id.btn_register:
                 RegisterFragment fragment = new RegisterFragment();
                 setTransition(fragment);
-                replace(fragment, mRegister, RegisterFragment.SHARED_ELEMENT,true);
+                replace(fragment, mRegister, RegisterFragment.SHARED_ELEMENT, true);
+                break;
+            case R.id.login_facebook:
+                Toast.makeText(activity, "not support right now", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.login_google:
+                Toast.makeText(activity, "not support right now", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.login_twitter:
+                Toast.makeText(activity, "not support right now", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.login_wechat:
+                IWXAPI api = Wechat.getApi(activity);
+                csrf = Wechat.createCSRF();
+                Wechat.sendAuthRequest(api, csrf);
+                break;
+            case R.id.login_weibo:
+                Toast.makeText(activity, "not support right now", Toast.LENGTH_LONG).show();
                 break;
             default:
                 break;

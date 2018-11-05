@@ -246,24 +246,22 @@ public class CellLayout extends ViewGroup {
                 new InterruptibleInOutAnimator(this, duration, fromAlphaValue, toAlphaValue);
             anim.getAnimator().setInterpolator(mEaseOutInterpolator);
             final int thisIndex = i;
-            anim.getAnimator().addUpdateListener(new AnimatorUpdateListener() {
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    final Bitmap outline = (Bitmap)anim.getTag();
+            anim.getAnimator().addUpdateListener(animation -> {
+                final Bitmap outline = (Bitmap)anim.getTag();
 
-                    // If an animation is started and then stopped very quickly, we can still
-                    // get spurious updates we've cleared the tag. Guard against this.
-                    if (outline == null) {
-                        if (LOGD) {
-                            Object val = animation.getAnimatedValue();
-                            Log.d(TAG, "anim " + thisIndex + " update: " + val +
-                                     ", isStopped " + anim.isStopped());
-                        }
-                        // Try to prevent it from continuing to run
-                        animation.cancel();
-                    } else {
-                        mDragOutlineAlphas[thisIndex] = (Float) animation.getAnimatedValue();
-                        CellLayout.this.invalidate(mDragOutlines[thisIndex]);
+                // If an animation is started and then stopped very quickly, we can still
+                // get spurious updates we've cleared the tag. Guard against this.
+                if (outline == null) {
+                    if (LOGD) {
+                        Object val = animation.getAnimatedValue();
+                        Log.d(TAG, "anim " + thisIndex + " update: " + val +
+                                 ", isStopped " + anim.isStopped());
                     }
+                    // Try to prevent it from continuing to run
+                    animation.cancel();
+                } else {
+                    mDragOutlineAlphas[thisIndex] = (Float) animation.getAnimatedValue();
+                    CellLayout.this.invalidate(mDragOutlines[thisIndex]);
                 }
             });
             // The animation holds a reference to the drag outline bitmap as long is it's

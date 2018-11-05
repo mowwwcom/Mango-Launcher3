@@ -90,6 +90,7 @@
                 android:paddingTop="5dp">
 
                 <ImageView
+                    android:id="@+id/login_google"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
@@ -98,6 +99,7 @@
                     android:src="@drawable/ic_google" />
 
                 <ImageView
+                    android:id="@+id/login_facebook"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
@@ -106,6 +108,7 @@
                     android:src="@drawable/ic_facebook" />
 
                 <ImageView
+                    android:id="@+id/login_twitter"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
@@ -114,6 +117,7 @@
                     android:src="@drawable/ic_twitter" />
 
                 <ImageView
+                    android:id="@+id/login_wechat"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
@@ -122,6 +126,7 @@
                     android:src="@drawable/ic_wechat" />
 
                 <ImageView
+                    android:id="@+id/login_weibo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"

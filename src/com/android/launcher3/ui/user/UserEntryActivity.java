@@ -3,8 +3,6 @@ package com.android.launcher3.ui.user;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.android.launcher3.R;
 import com.android.launcher3.ui.BaseCompatActivity;
