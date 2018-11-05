@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -90,7 +91,7 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
         if (hasVerticalHotseat) {
             mContent.setGridSize(1, idp.numHotseatIcons);
         } else {
-            mContent.setGridSize(idp.numHotseatIcons, 1);
+            mContent.setGridSize(idp.numHotseatIcons, 2);
         }
 
         if (!FeatureFlags.NO_ALL_APPS_ICON) {
@@ -174,9 +175,10 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
         InsettableFrameLayout.dispatchInsets(this, insets);
     }
 
-    public void addQsb(View qsb) {
-        CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 0, 4, 1);
+    public void addQsb(View qsb, int id) {
+        CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 0, 1, 1);
         lp.canReorder = false;
-        mContent.addViewToCellLayout(qsb, -1, qsb.getId(), lp, true);
+        boolean success = mContent.addViewToCellLayout(qsb, 0, id, lp, true);
+        Log.e("Hotseat", "addQsb success? " + success);
     }
 }

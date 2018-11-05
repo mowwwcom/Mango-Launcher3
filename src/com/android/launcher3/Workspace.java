@@ -507,29 +507,26 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         }
         // Add the first page
         CellLayout firstPage = insertNewWorkspaceScreen(Workspace.FIRST_SCREEN_ID, 0);
-        // Always add a QSB on the first screen.
-        if (qsb == null) {
-            // In transposed layout, we add the QSB in the Grid. As workspace does not touch the
-            // edges, we do not need a full width QSB.
-            qsb = LayoutInflater.from(getContext())
-                    .inflate(R.layout.search_container_workspace,
-                            position == QsbHelper.POSITION_HOTSEAT ? null : firstPage,
-                            false);
-        }
-
         if (position < QsbHelper.POSITION_HOTSEAT) {
-            // to homescreen
             int cellY = position == QsbHelper.POSITION_TOP ? 0 : firstPage.getCountY() - 1;
-            CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, cellY,
-                    firstPage.getCountX(), 1);
+            CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, cellY, firstPage.getCountX(), 1);
             lp.canReorder = false;
-            if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {
+            // Always add a QSB on the first screen.
+            if (qsb == null) {
+                qsb = LayoutInflater.from(getContext())
+                        .inflate(R.layout.search_container_workspace, firstPage, false);
+            }
+            if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_hotseat, lp, true)) {
                 Log.e(TAG, "Failed to add to item at (0, 0) to CellLayout");
             }
         } else {
             // to hotseat
-            Hotseat hotseat = mLauncher.getHotseat();
-            hotseat.addQsb(qsb);
+            if (qsb == null) {
+                Hotseat hotseat = mLauncher.getHotseat();
+                qsb = LayoutInflater.from(getContext())
+                        .inflate(R.layout.search_container_workspace, hotseat.getLayout(), false);
+                hotseat.addQsb(qsb, R.id.search_container_hotseat);
+            }
         }
     }
 

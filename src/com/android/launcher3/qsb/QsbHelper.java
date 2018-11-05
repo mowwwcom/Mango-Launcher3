@@ -28,7 +28,8 @@ public class QsbHelper {
     }
 
     public static int getAppliedValue(Context context) {
-        return getDevicePrefs(context).getInt(KEY_PREFERENCE, POSITION_TOP);
+//        return getDevicePrefs(context).getInt(KEY_PREFERENCE, POSITION_TOP);
+        return POSITION_HOTSEAT;
     }
 
     public static void handlePreferenceUI(ListPreference preference) {
