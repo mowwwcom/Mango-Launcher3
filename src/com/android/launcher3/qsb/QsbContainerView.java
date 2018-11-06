@@ -18,6 +18,7 @@ package com.android.launcher3.qsb;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetHostView;
@@ -29,6 +30,7 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +46,7 @@ import com.android.launcher3.config.FeatureFlags;
 /**
  * A frame layout which contains a QSB. This internally uses fragment to bind the view, which
  * allows it to contain the logic for {@link Fragment#startActivityForResult(Intent, int)}.
- *
+ * <p>
  * Note: AppWidgetManagerCompat can be disabled using FeatureFlags. In QSB, we should use
  * AppWidgetManager directly, so that it keeps working in that case.
  */
@@ -69,6 +71,12 @@ public class QsbContainerView extends FrameLayout {
 
     protected void setPaddingUnchecked(int left, int top, int right, int bottom) {
         super.setPadding(left, top, right, bottom);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        Log.e("QSB", "onDetachedFromWindow");
     }
 
     /**
@@ -228,6 +236,12 @@ public class QsbContainerView extends FrameLayout {
         public boolean isQsbEnabled() {
             return FeatureFlags.QSB_ON_FIRST_SCREEN;
         }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+        }
+
     }
 
     /**

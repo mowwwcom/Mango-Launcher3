@@ -24,6 +24,8 @@ import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.WallpaperManager;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
@@ -502,30 +504,25 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
      */
     public void bindAndInitFirstWorkspaceScreen(View qsb) {
         int position = QsbHelper.getAppliedValue(mLauncher);
-        if (!FeatureFlags.QSB_ON_FIRST_SCREEN || position == QsbHelper.POSITION_NONE) {
+        if (!FeatureFlags.QSB_ON_FIRST_SCREEN) {
             return;
         }
         // Add the first page
         CellLayout firstPage = insertNewWorkspaceScreen(Workspace.FIRST_SCREEN_ID, 0);
-        if (position < QsbHelper.POSITION_HOTSEAT) {
+        if (position == QsbHelper.POSITION_NONE) {
+            return;
+        }
+        if (qsb == null) {
+            qsb = LayoutInflater.from(getContext())
+                    .inflate(R.layout.view_search_container, firstPage, false);
+        }
+        if (position < QsbHelper.POSITION_HOT_SEAT) {
             int cellY = position == QsbHelper.POSITION_TOP ? 0 : firstPage.getCountY() - 1;
             CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, cellY, firstPage.getCountX(), 1);
             lp.canReorder = false;
             // Always add a QSB on the first screen.
-            if (qsb == null) {
-                qsb = LayoutInflater.from(getContext())
-                        .inflate(R.layout.search_container_workspace, firstPage, false);
-            }
-            if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_hotseat, lp, true)) {
+            if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {
                 Log.e(TAG, "Failed to add to item at (0, 0) to CellLayout");
-            }
-        } else {
-            // to hotseat
-            if (qsb == null) {
-                Hotseat hotseat = mLauncher.getHotseat();
-                qsb = LayoutInflater.from(getContext())
-                        .inflate(R.layout.search_container_workspace, hotseat.getLayout(), false);
-                hotseat.addQsb(qsb, R.id.search_container_hotseat);
             }
         }
     }

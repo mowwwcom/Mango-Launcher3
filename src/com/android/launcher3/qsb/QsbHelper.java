@@ -1,11 +1,14 @@
 package com.android.launcher3.qsb;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
+import android.util.Log;
 
+import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.util.OverrideApplyHandler;
@@ -14,22 +17,31 @@ import static com.android.launcher3.Utilities.getDevicePrefs;
 
 /**
  * @author tic
- * created on 18-10-10
+ *         created on 18-10-10
  */
 public class QsbHelper {
     public static final String KEY_PREFERENCE = "pref_qsb_position";
     public static final int POSITION_NONE = -1;
     public static final int POSITION_TOP = 0;
     public static final int POSITION_BOTTOM = 1;
-    public static final int POSITION_HOTSEAT = 2;
+    public static final int POSITION_HOT_SEAT = 2;
+
+    private static Boolean inHotseat = null;
 
     public static boolean isSupported(Activity activity) {
         return true;
     }
 
     public static int getAppliedValue(Context context) {
-//        return getDevicePrefs(context).getInt(KEY_PREFERENCE, POSITION_TOP);
-        return POSITION_HOTSEAT;
+        return getDevicePrefs(context).getInt(KEY_PREFERENCE, POSITION_TOP);
+//        return POSITION_HOT_SEAT;
+    }
+
+    public static boolean inHotSeat(Context context) {
+        if (inHotseat == null) {
+            inHotseat = getAppliedValue(context) == POSITION_HOT_SEAT;
+        }
+        return inHotseat;
     }
 
     public static void handlePreferenceUI(ListPreference preference) {
@@ -56,6 +68,7 @@ public class QsbHelper {
                         mContext.getString(R.string.qsb_position_override_progress),
                         true /* indeterminate */,
                         false /* cancelable */);
+                Launcher.removeQSB();
                 OverrideApplyHandler.applyWith(mContext, () -> {
                     // Synchronously write the preference.
                     getDevicePrefs(mContext).edit().putInt(KEY_PREFERENCE, newValue).commit();

@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.logging.UserEventDispatcher.LogContainerProvider;
+import com.android.launcher3.qsb.QsbHelper;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Action;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ControlType;
@@ -46,6 +47,7 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
 
     @ViewDebug.ExportedProperty(category = "launcher")
     private boolean mHasVerticalHotseat;
+    private View qsb;
 
     public Hotseat(Context context) {
         this(context, null);
@@ -84,14 +86,14 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
         mContent = findViewById(R.id.layout);
     }
 
-    void resetLayout(boolean hasVerticalHotseat) {
+    void resetLayout(boolean hasVerticalHotseat, boolean inHotseat) {
         mContent.removeAllViewsInLayout();
         mHasVerticalHotseat = hasVerticalHotseat;
         InvariantDeviceProfile idp = mLauncher.getDeviceProfile().inv;
         if (hasVerticalHotseat) {
             mContent.setGridSize(1, idp.numHotseatIcons);
         } else {
-            mContent.setGridSize(idp.numHotseatIcons, 2);
+            mContent.setGridSize(idp.numHotseatIcons, inHotseat ? 2 : 1);
         }
 
         if (!FeatureFlags.NO_ALL_APPS_ICON) {
@@ -131,6 +133,14 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
             CellLayout.LayoutParams lp = new CellLayout.LayoutParams(x, y, 1, 1);
             lp.canReorder = false;
             mContent.addViewToCellLayout(allAppsButton, -1, allAppsButton.getId(), lp, true);
+        }
+
+        if (qsb == null && inHotseat) {
+            qsb = LayoutInflater.from(getContext())
+                    .inflate(R.layout.view_search_container, mContent, false);
+            CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 1, 5, 1);
+            lp.canReorder = false;
+            mContent.addViewToCellLayout(qsb, -1, R.id.search_container_hotseat, lp, true);
         }
     }
 
@@ -173,12 +183,5 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
 
         setLayoutParams(lp);
         InsettableFrameLayout.dispatchInsets(this, insets);
-    }
-
-    public void addQsb(View qsb, int id) {
-        CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 0, 1, 1);
-        lp.canReorder = false;
-        boolean success = mContent.addViewToCellLayout(qsb, 0, id, lp, true);
-        Log.e("Hotseat", "addQsb success? " + success);
     }
 }

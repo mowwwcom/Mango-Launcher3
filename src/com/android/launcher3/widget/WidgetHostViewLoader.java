@@ -96,19 +96,16 @@ public class WidgetHostViewLoader implements DragController.DragListener {
             return false;
         }
 
-        mBindWidgetRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mWidgetLoadingId = mLauncher.getAppWidgetHost().allocateAppWidgetId();
-                if (LOGD) {
-                    Log.d(TAG, "Binding widget, id: " + mWidgetLoadingId);
-                }
-                if(AppWidgetManagerCompat.getInstance(mLauncher).bindAppWidgetIdIfAllowed(
-                        mWidgetLoadingId, pInfo, options)) {
+        mBindWidgetRunnable = () -> {
+            mWidgetLoadingId = mLauncher.getAppWidgetHost().allocateAppWidgetId();
+            if (LOGD) {
+                Log.d(TAG, "Binding widget, id: " + mWidgetLoadingId);
+            }
+            if(AppWidgetManagerCompat.getInstance(mLauncher).bindAppWidgetIdIfAllowed(
+                    mWidgetLoadingId, pInfo, options)) {
 
-                    // Widget id bound. Inflate the widget.
-                    mHandler.post(mInflateWidgetRunnable);
-                }
+                // Widget id bound. Inflate the widget.
+                mHandler.post(mInflateWidgetRunnable);
             }
         };
 
@@ -122,7 +119,7 @@ public class WidgetHostViewLoader implements DragController.DragListener {
                     return;
                 }
                 AppWidgetHostView hostView = mLauncher.getAppWidgetHost().createView(
-                        (Context) mLauncher, mWidgetLoadingId, pInfo);
+                        mLauncher, mWidgetLoadingId, pInfo);
                 mInfo.boundWidget = hostView;
 
                 // We used up the widget Id in binding the above view.

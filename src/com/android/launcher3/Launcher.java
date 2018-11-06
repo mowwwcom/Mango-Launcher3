@@ -22,7 +22,9 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.Fragment;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.content.ActivityNotFoundException;
@@ -47,6 +49,7 @@ import android.os.Process;
 import android.os.StrictMode;
 import android.os.UserHandle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.text.method.TextKeyListener;
 import android.util.Log;
@@ -88,6 +91,7 @@ import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.popup.PopupContainerWithArrow;
 import com.android.launcher3.popup.PopupDataProvider;
+import com.android.launcher3.qsb.QsbHelper;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.states.InternalStateHandler;
 import com.android.launcher3.states.RotationHelper;
@@ -1795,7 +1799,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         mAppWidgetHost.clearViews();
 
         if (mHotseat != null) {
-            mHotseat.resetLayout(mDeviceProfile.isVerticalBarLayout());
+            mHotseat.resetLayout(mDeviceProfile.isVerticalBarLayout(),
+                    QsbHelper.inHotSeat(this));
         }
         TraceHelper.endSection("startBinding");
     }
@@ -1832,7 +1837,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
             long screenId = orderedScreenIds.get(i);
             if (!FeatureFlags.QSB_ON_FIRST_SCREEN || screenId != Workspace.FIRST_SCREEN_ID) {
                 // No need to bind the first screen, as its always bound.
-                if(mWorkspace.getScreenOrder().indexOf(screenId) < 0) {
+                if (mWorkspace.getScreenOrder().indexOf(screenId) < 0) {
                     // screen not exist
                     mWorkspace.insertNewWorkspaceScreenBeforeEmptyScreen(screenId);
                 }
