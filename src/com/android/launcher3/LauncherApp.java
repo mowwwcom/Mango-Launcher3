@@ -2,6 +2,7 @@ package com.android.launcher3;
 
 import android.app.Application;
 
+import com.android.launcher3.qsb.QsbHelper;
 import com.android.launcher3.style.LauncherStyleHandler;
 
 /**
@@ -16,5 +17,6 @@ public class LauncherApp extends Application {
 
         // confirm launcher style
         LauncherStyleHandler.getAppliedValue(this);
+        QsbHelper.inHotSeat(this);
     }
 }

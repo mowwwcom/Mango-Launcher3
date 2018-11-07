@@ -512,11 +512,11 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         if (position == QsbHelper.POSITION_NONE) {
             return;
         }
-        if (qsb == null) {
-            qsb = LayoutInflater.from(getContext())
-                    .inflate(R.layout.view_search_container, firstPage, false);
-        }
         if (position < QsbHelper.POSITION_HOT_SEAT) {
+            if (qsb == null) {
+                qsb = LayoutInflater.from(getContext())
+                        .inflate(R.layout.view_search_container, firstPage, false);
+            }
             int cellY = position == QsbHelper.POSITION_TOP ? 0 : firstPage.getCountY() - 1;
             CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, cellY, firstPage.getCountX(), 1);
             lp.canReorder = false;

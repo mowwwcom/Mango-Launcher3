@@ -1,14 +1,11 @@
 package com.android.launcher3.qsb;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
-import android.util.Log;
 
-import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.util.OverrideApplyHandler;
@@ -34,7 +31,6 @@ public class QsbHelper {
 
     public static int getAppliedValue(Context context) {
         return getDevicePrefs(context).getInt(KEY_PREFERENCE, POSITION_TOP);
-//        return POSITION_HOT_SEAT;
     }
 
     public static boolean inHotSeat(Context context) {
@@ -68,7 +64,6 @@ public class QsbHelper {
                         mContext.getString(R.string.qsb_position_override_progress),
                         true /* indeterminate */,
                         false /* cancelable */);
-                Launcher.removeQSB();
                 OverrideApplyHandler.applyWith(mContext, () -> {
                     // Synchronously write the preference.
                     getDevicePrefs(mContext).edit().putInt(KEY_PREFERENCE, newValue).commit();
