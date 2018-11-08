@@ -184,5 +184,6 @@
     <string name="register">注册</string>
     <string name="hint_account">请输入账号</string>
     <string name="hint_password">请输入密码</string>
+    <string name="clock">时钟</string>
 
 </resources>

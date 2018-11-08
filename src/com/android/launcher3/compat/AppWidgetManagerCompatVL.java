@@ -61,6 +61,7 @@ class AppWidgetManagerCompatVL extends AppWidgetManagerCompat {
             if (FeatureFlags.ENABLE_CUSTOM_WIDGETS) {
                 providers.addAll(CustomWidgetParser.getCustomWidgets(mContext));
             }
+
             return providers;
         }
         // Only get providers for the given package/user.
@@ -82,7 +83,7 @@ class AppWidgetManagerCompatVL extends AppWidgetManagerCompat {
 
     @Override
     public boolean bindAppWidgetIdIfAllowed(int appWidgetId, AppWidgetProviderInfo info,
-            Bundle options) {
+                                            Bundle options) {
         if (FeatureFlags.GO_DISABLE_WIDGETS) {
             return false;
         }

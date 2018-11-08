@@ -1,8 +1,6 @@
 
 package com.android.launcher3.model;
 
-import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_HIDE_FROM_PICKER;
-
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -34,9 +32,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_HIDE_FROM_PICKER;
+
 /**
  * Widgets data model that is used by the adapters of the widget views and controllers.
- *
+ * <p>
  * <p> The widgets and shortcuts are organized using package name as its index.
  */
 public class WidgetsModel {
@@ -112,7 +112,7 @@ public class WidgetsModel {
     }
 
     private synchronized void setWidgetsAndShortcuts(ArrayList<WidgetItem> rawWidgetsShortcuts,
-            LauncherAppState app, @Nullable PackageUserKey packageUser) {
+                                                     LauncherAppState app, @Nullable PackageUserKey packageUser) {
         if (DEBUG) {
             Log.d(TAG, "addWidgetsAndShortcuts, widgetsShortcuts#=" + rawWidgetsShortcuts.size());
         }
@@ -189,7 +189,7 @@ public class WidgetsModel {
             if (pInfo == null) {
                 pInfo = new PackageItemInfo(packageName);
                 pInfo.user = item.user;
-                tmpPackageItemInfos.put(packageName,  pInfo);
+                tmpPackageItemInfos.put(packageName, pInfo);
             } else if (!myUser.equals(pInfo.user)) {
                 // Keep updating the user, until we get the primary user.
                 pInfo.user = item.user;

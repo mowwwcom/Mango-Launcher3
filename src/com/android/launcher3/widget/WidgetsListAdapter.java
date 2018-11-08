@@ -30,12 +30,10 @@ import com.android.launcher3.R;
 import com.android.launcher3.WidgetPreviewLoader;
 import com.android.launcher3.model.WidgetItem;
 import com.android.launcher3.util.LabelComparator;
-import com.android.launcher3.util.PackageUserKey;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -192,6 +190,7 @@ public class WidgetsListAdapter extends Adapter<WidgetsRowViewHolder> {
         }
     }
 
+    @Override
     public boolean onFailedToRecycleView(WidgetsRowViewHolder holder) {
         // If child views are animating, then the RecyclerView may choose not to recycle the view,
         // causing extraneous onCreateViewHolder() calls.  It is safe in this case to continue
