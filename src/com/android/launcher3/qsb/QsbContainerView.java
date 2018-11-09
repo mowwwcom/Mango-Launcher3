@@ -18,13 +18,10 @@ package com.android.launcher3.qsb;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.SearchManager;
 import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -219,6 +216,7 @@ public class QsbContainerView extends FrameLayout {
         public void onDestroy() {
             mQsbWidgetHost.stopListening();
             super.onDestroy();
+            Log.e("workspace","qsb fragment destroy");
         }
 
         private void rebindFragment() {
@@ -237,11 +235,6 @@ public class QsbContainerView extends FrameLayout {
             return FeatureFlags.QSB_ON_FIRST_SCREEN;
         }
 
-        @Override
-        public void onDestroyView() {
-            super.onDestroyView();
-        }
-
     }
 
     /**
@@ -251,25 +244,26 @@ public class QsbContainerView extends FrameLayout {
      * provided by the package.
      */
     public static AppWidgetProviderInfo getSearchWidgetProvider(Context context) {
-        SearchManager searchManager =
-                (SearchManager) context.getSystemService(Context.SEARCH_SERVICE);
-        ComponentName searchComponent = searchManager.getGlobalSearchActivity();
-        if (searchComponent == null) return null;
-        String providerPkg = searchComponent.getPackageName();
-
-        AppWidgetProviderInfo defaultWidgetForSearchPackage = null;
-
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        for (AppWidgetProviderInfo info : appWidgetManager.getInstalledProviders()) {
-            if (info.provider.getPackageName().equals(providerPkg) && info.configure == null) {
-                if ((info.widgetCategory & AppWidgetProviderInfo.WIDGET_CATEGORY_SEARCHBOX) != 0) {
-                    return info;
-                } else if (defaultWidgetForSearchPackage == null) {
-                    defaultWidgetForSearchPackage = info;
-                }
-            }
-        }
-        return defaultWidgetForSearchPackage;
+        return null;
+//        SearchManager searchManager =
+//                (SearchManager) context.getSystemService(Context.SEARCH_SERVICE);
+//        ComponentName searchComponent = searchManager.getGlobalSearchActivity();
+//        if (searchComponent == null) return null;
+//        String providerPkg = searchComponent.getPackageName();
+//
+//        AppWidgetProviderInfo defaultWidgetForSearchPackage = null;
+//
+//        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+//        for (AppWidgetProviderInfo info : appWidgetManager.getInstalledProviders()) {
+//            if (info.provider.getPackageName().equals(providerPkg) && info.configure == null) {
+//                if ((info.widgetCategory & AppWidgetProviderInfo.WIDGET_CATEGORY_SEARCHBOX) != 0) {
+//                    return info;
+//                } else if (defaultWidgetForSearchPackage == null) {
+//                    defaultWidgetForSearchPackage = info;
+//                }
+//            }
+//        }
+//        return defaultWidgetForSearchPackage;
     }
 
     private static class QsbWidgetHost extends AppWidgetHost {

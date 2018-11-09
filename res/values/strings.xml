@@ -383,5 +383,6 @@
     <string name="register">Register</string>
     <string name="hint_account">enter account</string>
     <string name="hint_password">enter password</string>
+    <string name="clock">clock</string>
 
 </resources>

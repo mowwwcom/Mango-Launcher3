@@ -31,6 +31,7 @@ public class QsbHelper {
 
     public static int getAppliedValue(Context context) {
         return getDevicePrefs(context).getInt(KEY_PREFERENCE, POSITION_TOP);
+//        return POSITION_HOT_SEAT;
     }
 
     public static boolean inHotSeat(Context context) {

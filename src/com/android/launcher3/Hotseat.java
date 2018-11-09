@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.logging.UserEventDispatcher.LogContainerProvider;
-import com.android.launcher3.qsb.QsbHelper;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Action;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ControlType;
@@ -47,7 +46,6 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
 
     @ViewDebug.ExportedProperty(category = "launcher")
     private boolean mHasVerticalHotseat;
-    private View qsb;
 
     public Hotseat(Context context) {
         this(context, null);
@@ -135,12 +133,17 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
             mContent.addViewToCellLayout(allAppsButton, -1, allAppsButton.getId(), lp, true);
         }
 
-        if (qsb == null && inHotseat) {
-            qsb = LayoutInflater.from(getContext())
-                    .inflate(R.layout.view_search_container, mContent, false);
-            CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 1, 5, 1);
-            lp.canReorder = false;
-            mContent.addViewToCellLayout(qsb, -1, R.id.search_container_hotseat, lp, true);
+        if (inHotseat) {
+            View qsb = mContent.findViewById(R.id.search_container_hotseat);
+            if (qsb == null) {
+                qsb = LayoutInflater.from(getContext())
+                        .inflate(R.layout.view_search_container, mContent, false);
+                CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 1, 5, 1);
+                lp.canReorder = false;
+                if(mContent.addViewToCellLayout(qsb, -1, R.id.search_container_hotseat, lp, true)) {
+                    Log.e("workspace", "hotseat add qsb");
+                }
+            }
         }
     }
 
@@ -183,5 +186,11 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
 
         setLayoutParams(lp);
         InsettableFrameLayout.dispatchInsets(this, insets);
+    }
+
+    @Override
+    protected void detachViewFromParent(View view) {
+        super.detachViewFromParent(view);
+        Log.e("workspace", "detachView:" + view.getClass().getSimpleName());
     }
 }

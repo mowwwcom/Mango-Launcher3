@@ -24,8 +24,6 @@ import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.WallpaperManager;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
@@ -523,6 +521,8 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             // Always add a QSB on the first screen.
             if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {
                 Log.e(TAG, "Failed to add to item at (0, 0) to CellLayout");
+            } else {
+                Log.e(TAG, "add qsb layer success");
             }
         }
     }
@@ -531,11 +531,15 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         // Disable all layout transitions before removing all pages to ensure that we don't get the
         // transition animations competing with us changing the scroll when we add pages
         disableLayoutTransitions();
-
         // Recycle the QSB widget
-        View qsb = findViewById(R.id.search_container_workspace);
+        View qsb =
+                QsbHelper.inHotSeat(mLauncher) ?
+                mLauncher.getHotseat().findViewById(R.id.search_container_hotseat) :
+                findViewById(R.id.search_container_workspace);
+        Log.e(TAG, "remove qsb layer:qsb null? " + (qsb == null));
         if (qsb != null) {
-            ((ViewGroup) qsb.getParent()).removeView(qsb);
+            mLauncher.getHotseat().removeView(qsb);
+            // ((ViewGroup) qsb.getParent()).removeView(qsb);
         }
 
         // Remove the pages and clear the screen models

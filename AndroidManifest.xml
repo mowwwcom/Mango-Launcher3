@@ -59,6 +59,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+
 
     <application
         android:name="com.android.launcher3.LauncherApp"
@@ -143,7 +145,18 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/search_appwidget_info"/>
+                android:resource="@xml/appwidget_search_bar"/>
+        </receiver>
+
+        <receiver
+            android:name="com.android.launcher3.widget.custom.ClockWidget"
+            android:label="@string/clock">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/appwidget_clock"/>
         </receiver>
 
     </application>
