@@ -161,6 +161,7 @@
             android:label="@string/clock">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATETIME"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
