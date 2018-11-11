@@ -32,6 +32,7 @@ import com.android.launcher3.compat.PackageInstallerCompat;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.model.ClassifyModel;
+import com.android.launcher3.model.LocationModel;
 import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.util.ConfigMonitor;
 import com.android.launcher3.util.Preconditions;
@@ -52,6 +53,8 @@ public class LauncherAppState {
     private final Context mContext;
     private final LauncherModel mModel;
     private final ClassifyModel mClassifyModel;
+    private final LocationModel mLocationModel;
+
     private final IconCache mIconCache;
     private final WidgetPreviewLoader mWidgetCache;
     private final InvariantDeviceProfile mInvariantDeviceProfile;
@@ -96,7 +99,7 @@ public class LauncherAppState {
         mWidgetCache = new WidgetPreviewLoader(mContext, mIconCache);
         mClassifyModel = new ClassifyModel(this);
         mModel = new LauncherModel(this, mIconCache, AppFilter.newInstance(mContext));
-
+        mLocationModel = new LocationModel();
         LauncherAppsCompat.getInstance(mContext).addOnAppsChangedCallback(mModel);
 
         // Register intent receivers
@@ -195,5 +198,9 @@ public class LauncherAppState {
             }
         }
         return mLauncherProvider;
+    }
+
+    public LocationModel getLocationModel() {
+        return mLocationModel;
     }
 }

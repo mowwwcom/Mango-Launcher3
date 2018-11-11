@@ -70,12 +70,6 @@ public class QsbContainerView extends FrameLayout {
         super.setPadding(left, top, right, bottom);
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        Log.e("QSB", "onDetachedFromWindow");
-    }
-
     /**
      * A fragment to display the QSB.
      */
@@ -216,7 +210,6 @@ public class QsbContainerView extends FrameLayout {
         public void onDestroy() {
             mQsbWidgetHost.stopListening();
             super.onDestroy();
-            Log.e("workspace","qsb fragment destroy");
         }
 
         private void rebindFragment() {

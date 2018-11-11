@@ -50,7 +50,7 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
-            // signingConfig signingConfigs.debug
+            signingConfig signingConfigs.debug
         }
 
 //        release {
@@ -172,6 +172,7 @@ dependencies {
     implementation "com.android.support:preference-v7:${SUPPORT_LIBS_VERSION}"
     implementation 'com.google.protobuf.nano:protobuf-javanano:3.0.0-alpha-7'
     implementation 'com.google.guava:guava:26.0-android'
+    implementation 'com.amap.api:location:latest.integration'
 
     quickstepImplementation fileTree(dir: "quickstep/libs", include: 'sysui_shared.jar')
     implementation files('oauth/libs/wechat-sdk-android-with-mta-5.1.6.jar')

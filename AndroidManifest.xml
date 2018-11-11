@@ -61,6 +61,14 @@
 
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
+    <!--用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!--用于访问GPS定位-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!--用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <!--用于申请调用A-GPS模块-->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
 
     <application
         android:name="com.android.launcher3.LauncherApp"
@@ -158,6 +166,10 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/appwidget_clock"/>
         </receiver>
+        <service android:name="com.amap.api.location.APSService"/>
 
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="f8859d36b7d60b8235f3c0148127f270"/>
     </application>
 </manifest>

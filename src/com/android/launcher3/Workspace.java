@@ -24,6 +24,7 @@ import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
+import android.app.Fragment;
 import android.app.WallpaperManager;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
@@ -532,14 +533,12 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         // transition animations competing with us changing the scroll when we add pages
         disableLayoutTransitions();
         // Recycle the QSB widget
-        View qsb =
-                QsbHelper.inHotSeat(mLauncher) ?
-                mLauncher.getHotseat().findViewById(R.id.search_container_hotseat) :
-                findViewById(R.id.search_container_workspace);
-        Log.e(TAG, "remove qsb layer:qsb null? " + (qsb == null));
+        View qsb = findViewById(R.id.search_container_workspace);
+        if (qsb == null) {
+            qsb = mLauncher.getHotseat().findViewById(R.id.search_container_hotseat);
+        }
         if (qsb != null) {
-            mLauncher.getHotseat().removeView(qsb);
-            // ((ViewGroup) qsb.getParent()).removeView(qsb);
+            ((ViewGroup) qsb.getParent()).removeView(qsb);
         }
 
         // Remove the pages and clear the screen models

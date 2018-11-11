@@ -1775,6 +1775,17 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
             mPendingExecutor.markCompleted();
             mPendingExecutor = null;
         }
+
+        removeQsbFragment();
+    }
+
+    private void removeQsbFragment() {
+        Fragment frag = getFragmentManager().findFragmentByTag("qsb_view");
+        if (frag != null) {
+            getFragmentManager().beginTransaction()
+                    .remove(frag)
+                    .commit();
+        }
     }
 
     /**

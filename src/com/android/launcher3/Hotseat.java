@@ -140,8 +140,8 @@ public class Hotseat extends FrameLayout implements LogContainerProvider, Insett
                         .inflate(R.layout.view_search_container, mContent, false);
                 CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 1, 5, 1);
                 lp.canReorder = false;
-                if(mContent.addViewToCellLayout(qsb, -1, R.id.search_container_hotseat, lp, true)) {
-                    Log.e("workspace", "hotseat add qsb");
+                if (mContent.addViewToCellLayout(qsb, -1, R.id.search_container_hotseat, lp, true)) {
+                    Log.e("workspace", "hotseat failed to add QSB view");
                 }
             }
         }

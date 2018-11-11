@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.android.launcher3.dashboard.SmartAssistantModel;
 import com.android.launcher3.dashboard.SmartAssistants;
+import com.android.launcher3.model.LocationModel;
 import com.android.launcher3.test.DumpReceiver;
 import com.android.launcher3.util.Broadcasts;
 import com.android.launcher3.util.security.Security;
@@ -27,6 +28,11 @@ import java.util.ArrayList;
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_SETTINGS,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_WIFI_STATE,
+        Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS,
+
 })
 public class LauncherM extends Launcher {
 
@@ -67,15 +73,19 @@ public class LauncherM extends Launcher {
         }
     };
 
+    private LocationModel mLocationModel;
+
     private LauncherCallbacks callbacks = new LauncherCallbacks() {
         @Override
         public void onCreate(Bundle savedInstanceState) {
-
+//            LauncherAppState app = LauncherAppState.getInstance(LauncherM.this);
+//            mLocationModel = app.getLocationModel();
+//            mLocationModel.initLocation(LauncherM.this);
         }
 
         @Override
         public void onResume() {
-
+//            mLocationModel.startLocation();
         }
 
         @Override
