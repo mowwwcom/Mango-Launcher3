@@ -3,15 +3,20 @@ package com.android.launcher3.widget.custom;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.AlarmClock;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
+import com.android.launcher3.util.system.Activities;
+
+import java.util.Locale;
 
 /**
  * @author tic
@@ -19,29 +24,43 @@ import com.android.launcher3.R;
  */
 public class ClockWidget extends AppWidgetProvider {
 
+    private static final String ACTION_UPDATE_TIME = "android.appwidget.action.APPWIDGET_UPDATETIME";
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+        String action = intent.getAction();
+        if (action.equals(ACTION_UPDATE_TIME)) {
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            CharSequence date = getBastDatePattern(context);
+            updateTime(context, appWidgetManager, date);
+        }
+    }
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
         // Perform this loop procedure for each App Widget that belongs to this provider
-        int N = appWidgetIds.length;
-        for (int i = 0; i < N; i++) {
-            int appWidgetId = appWidgetIds[i];
+        CharSequence date = getBastDatePattern(context);
+        updateTime(context, appWidgetManager, date);
+    }
 
-            // Get the layout for the App Widget and attach an on-click listener
-            // to the button
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.appwidget_clock);
-//            views.setString(R.id.date1, "", "");
-//            views.setString(R.id.time, "", "");
-            views.setViewVisibility(R.id.weather, View.GONE);
-            views.setViewVisibility(R.id.split, View.GONE);
-            // views.setViewVisibility(R.id.time, View.GONE);
+    private void updateTime(Context context, AppWidgetManager appWidgetManager,
+                            CharSequence date) {
+        PendingIntent clockIntent = PendingIntent
+                .getActivity(context, 0, Activities.clock(), 0);
+        PendingIntent calendarIntent = PendingIntent
+                .getActivity(context, 0, Activities.calendar(), 0);
 
-            PendingIntent clockIntent = PendingIntent.getActivity(context, 0, new Intent(AlarmClock.ACTION_SET_ALARM), 0);
-            views.setOnClickPendingIntent(R.id.date1, clockIntent);
-            // views.setOnClickPendingIntent(R.id.weather, PendingIntent.getActivity());
-            views.setOnClickPendingIntent(R.id.time, clockIntent);
-            appWidgetManager.updateAppWidget(appWidgetId, views);
-        }
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.appwidget_clock);
+        views.setCharSequence(R.id.date1, "setText", date);
+        views.setViewVisibility(R.id.weather, View.GONE);
+        views.setViewVisibility(R.id.split, View.GONE);
+        views.setViewVisibility(R.id.time, View.GONE);
+
+        views.setOnClickPendingIntent(R.id.date1, calendarIntent);
+        views.setOnClickPendingIntent(R.id.time, clockIntent);
+        appWidgetManager.updateAppWidget(new ComponentName(context, ClockWidget.class), views);
     }
 
     /**
@@ -62,5 +81,17 @@ public class ClockWidget extends AppWidgetProvider {
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
         Log.e("widget", "appwidgetId:" + appWidgetId);
         Log.e("widget", "newOptions:" + newOptions.toString());
+    }
+
+    public CharSequence getBastDatePattern(Context context) {
+        Locale locale;
+        if (Utilities.ATLEAST_NOUGAT) {
+            locale = context.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            locale = context.getResources().getConfiguration().locale;
+        }
+        long now = System.currentTimeMillis();
+        String format = DateFormat.getBestDateTimePattern(locale, "EEEEMMMMd");
+        return DateFormat.format(format, now);
     }
 }
