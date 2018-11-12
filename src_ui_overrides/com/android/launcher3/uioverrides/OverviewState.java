@@ -26,6 +26,6 @@ import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 public class OverviewState extends LauncherState {
 
     public OverviewState(int id) {
-        super(id, ContainerType.WORKSPACE, OVERVIEW_TRANSITION_MS, FLAG_DISABLE_RESTORE);
+        super(id, ContainerType.WORKSPACE, OVERVIEW_TRANSITION_MS, FLAG_OVERVIEW_UI);
     }
 }

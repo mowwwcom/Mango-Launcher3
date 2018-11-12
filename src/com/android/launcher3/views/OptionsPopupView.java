@@ -29,6 +29,7 @@ import android.view.View.OnLongClickListener;
 import android.widget.Toast;
 
 import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.popup.ArrowPopup;
@@ -148,8 +149,16 @@ public class OptionsPopupView extends ArrowPopup
                 ControlType.WIDGETS_BUTTON, OptionsPopupView::onWidgetsClicked));
         options.add(new OptionItem(R.string.mango_settings, R.drawable.ic_setting,
                 ControlType.SETTINGS_BUTTON, OptionsPopupView::startSettings));
+        options.add(new OptionItem(R.string.transition_effect, R.drawable.ic_setting,
+                9, OptionsPopupView::goTransitionEffect));
 
         show(launcher, target, options);
+    }
+
+    public static boolean goTransitionEffect(View view) {
+        Launcher launcher = Launcher.getLauncher(view.getContext());
+        launcher.getStateManager().goToState(LauncherState.OVERVIEW);
+        return true;
     }
 
     public static boolean onWidgetsClicked(View view) {
@@ -204,7 +213,7 @@ public class OptionsPopupView extends ArrowPopup
         private final OnLongClickListener mClickListener;
 
         public OptionItem(int labelRes, int iconRes, int controlTypeForLog,
-                OnLongClickListener clickListener) {
+                          OnLongClickListener clickListener) {
             mLabelRes = labelRes;
             mIconRes = iconRes;
             mControlTypeForLog = controlTypeForLog;

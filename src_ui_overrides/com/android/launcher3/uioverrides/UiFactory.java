@@ -19,6 +19,7 @@ package com.android.launcher3.uioverrides;
 import android.app.Activity;
 import android.content.Context;
 import android.os.CancellationSignal;
+import android.view.View;
 
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherStateManager.StateHandler;
@@ -29,37 +30,49 @@ import java.io.PrintWriter;
 public class UiFactory {
 
     public static TouchController[] createTouchControllers(Launcher launcher) {
-        return new TouchController[] {
+        return new TouchController[]{
                 launcher.getDragController(), new AllAppsSwipeController(launcher)};
     }
 
-    public static void setOnTouchControllersChangedListener(Context context, Runnable listener) { }
-
-    public static StateHandler[] getStateHandler(Launcher launcher) {
-        return new StateHandler[] {
-                launcher.getAllAppsController(), launcher.getWorkspace() };
+    public static void setOnTouchControllersChangedListener(Context context, Runnable listener) {
     }
 
-    public static void resetOverview(Launcher launcher) { }
+    public static StateHandler[] getStateHandler(Launcher launcher) {
+        return new StateHandler[]{
+                launcher.getAllAppsController(), launcher.getWorkspace()};
+    }
 
-    public static void onLauncherStateOrFocusChanged(Launcher launcher) { }
+    public static void resetOverview(Launcher launcher) {
+        launcher.getOverviewPanelContainer().setVisibility(View.GONE);
+    }
 
-    public static void onCreate(Launcher launcher) { }
+    public static void onLauncherStateOrFocusChanged(Launcher launcher) {
+    }
 
-    public static void onStart(Launcher launcher) { }
+    public static void onCreate(Launcher launcher) {
+    }
 
-    public static void onLauncherStateOrResumeChanged(Launcher launcher) { }
+    public static void onStart(Launcher launcher) {
+    }
 
-    public static void onTrimMemory(Launcher launcher, int level) { }
+    public static void onLauncherStateOrResumeChanged(Launcher launcher) {
+    }
+
+    public static void onTrimMemory(Launcher launcher, int level) {
+    }
 
     public static void useFadeOutAnimationForLauncherStart(Launcher launcher,
-            CancellationSignal cancellationSignal) { }
+                                                           CancellationSignal cancellationSignal) {
+    }
 
     public static boolean dumpActivity(Activity activity, PrintWriter writer) {
         return false;
     }
 
-    public static void prepareToShowOverview(Launcher launcher) { }
+    public static void prepareToShowOverview(Launcher launcher) {
+        launcher.getOverviewPanelContainer().setVisibility(View.VISIBLE);
+    }
 
-    public static void setBackButtonAlpha(Launcher launcher, float alpha, boolean animate) { }
+    public static void setBackButtonAlpha(Launcher launcher, float alpha, boolean animate) {
+    }
 }

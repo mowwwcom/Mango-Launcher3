@@ -176,6 +176,7 @@
     <!-- Text for settings button -->
     <string name="settings_button_text">Home settings</string>
     <string name="mango_settings">Mango settings</string>
+    <string name="transition_effect">Transition effect</string>
     <!-- Message shown when a feature is disabled by the administrator -->
     <string name="msg_disabled_by_admin">Disabled by your admin</string>
 
@@ -384,5 +385,14 @@
     <string name="hint_account">enter account</string>
     <string name="hint_password">enter password</string>
     <string name="clock">clock</string>
+
+    <string name="pageanim_normal">"Classic"</string>
+    <string name="pageanim_turntable">"Windmill"</string>
+    <string name="pageanim_layered">"Cascade"</string>
+    <string name="pageanim_rotate">"Rotate"</string>
+    <string name="pageanim_pageturn">"Page"</string>
+    <string name="pageanim_rotatebylefttoppoint">"Card"</string>
+    <string name="pageanim_rotatebycenterpoint">"Compass"</string>
+    <string name="pageanim_blocks">"Box"</string>
 
 </resources>
