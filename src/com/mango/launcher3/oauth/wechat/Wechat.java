@@ -1,4 +1,4 @@
-package com.mango.oath.wechat;
+package com.mango.launcher3.oauth.wechat;
 
 import android.content.Context;
 

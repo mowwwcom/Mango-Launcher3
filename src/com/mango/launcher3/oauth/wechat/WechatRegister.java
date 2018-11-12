@@ -1,9 +1,10 @@
-package com.mango.oath.wechat;
+package com.mango.launcher3.oauth.wechat;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.mango.oath.wechat.Wechat;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 

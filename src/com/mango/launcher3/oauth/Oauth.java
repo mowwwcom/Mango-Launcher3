@@ -1,4 +1,4 @@
-package com.mango.oath;
+package com.mango.launcher3.oauth;
 
 /**
  * @author tic

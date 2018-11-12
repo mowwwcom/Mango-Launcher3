@@ -153,6 +153,7 @@ repositories {
     mavenCentral()
     google()
 }
+def retrofit = "2.4.0"
 
 dependencies {
     testImplementation 'junit:junit:4.12'
@@ -173,8 +174,13 @@ dependencies {
     implementation 'com.google.protobuf.nano:protobuf-javanano:3.0.0-alpha-7'
     implementation 'com.google.guava:guava:26.0-android'
 
+    implementation "com.squareup.retrofit2:retrofit:${retrofit}"
+    implementation "com.squareup.retrofit2:converter-gson:${retrofit}"
+    implementation "com.squareup.retrofit2:adapter-rxjava:${retrofit}"
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
+
     quickstepImplementation fileTree(dir: "quickstep/libs", include: 'sysui_shared.jar')
-    implementation files('oauth/libs/wechat-sdk-android-with-mta-5.1.6.jar')
+    implementation files('libs/wechat-sdk-android-with-mta-5.1.6.jar')
 }
 
 protobuf {
