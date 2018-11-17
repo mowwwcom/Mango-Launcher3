@@ -4,6 +4,7 @@ import com.android.launcher3.entity.User;
 import com.mango.launcher3.http.UserService;
 
 import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * @author tic
@@ -15,12 +16,13 @@ public class UserHttpTest {
     private final Retrofits mRetrofits;
 
     public UserHttpTest() {
-        mRetrofits = new Retrofits();
+        mRetrofits = Retrofits.create();
         mService = mRetrofits.create(UserService.class);
     }
 
     public void login(String account, String password) {
         Call<User> call = mService.login(account);
-        User user = mRetrofits.execute(call);
+        Response<User> user = mRetrofits.execute(call);
+
     }
 }

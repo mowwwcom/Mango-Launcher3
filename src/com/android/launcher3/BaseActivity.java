@@ -94,7 +94,7 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
     @InvisibilityFlags
     private int mForceInvisible;
 
-    private PermissionManager mPermissionManager;
+    private PermissionManager mSecurity;
 
     public DeviceProfile getDeviceProfile() {
         return mDeviceProfile;
@@ -137,8 +137,8 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mPermissionManager = new PermissionManager(this);
-        mPermissionManager.requestPermission();
+        mSecurity = new PermissionManager(this);
+        mSecurity.requestPermission();
     }
 
     @Override
@@ -269,11 +269,17 @@ public abstract class BaseActivity extends Activity implements UserEventDelegate
         writer.println(" mForceInvisible: " + mForceInvisible);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mSecurity.onRequestPermissionResult(requestCode, permissions, grantResults);
+    }
+
     /**
      * for override
      */
     @Override
-    public void onPermissionRefuse(@NonNull String permissions) {
+    public void onPermissionResult(@NonNull String permissions, boolean accept) {
 
     }
 

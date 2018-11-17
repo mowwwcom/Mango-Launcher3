@@ -36,8 +36,9 @@ public final class PermissionManager {
          * permission refused
          *
          * @param permissions p
+         * @param accept      accept
          */
-        void onPermissionRefuse(@NonNull String permissions);
+        void onPermissionResult(@NonNull String permissions, boolean accept);
     }
 
     /**
@@ -49,8 +50,11 @@ public final class PermissionManager {
             Log.d("PermissionManager", "no permission request");
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !havePermission(permissions.value())) {
-            mCallback.getActivity().requestPermissions(this.unauthorizedPermission, 0x123);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            String[] permission = permissions.value();
+            if (!havePermission(permission)) {
+                mCallback.getActivity().requestPermissions(this.unauthorizedPermission, 0x123);
+            }
         }
     }
 
@@ -68,6 +72,8 @@ public final class PermissionManager {
             if (mCallback.getActivity()
                     .checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
                 permissionList.add(permission);
+            } else {
+                mCallback.onPermissionResult(permission, true);
             }
         }
         if (permissionList.size() > 0) {
@@ -89,7 +95,9 @@ public final class PermissionManager {
     public void onRequestPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         for (int i = 0; i < grantResults.length; i++) {
             if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                mCallback.onPermissionRefuse(permissions[i]);
+                mCallback.onPermissionResult(permissions[i], false);
+            } else {
+                mCallback.onPermissionResult(permissions[i], true);
             }
         }
     }
