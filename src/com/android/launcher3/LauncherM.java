@@ -15,6 +15,7 @@ import com.android.launcher3.model.LocationModel;
 import com.android.launcher3.test.DumpReceiver;
 import com.android.launcher3.util.Broadcasts;
 import com.android.launcher3.util.security.Security;
+import com.android.launcher3.widget.custom.ClockWidget;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -81,11 +82,14 @@ public class LauncherM extends Launcher {
 //            LauncherAppState app = LauncherAppState.getInstance(LauncherM.this);
 //            mLocationModel = app.getLocationModel();
 //            mLocationModel.initLocation(LauncherM.this);
+
+            ClockWidget.initClock(LauncherM.this);
         }
 
         @Override
         public void onResume() {
 //            mLocationModel.startLocation();
+
         }
 
         @Override

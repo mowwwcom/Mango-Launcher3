@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.android.launcher3.R;
 import com.android.launcher3.uioverrides.progress.CircularMusicProgressBar;
-import com.mango.oath.wechat.Wechat;
+import com.mango.launcher3.oauth.wechat.Wechat;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 
 /**

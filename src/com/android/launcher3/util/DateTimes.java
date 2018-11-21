@@ -1,9 +1,11 @@
 package com.android.launcher3.util;
 
 import android.content.Context;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -72,6 +74,19 @@ public class DateTimes {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static CharSequence getBestDateTimePattern(Context context) {
+        Locale locale;
+        if (Utilities.ATLEAST_NOUGAT) {
+            locale = context.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            locale = context.getResources().getConfiguration().locale;
+        }
+
+        long now = System.currentTimeMillis();
+        String format = DateFormat.getBestDateTimePattern(locale, "EEEEMMMMd");
+        return DateFormat.format(format, now);
     }
 
     public static String convertDateToString(Date date, String format) {

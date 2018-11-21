@@ -83,6 +83,11 @@
                 <action android:name="com.mango.launcher.DUMP_DB"/>
             </intent-filter>
         </receiver>
+        <receiver android:name="com.mango.launcher3.receiver.AlarmsReceiver">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATETIME"/>
+            </intent-filter>
+        </receiver>
 
         <service
             android:name="com.android.launcher3.uioverrides.dynamicui.WallpaperManagerCompatVL$ColorExtractionService"
