@@ -28,8 +28,10 @@ public class DumpReceiver extends BroadcastReceiver {
             case ACTION_DUMP_DB:
                 File file = context.getDatabasePath(LauncherFiles.LAUNCHER_DB);
                 if (file.exists()) {
-                    IOUtils.copy(file, new File("/sdcard/download/launcher3/"+ LauncherFiles.LAUNCHER_DB));
+                    IOUtils.copy(file, new File("/sdcard/download/launcher3/" + LauncherFiles.LAUNCHER_DB));
                 }
+                break;
+            default:
                 break;
         }
     }

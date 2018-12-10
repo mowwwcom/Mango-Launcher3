@@ -2,18 +2,19 @@ package com.android.launcher3.util;
 
 import android.app.AppOpsManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.res.ResourcesCompat;
 
+import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
 import java.lang.reflect.Field;
@@ -66,9 +67,10 @@ public class Notifications {
      * @param title   标题
      * @param content 内容
      */
-    public static void showNotification(Context context, Intent intent, int id, int largeIcon,
+    public static void showNotification(Context context, PendingIntent intent, int id, int largeIcon,
                                         int smallIcon, String ticker, String title, String content) {
-        showNotification(context, intent, id, ticker, title, content, largeIcon, smallIcon, Notification.DEFAULT_SOUND, -1);
+        showNotification(context, intent, id, ticker, title, content, largeIcon, smallIcon,
+                Notification.DEFAULT_SOUND, -1, context.getPackageName());
     }
 
     /**
@@ -79,66 +81,79 @@ public class Notifications {
      * @param title   标题
      * @param content 内容
      */
-    public static void showNotificationProgress(Context context, Intent intent, int id, int largeIcon,
+    public static void showNotificationProgress(Context context, PendingIntent intent, int id, int largeIcon,
                                                 int smallIcon, String ticker, String title, String content, int progress) {
-        showNotification(context, intent, id, ticker, title, content, largeIcon, smallIcon, Notification.DEFAULT_SOUND, progress);
+        showNotification(context, intent, id, ticker, title, content, largeIcon, smallIcon,
+                Notification.DEFAULT_SOUND, progress, context.getPackageName());
     }
 
     /**
      * 显示通知栏
      *
-     * @param intent    点击消息跳转intent
+     * @param pi        点击消息跳转intent
      * @param ticker    提醒的文本
      * @param title     标题
      * @param content   内容
      * @param largeIcon 大图
      * @param smallIcon 小图
      */
-    public static void showNotification(Context context, Intent intent, int id, String ticker, String title, String content,
-                                        int largeIcon, int smallIcon, int defaults, int progress) {
-        //1.从系统服务中获得通知管理器
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+    public static void showNotification(Context context, PendingIntent pi, int id,
+                                        String ticker, String title, String content,
+                                        int largeIcon, int smallIcon, int defaults, int progress, String group) {
+        String channelId = context.getPackageName() + "-" + id;
+        NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        assert manager != null;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
-        // notification build
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+        builder.setTicker(ticker)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setAutoCancel(true)
+                .setChannelId(channelId)
+                .setDefaults(defaults)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(smallIcon)
+                .setGroup(group)
+                .setColorized(true)
+                .setColor(ResourcesCompat.getColor(context.getResources(), R.color.colorPrimary, null));
 
-        // 构建 PendingIntent
-        PendingIntent pi = null;
-        if (intent != null) {
-            pi = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        }
-        mBuilder.setTicker(ticker);
-        mBuilder.setContentTitle(title);
-        mBuilder.setContentText(content);
-        //版本兼容
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mBuilder.setSmallIcon(smallIcon);
-            mBuilder.setColor(Color.parseColor("#33CFC8"));
-        } else {
-            mBuilder.setPriority(Notification.PRIORITY_HIGH);//高优先级
-            mBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), largeIcon));
-        }
-        if (progress >= 0) {
-            mBuilder.setProgress(100, progress, false);
-        }
-        mBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-        mBuilder.setAutoCancel(true);//点击后取消
-        mBuilder.setDefaults(defaults);
-        mBuilder.setWhen(System.currentTimeMillis());//设置通知时间
+        builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), largeIcon));
+
         if (pi != null) {
-            mBuilder.setContentIntent(pi);
+            builder.setContentIntent(pi);
         }
 
-        if (mNotificationManager != null) {
-            mNotificationManager.notify(id, mBuilder.build());
+        if (progress >= 0) {
+            builder.setProgress(100, progress, false);
         }
+
+        if (Utilities.ATLEAST_P) {
+            // 9.0
+        } else if (Utilities.ATLEAST_OREO) {
+            // 8.0
+            NotificationChannel channel = new NotificationChannel(channelId, title, NotificationManager.IMPORTANCE_HIGH);
+            manager.createNotificationChannel(channel);
+        } else if (Utilities.ATLEAST_NOUGAT) {
+            // 7.0
+            builder.setPriority(NotificationManager.IMPORTANCE_HIGH);
+        } else if (Utilities.ATLEAST_MARSHMALLOW) {
+            // 6.0
+        } else if (Utilities.ATLEAST_LOLLIPOP) {
+            // 5.0
+            builder.setPriority(Notification.PRIORITY_HIGH);
+            // 当前需要隐藏隐私信息时，设置Visibility，并调用 PublicVersion 替换原有通知
+            // builder.setVisibility(Notification.VISIBILITY_PRIVATE);
+            // builder.setPublicVersion(privateNotify);
+            // builder.addPerson()
+        }
+        manager.notify(id, builder.build());
     }
 
     /**
      * 取消显示通知
      */
     public static void dismissNotification(Context context, int id) {
-        NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);//得到系统通知服务
+        NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         if (manager != null) {
             manager.cancel(id);
         }
@@ -169,5 +184,4 @@ public class Notifications {
         }
         return false;
     }
-
 }
