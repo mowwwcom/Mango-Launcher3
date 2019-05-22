@@ -41,7 +41,8 @@ public class JsonConverterFactory extends Converter.Factory {
                                                             Annotation[] annotations,
                                                             Retrofit retrofit) {
         TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
-        return new JsonResponseBodyConverter<>(gson, adapter);
+//        return new JsonResponseBodyConverter<>(gson, adapter);//del by jack
+        return null;//add by jack
     }
 
     @Override
@@ -50,7 +51,8 @@ public class JsonConverterFactory extends Converter.Factory {
                                                           Annotation[] methodAnnotations,
                                                           Retrofit retrofit) {
         TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
-        return new JsonRequestBodyConverter<>(gson, adapter);
+//        return new JsonRequestBodyConverter<>(gson, adapter);//del by jack
+        return null;//add by jack
     }
 
 }
